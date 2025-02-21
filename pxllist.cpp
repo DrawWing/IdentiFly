@@ -82,6 +82,7 @@ QString pxlList::toTxtChain() const
     outString.append(startString);
     outString.append(" ");
 
+
 // below codes are in Cartesian coordinates
 // 0 = step to the right, 2 = up, 4 = left, 6 = down,
 // and the other digits are intermediate directions.
@@ -116,6 +117,23 @@ QString pxlList::toTxtChain() const
         nextNode=nextNode->next;
     }while(currNode != front);
     return outString;
+}
+
+std::vector<Coord> pxlList::toVec() const
+{
+    std::vector<Coord> outVec;
+
+    nodePxl* currNode = front;
+    nodePxl* nextNode = currNode->next;
+
+    do{
+        outVec.push_back(currNode->pxl);
+
+        currNode=currNode->next;
+        nextNode=nextNode->next;
+    }while(currNode != front);
+
+    return outVec;
 }
 
 void pxlList::fromTxt(QString inString)
@@ -845,7 +863,8 @@ pxlList::centroid() const
 }
 
 //find in the pixel list one closes to thePxl
-nodePxl* pxlList::findClose(Coord toPxl){
+nodePxl* pxlList::findClose(Coord toPxl)
+{
     nodePxl* p=front;
     Coord pxl = p->pxl;
     dwVector vec(pxl, toPxl);

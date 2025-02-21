@@ -424,7 +424,7 @@ QStringList dwLdaGm::classify(dwRclList & inList)
 {
     QStringList outList;
 
-    std::vector< dwRCoordList > inVec = inList.lst();
+    std::vector< dwRCoordList > inVec = inList.list();
     for( unsigned i = 0; i < inVec.size(); ++i)
     {
         dwRCoordList theList = inVec[i];
@@ -443,7 +443,7 @@ QString dwLdaGm::classifyTab(dwRclList & inList)
     std::vector< QString >  idList = inList.getIdList();
 
     QStringList classList;
-    std::vector< dwRCoordList > inVec = inList.lst();
+    std::vector< dwRCoordList > inVec = inList.list();
     for( unsigned i = 0; i < inVec.size(); ++i)
     {
         dwRCoordList theList = inVec[i];
@@ -493,7 +493,7 @@ dwDataSet dwLdaGm::cvaMD(dwRclList & inList)
     }
     outDataSet.setHeader(outHeader);
 
-    std::vector< dwRCoordList > inVec = inList.lst();
+    std::vector< dwRCoordList > inVec = inList.list();
     for( unsigned i = 0; i < inVec.size(); ++i)
     {
         dwRCoordList theList = inVec[i];
@@ -558,7 +558,7 @@ dwDataSet dwLdaGm::cvaProb(dwRclList & inList)
     }
     outDataSet.setHeader(outHeader);
 
-    std::vector< dwRCoordList > inVec = inList.lst();
+    std::vector< dwRCoordList > inVec = inList.list();
     for( unsigned i = 0; i < inVec.size(); ++i)
     {
         dwRCoordList theList = inVec[i];
@@ -689,7 +689,7 @@ dwDataSet dwLdaGm::cvaDistProb(dwRclList & inList)
     }
     outDataSet.setHeader(outHeader);
 
-    std::vector< dwRCoordList > inVec = inList.lst();
+    std::vector< dwRCoordList > inVec = inList.list();
     for( unsigned i = 0; i < inVec.size(); ++i)
     {
         dwRCoordList theList = inVec[i];
@@ -736,7 +736,7 @@ dwDataSet dwLdaGm::cvaScores(dwRclList & inList)
 ////    outHeader[0] = "id";
 //    outDataSet.setHeader(outHeader);
 
-    std::vector< dwRCoordList > inVec = inList.lst();
+    std::vector< dwRCoordList > inVec = inList.list();
     for( unsigned i = 0; i < inVec.size(); ++i)
     {
         dwRCoordList theList = inVec[i];
@@ -763,7 +763,7 @@ dwDataSet dwLdaGm::ldaScores(dwRclList & inList)
     }
     outDataSet.setHeader(outHeader);
 
-    std::vector< dwRCoordList > inVec = inList.lst();
+    std::vector< dwRCoordList > inVec = inList.list();
     for( unsigned i = 0; i < inVec.size(); ++i)
     {
         dwRCoordList theList = inVec[i];
@@ -1095,7 +1095,7 @@ QImage dwLdaGm::cvaDiagram(dwRclList & inList,  unsigned cvX, unsigned cvY)
     /// ellips names end
 
 /// points start
-    std::vector< dwRCoordList > inVec = inList.lst();
+    std::vector< dwRCoordList > inVec = inList.list();
     for( unsigned i = 0; i < inVec.size(); ++i)
     {
         dwRCoordList theList = inVec[i];

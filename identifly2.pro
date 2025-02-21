@@ -29,6 +29,7 @@ SOURCES += \
     dwPairLR.cpp \
     dwRCoordList.cpp \
     dwRclList.cpp \
+    dwSLAO.cpp \
     dwView.cpp \
     dwldagm.cpp \
     dwvector.cpp \
@@ -57,6 +58,7 @@ HEADERS += \
     dwPairLR.h \
     dwRCoordList.h \
     dwRclList.h \
+    dwSLAO.h \
     dwView.h \
     dwldagm.h \
     dwvector.h \

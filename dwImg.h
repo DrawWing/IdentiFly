@@ -19,16 +19,11 @@ public:
     dwImage dwCopy();
     void copyText(dwImage & toImg) const;
     void from(QImage *);
-    unsigned countNeighbours(unsigned row, unsigned col);
-    unsigned countNotWhiteNeighbours(unsigned row, unsigned col);
-    void findNeighbour(unsigned &row, unsigned &col);
     void threshold(unsigned);
     void markPxl(Coord, unsigned char color);
-    void markNeighbours(const Coord & pxl,  unsigned char color);
     void markList(const pxlList&, unsigned char color);
     void markList(const pxlList *, unsigned char color = 0);
     dwImage cropOutline(const pxlList * outline, double angle);
-    void mask(dwImage & maskImg, int thd);
 
     int outlineThd() const;
     void fillRow(int, unsigned char);
@@ -56,7 +51,6 @@ public:
     double toNeighbour(Coord inPxl, int radius); //distance to neighbour in radius arond inPxl
     double toNeighbour(realCoord inPxl, int radius); //distance to neighbour in radius arond inPxl
     bool isCorner(unsigned x, unsigned y) const;
-    bool isEdge(unsigned x, unsigned y) const;
 
     dwImage & operator=( const dwImage & );
     dwImage & operator=( const QImage & );

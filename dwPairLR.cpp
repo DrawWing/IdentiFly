@@ -32,7 +32,7 @@ std::vector< QString > dwPairLR::outliers(QDir inDir)
         return outList;
 
     std::vector< std::pair<double, QString> > stringValList;
-    std::vector< dwRCoordList > rclList = rcl.lst();
+    std::vector< dwRCoordList > rclList = rcl.list();
     for(int i = 0; i < inStringList.size(); ++i)
     {
         QString theStr = inStringList[i];

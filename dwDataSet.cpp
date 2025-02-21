@@ -202,7 +202,7 @@ void dwDataSet::fromCvMatDouble(const cv::Mat & inMat)
 void dwDataSet::fromRclList(const dwRclList & inList)
 {
     dataSet.clear();
-    std::vector< dwRCoordList > inVec = inList.lst();
+    std::vector< dwRCoordList > inVec = inList.list();
     for(unsigned i = 0; i < inVec.size(); ++i)
     {
         dwData inData;

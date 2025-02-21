@@ -18,6 +18,7 @@ public:
 	void fromList(std::list<Coord> *);
 	void fromFile(std::ifstream  & inFile);
     QString toTxtChain() const;
+    std::vector<Coord> toVec() const;
     void fromTxt(QString inString);
 
 	pxlList copy() const;

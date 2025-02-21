@@ -21,7 +21,6 @@ public:
     QString toCsv() const;
     QString toCsvRow() const;
     QString toTxtRow() const;
-//    QString index() const;
     QString XmlExportHeader(QDomDocument XmlDoc) const;
     QString XmlExport(QDomDocument XmlDoc) const;
     void XmlReconfiguration(QDomDocument XmlDoc);
@@ -29,9 +28,6 @@ public:
     QString apisDistances() const;
     void fromImg(const QImage &);
     void fromTxt(const QString & inTxt);
-
-    // !!! to be removed
-    bool left; //is this a left wing;
 
     unsigned outlineThd; // synonim of wingThd wing_threshold
     int venationThd; //threshold for extracting venation outline
@@ -60,7 +56,7 @@ public:
     void setResolution(double inValue);
     double getResolution() const;
     std::vector< int > getSequence() const;
-//    int getFitSize() const;
+
 private:
 //    QString softName; //software name
 //    double softVer; //software version
@@ -72,7 +68,6 @@ private:
     double scaleRef; //reference corresnding to scalebar in meters
     QString device;
     double resolution; //image resolution in pixels per meter
-//    int fitSize;
 
     QString fileName; //obecnie bez sciezki
     const QImage * image;

@@ -5,6 +5,8 @@
 #include <QSettings>
 #include <QStatusBar>
 
+#include <QDebug> // qDebug
+
 #include "dwOptions.h"
 #include "dwRclList.h"
 #include "dwView.h"
@@ -17,6 +19,8 @@
 #include "dwPairLR.h"
 #include "dwldagm.h"
 #include "dwImageViewer.h"
+
+#include "dwSLAO.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -141,7 +145,12 @@ void MainWindow::createActions()
     cropAct = new QAction(tr("&Crop"), this);
     connect(cropAct, SIGNAL(triggered()), this, SLOT(crop()));
 
-    //
+    cropDirAct = new QAction(tr("Crop d&irectory"), this);
+    connect(cropDirAct, SIGNAL(triggered()), this, SLOT(cropDir()));
+
+    scaleDirAct = new QAction(tr("Scale director&y"), this);
+    connect(scaleDirAct, SIGNAL(triggered()), this, SLOT(scaleDir()));
+
     zoomInAct = new QAction(QIcon(":/images/zoomin-green.png"), tr("Zoom &in"), this);
     zoomInAct->setShortcut(tr("Ctrl+Up"));
     zoomInAct->setAutoRepeat(true);
@@ -218,6 +227,24 @@ void MainWindow::createActions()
     protoViewAct = new QAction(tr("&View prototype"), this);
     connect(protoViewAct, SIGNAL(triggered()), this, SLOT( protoView() ));
 
+    semiOutlineAct = new QAction(tr("&Longest outline"), this);
+    connect(semiOutlineAct, SIGNAL(triggered()), this, SLOT(semiOutline()));
+
+    semiOutlineDirAct = new QAction(tr("&Longest outline - directory"), this);
+    connect(semiOutlineDirAct, SIGNAL(triggered()), this, SLOT(semiOutlineDir()));
+
+    semiLandAct = new QAction(tr("Semilandmarks &1 point"), this);
+    connect(semiLandAct, SIGNAL(triggered()), this, SLOT(semiLand1()));
+
+    semiLand2Act = new QAction(tr("Semilandmarks &2 points"), this);
+    connect(semiLand2Act, SIGNAL(triggered()), this, SLOT(semiLand2()));
+
+    semiLand2DirAct = new QAction(tr("Semilandmarks &2 points - directory"), this);
+    connect(semiLand2DirAct, SIGNAL(triggered()), this, SLOT(semiLand2Dir()));
+
+    semiAlignAct = new QAction(tr("Align semilandmarks"), this);
+    connect(semiAlignAct, SIGNAL(triggered()), this, SLOT(semiAlign()));
+
     setScaleBarAct = new QAction(tr("&Set scale bar"), this);
     connect(setScaleBarAct, SIGNAL(triggered()), this, SLOT(setScaleBar()));
 
@@ -232,9 +259,6 @@ void MainWindow::createActions()
 
     scaleInfoAct = new QAction(tr("Scale &information"), this);
     connect(scaleInfoAct, SIGNAL(triggered()), this, SLOT(scaleInfo()));
-
-    // scaleDirAct = new QAction(tr("Scale director&y"), this);
-    // connect(scaleDirAct, SIGNAL(triggered()), this, SLOT(scaleDir()));
 
     idFileAct = new QAction(tr("&Set classification"), this);
     connect(idFileAct, SIGNAL(triggered()), this, SLOT( idFile() ));
@@ -260,8 +284,15 @@ void MainWindow::createActions()
 
     getImageTextAct = new QAction(tr("&Image text"), this);
     connect(getImageTextAct, SIGNAL(triggered()), this, SLOT(getImageText()));
+
     setImageTextAct = new QAction(tr("Set image &text"), this);
     connect(setImageTextAct, SIGNAL(triggered()), this, SLOT(setImageText()));
+
+    convertCsvTpsAct = new QAction(tr("&Convert CSV to TPS"), this);
+    connect(convertCsvTpsAct, SIGNAL(triggered()), this, SLOT(convertCsvTps()));
+
+    reconfigAct = new QAction(tr("&Reconfiguration"), this);
+    connect(reconfigAct, SIGNAL(triggered()), this, SLOT(reconfig()));
 
     testAct = new QAction("Test", this);
     connect(testAct, SIGNAL(triggered()), this, SLOT(test()));
@@ -282,7 +313,6 @@ void MainWindow::createMenus()
     fileMenu->addAction(importTpsAct);
     fileMenu->addAction(exportDataAct);
     fileMenu->addAction(exportDataDirAct);
-    // //    fileMenu->addAction(reconfigAct);
     fileMenu->addAction(preferencesAct);
 
     separatorAction = fileMenu->addSeparator();
@@ -303,6 +333,8 @@ void MainWindow::createMenus()
     editMenu->addAction(rotateAct);
     editMenu->addAction(grayscaleAct);
     editMenu->addAction(cropAct);
+    editMenu->addAction(cropDirAct);
+    editMenu->addAction(scaleDirAct);
 
     viewMenu = new QMenu(tr("&View"), this);
     viewMenu->addAction(zoomInAct);
@@ -335,10 +367,14 @@ void MainWindow::createMenus()
     lmarkMenu->addAction(protoSetAct);
     lmarkMenu->addAction(protoViewAct);
 
-    // semiMenu = new QMenu(tr("Sem&ilandmarks"), this);
-    // semiMenu->addAction(outlineAct);
-    // semiMenu->addAction(semiLandAct);
-    // semiMenu->addAction(semiLand2Act);
+    semiMenu = new QMenu(tr("Sem&ilandmarks"), this);
+    semiMenu->addAction(semiOutlineAct);
+    semiMenu->addAction(semiLandAct);
+    semiMenu->addAction(semiLand2Act);
+    semiMenu->addAction(semiAlignAct);
+    semiMenu->addSeparator();
+    semiMenu->addAction(semiOutlineDirAct);
+    semiMenu->addAction(semiLand2DirAct);
 
     scaleMenu = new QMenu(tr("&Scale"), this);
     scaleMenu->addAction(setScaleBarAct);
@@ -362,10 +398,11 @@ void MainWindow::createMenus()
     testMenu = new QMenu(tr("&Test"), this);
     testMenu->addAction(getImageTextAct);
     testMenu->addAction(setImageTextAct);
+    testMenu->addAction(convertCsvTpsAct);
+    testMenu->addAction(reconfigAct);
     testMenu->addAction(testAct);
     // testMenu->addAction(setImageTextRawAct);
     // // testMenu->addAction(alignDataAct);
-    // testMenu->addAction(convertCsvTpsAct);
     // testMenu->addAction(getIdInfoAct);
     // // testMenu->addAction(getIdDwXmlAct);
     // // testMenu->addAction(imageAverageAct);
@@ -397,7 +434,7 @@ void MainWindow::createMenus()
     menuBar()->addMenu(viewMenu);
     menuBar()->addMenu(dataMenu);
     menuBar()->addMenu(lmarkMenu);
-    // menuBar()->addMenu(semiMenu);
+    menuBar()->addMenu(semiMenu);
     menuBar()->addMenu(scaleMenu);
     menuBar()->addMenu(idMenu);
     menuBar()->addMenu(helpMenu);
@@ -433,7 +470,7 @@ void MainWindow::createStatusBar()
     coordLbl->setText("(    ,    )(    ,    )    :    ,   ,   ,   ");
     coordLbl->setToolTip(tr("(bitmap-x,y)(Cartesian-x,y) transparancy: red, green, blue"));
     statusBar()->addPermanentWidget(coordLbl);
-    connect( view, SIGNAL( mouseMoved(QPointF) ),this, SLOT( updateStatus(QPointF) ) );
+    connect(view, SIGNAL( mouseMoved(QPointF) ),this, SLOT( updateStatus(QPointF) ) );
 
 }
 
@@ -475,7 +512,7 @@ void MainWindow::createToolBars()
     zoomSlider->setMaximum(500);
     zoomSlider->setValue(100);
     zoomSlider->setTickPosition(QSlider::TicksRight);
-    connect( viewToolBar, SIGNAL( orientationChanged(Qt::Orientation) ),
+    connect(viewToolBar, SIGNAL( orientationChanged(Qt::Orientation) ),
             zoomSlider, SLOT( setOrientation(Qt::Orientation) ) );
     connect(zoomSlider, SIGNAL(valueChanged(int)), view, SLOT(setupMatrix(int)));
 
@@ -1088,7 +1125,7 @@ void MainWindow::importTps()
             QMessageBox::warning(this, tr("Warning"), error);
 
         QFileInfo inInfo(fileName);
-        std::vector< dwRCoordList > tpsVec = tpsList.lst();
+        std::vector< dwRCoordList > tpsVec = tpsList.list();
         for(unsigned i = 0; i < tpsVec.size(); ++i){
             dwRCoordList rcl = tpsVec[i];
             QString tpsImgName = inInfo.absolutePath() + "/" + rcl.getId();
@@ -1376,6 +1413,133 @@ void MainWindow::crop()
     screenImg = wingImg;
     view->setImg(screenImg);
     saveOn();
+}
+
+void MainWindow::cropDir()
+{
+    bool ok;
+    unsigned char colorThd = QInputDialog::getInt(this, "", tr("Color threshold for cropping the image (0 - automatic detection)"),
+                                                  0, 0, 255, 1, &ok);
+    if(!ok)
+        return;
+
+    unsigned sizeThd;
+    unsigned sizeMax;
+    if(!screenImg.isNull())
+    {
+        sizeThd = screenImg.width()/4.0;
+        sizeMax = 2*screenImg.width()+2*screenImg.height();
+    }
+    else
+    {
+        sizeThd = 500;
+        sizeMax = 10000;
+    }
+
+    sizeThd = QInputDialog::getInt(this, "", tr("Size threshold for cropping the image (0 - automatic detection)"),
+                                   sizeThd, 8, sizeMax, 1, &ok);
+    if(!ok)
+        return;
+
+    int margin = QInputDialog::getInt(this, "", tr("Margin"),
+                                      10, 0, 100, 1, &ok);
+    if(!ok)
+        return;
+
+    QString inDirName = QFileDialog
+        ::getExistingDirectory(this, tr("Choose a directory"),
+                               filePath, QFileDialog::ShowDirsOnly);
+    if (inDirName.isEmpty())
+        return;
+
+    clear();
+
+    QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
+    QDir inDir( inDirName );
+    filePath = inDir.absolutePath();
+    QFileInfoList localFileInfoList = inDir.entryInfoList(QStringList("*.png"), QDir::Files, QDir::Name );
+    if(localFileInfoList.size() == 0)
+        return;
+
+    for (int i = 0; i < localFileInfoList.size(); ++i) {
+        inFileInfo = localFileInfoList.at(i);
+
+        if(inFileInfo.completeSuffix() == "dw.png")
+            continue;
+        if( !openDwPng(inFileInfo.absoluteFilePath()) )
+            continue ;
+        WingInfo inInfo;
+        inInfo.fromImg(screenImg);
+        if(colorThd == 0)
+            colorThd = inInfo.getOutlineThd();
+        if(!screenImg.isGrayTable())
+            screenImg = screenImg.convertToGray8();
+        screenImg.threshold(colorThd);
+        Outline maybeWingsOutlines;
+        maybeWingsOutlines.fromImg(&screenImg);
+        std::list< pxlList > * maybeWings = maybeWingsOutlines.pixels();
+
+        screenImg.setGrayTable();
+
+        int wingCount = 0;
+        std::list< pxlList >::iterator otl;
+        for( otl = maybeWings->begin(); otl != maybeWings->end(); otl++ ){
+            if( otl->clockwise || (otl->xSize() < (int)sizeThd) )  // clockwise otl is white spot on black background
+                continue;
+
+            dwImage wingImg = inImg.simpleCrop( &(*otl), margin);
+
+            QString cntStr;
+            cntStr.setNum(wingCount);
+            wingCount++;
+            QString dwpngFileName;
+            dwpngFileName = inFileInfo.path()+"/"+inFileInfo.baseName()+"_"+cntStr+".dw.png";
+            wingImg.save( dwpngFileName, "PNG");
+        }
+    }
+    QApplication::restoreOverrideCursor();
+    //statusBar()->showMessage(tr("File saved"), 2000);
+}
+
+// scale all images from a directory to fixed dpi
+void MainWindow::scaleDir()
+{
+    bool ok;
+    double inNumber = QInputDialog::getDouble(this, "", tr("Scaling factor"),
+                                              0, 0, 1, 8, &ok);
+    if(!ok) return;
+
+    if(inNumber == 0){
+        QMessageBox::warning(this, tr("Warning"),
+                             tr("Input value has to be greater than 0"));
+        return;
+    }
+
+    QString inDirName = QFileDialog::getExistingDirectory(this, tr("Choose a directory"), filePath, QFileDialog::ShowDirsOnly);
+    if(inDirName.isEmpty())
+        return;
+
+    QDir inDir( inDirName );
+    filePath = inDir.absolutePath();
+    QFileInfoList localFileInfoList = inDir.entryInfoList(QStringList("*.png"), QDir::Files, QDir::Name );
+    if(localFileInfoList.size() == 0)
+        return;
+    QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
+    for (int i = 0; i < localFileInfoList.size(); ++i) {
+        QFileInfo localFileInfo = localFileInfoList.at(i);
+        QString fileName = localFileInfo.absoluteFilePath();
+        statusBar()->showMessage(tr("Reading file: %1").arg(fileName));
+        QApplication::processEvents(); // for statusBar message refresh
+
+        dwImage img(fileName);
+
+        const double scale = inNumber;
+
+        img = img.scale(scale); // landmarks are scaled inside
+        img.save( fileName, "PNG");
+    }
+    QApplication::restoreOverrideCursor();
+    statusBar()->showMessage(tr("Finished"), 2000);
 }
 
 // used by thresholdDialog
@@ -1767,9 +1931,9 @@ void MainWindow::lmarkOut()
     dwRclList rcl;
     rcl.setId(inDir.dirName());
     QStringList extList = (QStringList() << "*.dw.png");
-    QFileInfoList hivList = inDir.entryInfoList(extList, QDir::Files, QDir::Name );
-    for (int j = 0; j < hivList.size(); ++j) {
-        QFileInfo localFileInfo = hivList.at(j);
+    QFileInfoList fileList = inDir.entryInfoList(extList, QDir::Files, QDir::Name );
+    for (int j = 0; j < fileList.size(); ++j) {
+        QFileInfo localFileInfo = fileList.at(j);
         QString fileName = localFileInfo.absoluteFilePath();
         statusBar()->showMessage(tr("Reading file: %1").arg(fileName));
         dwImage img(fileName);
@@ -1852,9 +2016,9 @@ void MainWindow::lmarkOneOut()
     ///
     rcl.setId(inDir.dirName());
     QStringList extList = (QStringList() << "*.dw.png");
-    QFileInfoList hivList = inDir.entryInfoList(extList, QDir::Files, QDir::Name );
-    for (int j = 0; j < hivList.size(); ++j) {
-        QFileInfo localFileInfo = hivList.at(j);
+    QFileInfoList fileList = inDir.entryInfoList(extList, QDir::Files, QDir::Name );
+    for (int j = 0; j < fileList.size(); ++j) {
+        QFileInfo localFileInfo = fileList.at(j);
         QString fileName = localFileInfo.absoluteFilePath();
         statusBar()->showMessage(tr("Reading file: %1").arg(fileName));
         dwImage img(fileName);
@@ -2103,16 +2267,18 @@ bool MainWindow::protoLoadDir(QDir dir)
     QString thePath = inDir.absolutePath();
 
     QFileInfoList localFileInfoList = inDir.entryInfoList(QStringList("*.png"), QDir::Files, QDir::Name );
-    if(localFileInfoList.size() > 0)
-        for (int i = 0; i < localFileInfoList.size(); ++i) {
-            QFileInfo localFileInfo = localFileInfoList.at(i);
-            QString localFileName = localFileInfo.fileName();
-            if(localFileName.startsWith("prototype-")){
-                protoFilePath = thePath + "/" + localFileName;
-                protoUpdate();
-                return true;
-            }
+    if(localFileInfoList.size() == 0)
+        return false;
+
+    for (int i = 0; i < localFileInfoList.size(); ++i) {
+        QFileInfo localFileInfo = localFileInfoList.at(i);
+        QString localFileName = localFileInfo.fileName();
+        if(localFileName.startsWith("prototype-")){
+            protoFilePath = thePath + "/" + localFileName;
+            protoUpdate();
+            return true;
         }
+    }
     return false;
 }
 
@@ -2148,7 +2314,7 @@ QDomDocument MainWindow::loadXmlDoc(QString &inFileName)
 }
 
 // find outline
-void MainWindow::outline()
+void MainWindow::semiOutline()
 {
     if(isNoImage())
         return;
@@ -2201,6 +2367,248 @@ void MainWindow::outline()
     //        QTextStream out(&data);
     //        out << outString;
     //    }
+}
+
+void MainWindow::semiOutlineDir()
+{
+    bool ok;
+    unsigned char colorThd = QInputDialog::getInt(this, "", tr("Color threshold for cropping the image)"),
+                                                  128, 0, 255, 1, &ok);
+    if(!ok)
+        return;
+
+    QString inDirName = QFileDialog
+        ::getExistingDirectory(this, tr("Choose a directory"),
+                               filePath, QFileDialog::ShowDirsOnly);
+    if (inDirName.isEmpty())
+        return;
+
+    clear();
+
+    QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
+    QDir inDir( inDirName );
+    filePath = inDir.absolutePath();
+    QFileInfoList localFileInfoList = inDir.entryInfoList(QStringList("*.dw.png"), QDir::Files, QDir::Name );
+    if(localFileInfoList.size() == 0)
+        return;
+    for (int i = 0; i < localFileInfoList.size(); ++i) {
+
+        QFileInfo localFileInfo = localFileInfoList.at(i);
+        QString fileName = localFileInfo.absoluteFilePath();
+        statusBar()->showMessage(tr("Reading file: %1").arg(fileName));
+        QApplication::processEvents(); // for statusBar message refresh
+
+        dwImage theImg(fileName);
+        Outline outlines;
+        if(theImg.isGrayTable())
+        {
+            theImg.threshold(colorThd);
+            outlines.fromImg(&theImg);
+            theImg.setGrayTable();
+        }else
+        {
+            dwImage tempImg = theImg;
+            tempImg.detach();
+            tempImg = tempImg.convertToGray8();
+            tempImg.threshold(colorThd);
+            outlines.fromImg(&tempImg);
+        }
+        pxlList* outlineMax;
+        outlineMax = outlines.maxCCOutline();
+        QString outlineString = outlineMax->toTxtChain();
+        info.setOutline(outlineString);
+
+        WingInfo theInfo;
+        theInfo.fromImg(theImg);
+        theInfo.setOutline(outlineString);
+        theInfo.toImg(theImg);
+        theImg.save(fileName, "PNG");
+    }
+    QApplication::restoreOverrideCursor();
+    statusBar()->showMessage(tr("Finished"), 2000);
+}
+
+// find semilandmarks
+void MainWindow::semiLand1()
+{
+    QString outlineString = info.getOutline();
+    if(outlineString.isEmpty())
+    {
+        QMessageBox::warning(this, tr("Warning"), tr("Create an outline first"));
+        return;
+    }
+    pxlList outline;
+    outline.fromTxt(outlineString);
+
+    std::vector < Coord > landmarks = view->landmarks();
+    if(landmarks.size() < 1)
+    {
+        QMessageBox::warning(this, tr("Warning"), tr("Number of landmarks different than %1").arg(1));
+        return;
+    }
+    Coord lastPoint = landmarks.front();
+
+    bool ok;
+    unsigned char semiLndSize = QInputDialog::getInt(this, "", tr("Number of semilandmarks"),
+                                                     50, 0, 99, 1, &ok);
+    if(!ok) return;
+
+    std::vector<Coord> semilandmarks = outline.semilandmarks(semiLndSize, lastPoint);
+    view->setMarkers(semilandmarks);
+}
+
+void MainWindow::semiLand2()
+{
+    QString outlineString = info.getOutline();
+    if(outlineString.isEmpty())
+    {
+        QMessageBox::warning(this, tr("Warning"), tr("Create an outline first"));
+        return;
+    }
+    pxlList outline;
+    outline.fromTxt(outlineString);
+
+    std::vector < Coord > landmarks = view->landmarks();
+    if(landmarks.size() < 2)
+    {
+        QMessageBox::warning(this, tr("Warning"), tr("Number of landmarks different than %1").arg(2));
+        return;
+    }
+    Coord fromPoint = landmarks[0];
+    Coord toPoint = landmarks[1];
+
+    bool ok;
+    unsigned char semiLndSize = QInputDialog::getInt(this, "", tr("Number of semilandmarks"),
+                                                     50, 0, 99, 1, &ok);
+    if(!ok) return;
+
+    std::vector<Coord> semilandmarks = outline.semilandmarks2points(semiLndSize, fromPoint, toPoint);
+    view->setMarkers(semilandmarks);
+}
+
+void MainWindow::semiLand2Dir()
+{
+    bool ok;
+    unsigned char semiLndSize = QInputDialog::getInt(this, "", tr("Number of semilandmarks"),
+                                                     50, 0, 99, 1, &ok);
+    if(!ok)
+        return;
+
+    QString inDirName = QFileDialog
+        ::getExistingDirectory(this, tr("Choose a directory"),
+                               filePath, QFileDialog::ShowDirsOnly);
+    if (inDirName.isEmpty())
+        return;
+
+    clear();
+
+    QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
+    QDir inDir( inDirName );
+    filePath = inDir.absolutePath();
+    QFileInfoList localFileInfoList = inDir.entryInfoList(QStringList("*.dw.png"), QDir::Files, QDir::Name );
+    if(localFileInfoList.size() == 0)
+        return;
+    for (int i = 0; i < localFileInfoList.size(); ++i) {
+        QFileInfo localFileInfo = localFileInfoList.at(i);
+        QString fileName = localFileInfo.absoluteFilePath();
+        statusBar()->showMessage(tr("Reading file: %1").arg(fileName));
+        QApplication::processEvents(); // for statusBar message refresh
+
+        dwImage theImg(fileName);
+        WingInfo theInfo;
+        theInfo.fromImg(theImg);
+
+        QString outlineString = theInfo.getOutline();
+        if(outlineString.isEmpty())
+            continue; // report error
+        pxlList outline;
+        outline.fromTxt(outlineString);
+
+        std::vector < Coord > landmarks = theInfo.getLandmarks();
+        if(landmarks.size() < 2)
+            continue; // report error
+        Coord fromPoint = landmarks[0];
+        Coord toPoint = landmarks[1];
+        std::vector<Coord> semilandmarks = outline.semilandmarks2points(semiLndSize, fromPoint, toPoint);
+        theInfo.setLandmarks(semilandmarks);
+        theInfo.toImg(theImg);
+        theImg.save(fileName, "PNG");
+    }
+    QApplication::restoreOverrideCursor();
+    statusBar()->showMessage(tr("Finished"), 2000);
+}
+
+void MainWindow::semiAlign()
+{
+    QString inDirName = QFileDialog::getExistingDirectory(this, tr("Choose a directory"),
+                                                          filePath, QFileDialog::ShowDirsOnly);
+
+    if (inDirName.isEmpty())
+        return;
+
+    QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
+    QDir inDir( inDirName );
+    filePath = inDir.absolutePath();
+
+    dwRclList lmkRcl;
+    dwRclList otlRcl;
+    lmkRcl.setId(inDir.dirName());
+    QStringList extList = (QStringList() << "*.dw.png");
+    QFileInfoList fileList = inDir.entryInfoList(extList, QDir::Files, QDir::Name );
+    for (int i = 0; i < fileList.size(); ++i)
+    {
+        QFileInfo localFileInfo = fileList.at(i);
+        QString fileName = localFileInfo.absoluteFilePath();
+        statusBar()->showMessage(tr("Reading file: %1").arg(fileName));
+        dwImage img(fileName);
+        WingInfo localInfo;
+        localInfo.fromImg(img);
+        dwRCoordList lmkList(localInfo.getLandmarks());
+        if(lmkList.size() == 0)
+            continue;
+        lmkList.setId(localFileInfo.absoluteFilePath());
+
+        QString outlineString = localInfo.getOutline();
+        pxlList outline;
+        if(!outlineString.isEmpty())
+            outline.fromTxt(outlineString);
+        else
+            continue;
+        std::vector< Coord > otlVec = outline.toVec();
+        dwRCoordList otlList(otlVec);
+
+        lmkRcl.push_back(lmkList);
+        otlRcl.push_back(otlList);
+
+    }
+
+    dwSLAO slao(lmkRcl, otlRcl);
+    lmkRcl= slao.align();
+    // lmkRcl= slao.getLandmarks();
+
+    // write aligned landmarks back to files
+    // QFileInfo inInfo(fileName);
+    std::vector< dwRCoordList > tpsVec = lmkRcl.list();
+    for(unsigned i = 0; i < tpsVec.size(); ++i){
+        dwRCoordList rcl = tpsVec[i];
+        QString theImgName = rcl.getId();
+        dwImage theImg(theImgName);
+
+        if (theImg.isNull()) {
+            statusBar()->showMessage(tr("Cannot open file %1").arg(theImgName), 2000);
+            continue;
+        }
+        statusBar()->showMessage(tr("Writing %1").arg(theImgName));
+
+        WingInfo pngInfo;
+        pngInfo.fromImg(theImg);
+        std::vector< realCoord > junc = rcl.list();
+        pngInfo.setLandmarks(junc);
+        pngInfo.toImg(theImg);
+        theImg.save( theImgName, "PNG");
+    }
+
+    QApplication::restoreOverrideCursor();
 }
 
 void MainWindow::setScaleBar()
@@ -2286,7 +2694,7 @@ void MainWindow::setResolutionDir()
     QDir inDir( inDirName );
     filePath = inDir.absolutePath();
     QFileInfoList localFileInfoList = inDir.entryInfoList(QStringList("*.png"), QDir::Files, QDir::Name );
-    if(localFileInfoList.size()==0)
+    if(localFileInfoList.size() == 0)
         return;
     QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
     for (int i = 0; i < localFileInfoList.size(); ++i) {
@@ -2503,7 +2911,8 @@ void MainWindow::idDir()
     QDir inDir( inDirName );
     filePath = inDir.absolutePath();
     QFileInfoList localFileInfoList = inDir.entryInfoList(QStringList("*.dw.png"), QDir::Files, QDir::Name );
-    if(localFileInfoList.size() == 0) return;
+    if(localFileInfoList.size() == 0)
+        return;
 
     for (int i = 0; i < localFileInfoList.size(); ++i) {
         QFileInfo localFileInfo = localFileInfoList.at(i);
@@ -2567,7 +2976,8 @@ void MainWindow::idDirAll()
     QDir inDir( inDirName );
     filePath = inDir.absolutePath();
     QFileInfoList localFileInfoList = inDir.entryInfoList(QStringList("*.dw.png"), QDir::Files, QDir::Name );
-    if(localFileInfoList.size() == 0) return;
+    if(localFileInfoList.size() == 0)
+        return;
 
     for (int i = 0; i < localFileInfoList.size(); ++i) {
         QFileInfo localFileInfo = localFileInfoList.at(i);
@@ -2616,7 +3026,8 @@ void MainWindow::idDirDir()
 
     QDir inDir(inDirName);
     QFileInfoList localFileInfoList = inDir.entryInfoList( QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name );
-    if(localFileInfoList.size() == 0) return;
+    if(localFileInfoList.size() == 0)
+        return;
 
     for (int i = 0; i < localFileInfoList.size(); ++i) {
         QFileInfo localFileInfo = localFileInfoList.at(i);
@@ -2777,53 +3188,8 @@ void MainWindow::setImageText()
     saveOn();
 }
 
-// adjust one landmark
-// void MainWindow::test()
-// {
-//     if(isNoImage())
-//         return;
-
-//     std::vector< Coord > landmarks = view->landmarks();
-//     if( landmarks.size() == 0 ){
-//         QMessageBox::warning(this, tr("Warning"), tr("No data available"));
-//         return;
-//     }
-
-//     if(prototypeImg.isNull())
-//         protoLoad();
-//     if(prototypeImg.isNull())
-//         return;
-
-
-//     WingInfo prototypeInfo;
-//     prototypeInfo.fromImg(prototypeImg);
-//     std::vector< Coord > prototypeList = prototypeInfo.getLandmarks();
-
-//     bool ok;
-//     int landmarkMax = prototypeList.size();
-//     int theOne = QInputDialog::getInt(this, "", tr("Landmark number"), 1, 1, landmarkMax, 1, &ok);
-//     if(!ok)
-//         return;
-//     --theOne; // indexing starts with 0
-
-//     QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
-
-//     info.setLandmarks(landmarks);
-//     info.toImg(screenImg);
-
-//     dwAdjust adj(screenImg, prototypeImg);
-//     Coord adjusted = adj.adjustedOne(theOne);
-//     landmarks[theOne] = adjusted;
-
-
-//     view->setMarkers(landmarks);
-//     saveOn();
-
-//     QApplication::restoreOverrideCursor();
-// }
-
 // convert csv to tps
-void MainWindow::test()
+void MainWindow::convertCsvTps()
 {
     QString inFileName = QFileDialog::getOpenFileName(this,
                                                       tr("Open File"), filePath, "CSV file (*.csv)");
@@ -2846,3 +3212,101 @@ void MainWindow::test()
     out << text;
     file.close();
 }
+
+// reconfigure landmark configuration
+// using xml file
+void MainWindow::reconfig()
+{
+    QString xmlDir = QCoreApplication::applicationDirPath();
+    xmlDir += "/dwxml";
+
+    QString xmlName = QFileDialog::getOpenFileName(this, tr("Open file"), xmlDir, tr("XML files (*.dw.xml)"));
+
+    QDomDocument XmlDoc = loadXmlDoc(xmlName);
+    if(XmlDoc.isNull())
+        return;
+
+    QString inDirName = QFileDialog::getExistingDirectory(this, tr("Choose a directory"),
+                                                          filePath, QFileDialog::ShowDirsOnly);
+
+    if (inDirName.isEmpty())
+        return;
+
+    QDir inDir( inDirName );
+    filePath = inDir.absolutePath();
+    QFileInfoList localFileInfoList = inDir.entryInfoList(QStringList("*.png"), QDir::Files, QDir::Name );
+    if(localFileInfoList.size() == 0)
+        return;
+
+    WingInfo tmpInfo;
+
+    QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
+    for (int i = 0; i < localFileInfoList.size(); ++i) {
+        QFileInfo localFileInfo = localFileInfoList.at(i);
+        QString fileName = localFileInfo.absoluteFilePath();
+        statusBar()->showMessage(tr("Reading file: %1").arg(fileName));
+        QApplication::processEvents(); // for statusBar message refresh
+
+        dwImage theImg(fileName);
+        if(theImg.isNull())
+            continue;
+
+        WingInfo localInfo;
+        QString localName = localFileInfo.fileName();
+        localInfo.fromImg(theImg);
+        localInfo.setFileName(localName);
+        localInfo.XmlReconfiguration(XmlDoc);
+        localInfo.toImg(theImg); //write wing info to image
+
+        theImg.save( fileName, "PNG");
+    }
+    QApplication::restoreOverrideCursor();
+    statusBar()->showMessage(tr("Finished"), 2000);
+}
+
+
+// adjust one landmark
+void MainWindow::test()
+{
+    if(isNoImage())
+        return;
+
+    std::vector< Coord > landmarks = view->landmarks();
+    if( landmarks.size() == 0 ){
+        QMessageBox::warning(this, tr("Warning"), tr("No data available"));
+        return;
+    }
+
+    if(prototypeImg.isNull())
+        protoLoad();
+    if(prototypeImg.isNull())
+        return;
+
+
+    WingInfo prototypeInfo;
+    prototypeInfo.fromImg(prototypeImg);
+    std::vector< Coord > prototypeList = prototypeInfo.getLandmarks();
+
+    bool ok;
+    int landmarkMax = prototypeList.size();
+    int theOne = QInputDialog::getInt(this, "", tr("Landmark number"), 1, 1, landmarkMax, 1, &ok);
+    if(!ok)
+        return;
+    --theOne; // indexing starts with 0
+
+    QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
+
+    info.setLandmarks(landmarks);
+    info.toImg(screenImg);
+
+    dwAdjust adj(screenImg, prototypeImg);
+    Coord adjusted = adj.adjustedOne(theOne);
+    landmarks[theOne] = adjusted;
+
+
+    view->setMarkers(landmarks);
+    saveOn();
+
+    QApplication::restoreOverrideCursor();
+}
+

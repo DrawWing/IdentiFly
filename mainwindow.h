@@ -60,6 +60,8 @@ private slots:
     void rotate();
     void grayscale();
     void crop();
+    void cropDir();
+    void scaleDir();
     void threshold(int); // used by thresholdDialog
 
     void zoomIn();
@@ -93,7 +95,12 @@ private slots:
     bool protoLoadDir(QDir dir);
     QDomDocument loadXmlDoc(QString &inFileName);
 
-    void outline();
+    void semiOutline();
+    void semiOutlineDir();
+    void semiLand1();
+    void semiLand2();
+    void semiLand2Dir();
+    void semiAlign();
 
     void setScaleBar();
     void clearScaleBar();
@@ -112,6 +119,8 @@ private slots:
 
     void getImageText();
     void setImageText();
+    void convertCsvTps();
+    void reconfig();
     void test();
 
 private:
@@ -167,6 +176,8 @@ private:
     QAction *rotateAct;
     QAction *grayscaleAct;
     QAction *cropAct;
+    QAction *cropDirAct;
+    QAction *scaleDirAct;
 
     QAction *zoomInAct;
     QAction *zoomOutAct;
@@ -191,6 +202,13 @@ private:
     QAction *protoSetAct;
     QAction *protoViewAct;
 
+    QAction *semiOutlineAct;
+    QAction *semiOutlineDirAct;
+    QAction *semiLandAct;
+    QAction *semiLand2Act;
+    QAction *semiLand2DirAct;
+    QAction *semiAlignAct;
+
     QAction *setScaleBarAct;
     QAction *clearScaleBarAct;
     QAction *setResolutionAct;
@@ -207,6 +225,8 @@ private:
     QAction *aboutDwAct;
     QAction *getImageTextAct;
     QAction *setImageTextAct;
+    QAction *convertCsvTpsAct;
+    QAction *reconfigAct;
     QAction *testAct;
 
     QLabel * protoLbl; // for statusbar
@@ -226,7 +246,7 @@ private:
     QMenu *viewMenu;
     QMenu *dataMenu;
     QMenu *lmarkMenu;
-    // QMenu *semiMenu;
+    QMenu *semiMenu;
     QMenu *scaleMenu;
     QMenu *idMenu;
     QMenu *helpMenu;

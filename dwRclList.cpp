@@ -23,7 +23,6 @@ void dwRclList::push_back(const dwRCoordList & rcl)
 	if(size == 0)
 		return;
 	rclList.push_back(rcl);
-	//strList.push_back(rcl.getId());
 
 	if(minRcListSize == 0){
 		minRcListSize = size;
@@ -76,7 +75,6 @@ void dwRclList::fromTps(const QString & resources)
 
                 if( (next_ln.startsWith("IMAGE=")) || (next_ln.startsWith("image=")) ){
                     next_ln.remove(0,6); //first 6 characters
-                    //strList.push_back(next_ln);
                     rcl.setId(next_ln);
                 }else{
                     rcl.setId("");
@@ -234,6 +232,13 @@ void dwRclList::fromCsv(const QString & resources)
     }
 }
 
+void dwRclList::fromVector(const std::vector< dwRCoordList > &inVec)
+{
+    rclList = inVec;
+    minRcListSize = rclList[0].size();
+    maxRcListSize = minRcListSize;
+}
+
 QString dwRclList::toTps(void) const
 {
 	QString output;
@@ -367,26 +372,6 @@ double dwRclList::superimpose(const dwRCoordList & reference)
 	return superimpose_once(reference); 
 }
 
-//Superimose to average landmarks configuration. 
-//Retrun average configuration.
-dwRCoordList dwRclList::superimpose(void)
-{
-	if(rclList.size() == 0)
-		return dwRCoordList();
-	const double diff_thd = 0.000001;
-	double old_diff;
-	center();
-	scale();
-	double new_diff = superimpose_once(rclList[0]); //use the first as reference
-	do{
-		old_diff = new_diff;
-		dwRCoordList reference = average();
-		new_diff = superimpose_once(reference);
-	}while(old_diff - new_diff > diff_thd);
-	//double aver_diff = new_diff/rclList.size();
-	return average();
-}
-
 // Superposition according to Rohlf and Slice 1990.
 dwRCoordList dwRclList::superimposeGPA(void)
 {
@@ -397,7 +382,7 @@ dwRCoordList dwRclList::superimposeGPA(void)
 	scale();
 	rotate2first(); // step 2
 	dwRCoordList Y = average();	//step 3
-	double Sr = rclList.size() * (1 - traceABt(Y,Y));  //.sumOfSquares()); // step4
+    double Sr = rclList.size() * (1 - traceABt(Y,Y));  // step4
 	double SrStarStar = Sr; 
 	std::vector< double > ro(rclList.size(), 1.0); //step5
 	do{ // step 6
@@ -411,25 +396,12 @@ dwRCoordList dwRclList::superimposeGPA(void)
             double traceXiXi =  traceABt(rclList[i], rclList[i]);
             double traceYstarYstar = traceABt(Ystar, Ystar);
 
-//            if(traceXiXi == 0)
-//            {
-//                traceXiXi=1;
-//            }
-//            if(traceYstarYstar == 0)
-//            {
-//                traceYstarYstar=1;
-//            }
-//            if(traceXiYstar <= 0)
-//            {
-//                traceXiYstar=1;
-//            }
             Q_ASSERT(traceXiXi != 0);
             Q_ASSERT(traceYstarYstar != 0);
             Q_ASSERT(traceXiYstar > 0);
             Q_ASSERT(traceXiXi * traceYstarYstar > 0);
 
             roStar_ro[i] = sqrt(traceXiYstar /( traceXiXi * traceYstarYstar ));
-//			roStar_ro[i] = sqrt(traceABt(rclList[i], Ystar)/(traceABt(rclList[i], rclList[i])*traceABt(Ystar, Ystar)));
 		}
 		scale(roStar_ro);
 		std::vector< double > roStar(rclList.size(), 1.0); 
@@ -440,10 +412,6 @@ dwRCoordList dwRclList::superimposeGPA(void)
 		dwRCoordList YstarStar = average();
 		SrStarStar = rclList.size() * (1 - traceABt(YstarStar,YstarStar));
 		Y = YstarStar;
-//        if(Y.isNaN())
-//            Sr=Sr;
-//        Q_ASSERT( !Y.isNaN());
-
 		ro = roStar;
 	}while(Sr - SrStarStar > diff_thd);
 	return Y;
@@ -498,29 +466,15 @@ dwRCoordList dwRclList::average(void) const
 	realCoord nullCoord(0.0, 0.0);
 	std::vector< realCoord > mean(minRcListSize, nullCoord);
 
-//	std::vector< dwRCoordList >::const_iterator rclIter;
-//	for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-//		std::vector< realCoord > rcList = rclIter->list();
-////        QString id = rclIter->getId();
-//		for(int i = 0; i < minRcListSize; i++){
-//			mean[i]+=rcList[i];
-//		}
-//	}
-
-    for(unsigned j = 0; j < rclList.size(); ++j){
+    for(unsigned j = 0; j < rclList.size(); ++j)
+    {
         dwRCoordList theList = rclList[j];
         std::vector< realCoord > rclVec = theList.list();
-        for(int i = 0; i < minRcListSize; i++){
+        for(int i = 0; i < minRcListSize; ++i)
             mean[i]+=rclVec[i];
-//            double tmp = mean[i].dx();
-//            if(tmp != tmp )
-//            {
-//                tmp=i;
-//            }
-        }
     }
 
-	for(unsigned i = 0; i < mean.size(); i++){
+    for(unsigned i = 0; i < mean.size(); ++i){
         mean[i] *= 1.0/rclList.size();
 	}
 	dwRCoordList meanList(mean);
@@ -529,26 +483,12 @@ dwRCoordList dwRclList::average(void) const
 
 void dwRclList::center(void)
 {
-//	std::vector< dwRCoordList >::iterator rclIter;
-//	for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-//		rclIter->center();
-//	}
-    for(unsigned i = 0; i < rclList.size(); ++i){
-//        if(i == 809)
-//            i = 809;
+    for(unsigned i = 0; i < rclList.size(); ++i)
         rclList[i].center();
-    }
 }
 
 void dwRclList::scale(void)
 {
-//	std::vector< dwRCoordList >::iterator rclIter;
-//	for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-//		double cs = rclIter->centroidSize();
-//        if(cs == 0)
-//            continue;
-//        rclIter->scale(1.0/cs);
-//	}
     for(unsigned i = 0; i < rclList.size(); ++i){
         double cs = rclList[i].centroidSize();
         if(cs == 0)
@@ -987,7 +927,7 @@ std::vector< double > dwRclList::distancesVarLgh(const dwRCoordList & constLst) 
     return outLst;
 }
 
-std::vector< dwRCoordList > dwRclList::lst(void) const
+std::vector< dwRCoordList > dwRclList::list(void) const
 {
 	return rclList;
 }

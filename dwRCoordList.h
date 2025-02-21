@@ -19,8 +19,6 @@ public:
     void fromRealPxls(const std::vector< realCoord > & pixels);
     void fromPxls(const std::vector< Coord > & inList);
     void fromCsv(const QString &inStr, const QChar sep);
-//    void setConstant(double inVal);
-//    double getConstant() const;
     void push_back(const realCoord & pxl);
     void pop_back();
     void clear();
@@ -46,7 +44,7 @@ public:
     void center(void);
     void scale(const double factor);
     void rotate(const double angle);
-    double centroidSize(void) const ; //find centroid size nie jest const bo używa center
+    double centroidSize(void) const ;
     double rotationAngle(const std::vector< realCoord > & reference) const; //find angle that minimize distance between 2 configurations
     double rotationAngle(const dwRCoordList & reference) const; //find angle that minimize distance between 2 configurations
     double rotationAngleRaw(const dwRCoordList & reference) const; //find angle between unscaled and untranslated configuratins
@@ -65,7 +63,6 @@ public:
     void flipHor(const int width = 0); //Flip points horizontaly
     void rotate90(const int height = 0); //Rotate points 90 degree clockwise
     void rotate2reference(const dwRCoordList &reference);
-    //double sumOfSquares(void) const;
     QString listToSVG() const;
     QString listToTxt() const;
     QString toSVG(const QString & fileName, dwImage & image) const;
@@ -83,9 +80,12 @@ public:
     double yMin() const;
     double yMax() const;
     void transform(const realCoord corner, const double angle = 0.0, const double inScale = 1.0);
-    double procrustesDistance(const std::vector< realCoord > & reference) const; //find Procrustes distance
-    double partialProcrustesDistance(const std::vector< realCoord > & reference) const; //find partial Procrustes distance
+    // double procrustesDistance(const std::vector< realCoord > & reference) const;
+    double procrustesDistance(const dwRCoordList & reference) const;
+    // double partialProcrustesDistance(const std::vector< realCoord > & reference) const;
+    double partialProcrustesDistance(const dwRCoordList & reference) const;
     dwRCoordList reverse() const; // change order from last to first
+    realCoord findNearest(realCoord toPxl);
 
 private:
     QString id;

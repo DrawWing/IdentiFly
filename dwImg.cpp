@@ -71,8 +71,7 @@ void dwImage::copyText(dwImage & toImg) const
 }
 
 //There is no method in QImage for changing width and height of null image.
-void
-dwImage::from(QImage * img){
+void dwImage::from(QImage * img){
 	if(width()!=img->width() || height()!=img->height())
 		return;
 //	if(img->hasAlphaChannel())
@@ -89,104 +88,6 @@ dwImage::from(QImage * img){
     for(int i=0; i < img->sizeInBytes(); i++) //czy to jest bezpieczne czy rozmiar determinuje numBytes
 //        for(int i=0; i < img->numBytes(); i++) //czy to jest bezpieczne czy rozmiar determinuje numBytes
         pd[i]=ps[i];
-}
-
-// Count all neighbours of a pixel.
-// pixel can be not valid
-unsigned dwImage::countNeighbours(unsigned row, unsigned col)
-{
-  unsigned neighbors=0;
-  if(*(scanLine(row+1)+col+1)==0)
-    neighbors++;
-  if(*(scanLine(row+1)+col)==0)
-    neighbors++;
-  if(*(scanLine(row+1)+col-1)==0)
-    neighbors++;
-  if(*(scanLine(row)+col+1)==0)
-    neighbors++;
-  if(*(scanLine(row)+col-1)==0)
-    neighbors++;
-  if(*(scanLine(row-1)+col+1)==0)
-    neighbors++;
-  if(*(scanLine(row-1)+col)==0)
-    neighbors++;
-  if(*(scanLine(row-1)+col-1)==0)
-    neighbors++;
-
-  return neighbors;
-}
-
-// Count all neighbours of a pixel.
-unsigned dwImage::countNotWhiteNeighbours(unsigned row, unsigned col)
-{
-  unsigned neighbors=0;
-  if(*(scanLine(row-1)+col-1) < 255)
-    neighbors++;
-  if(*(scanLine(row-1)+col) < 255)
-    neighbors++;
-  if(*(scanLine(row-1)+col+1) < 255)
-    neighbors++;
-  if(*(scanLine(row)+col+1) < 255)
-    neighbors++;
-  if(*(scanLine(row+1)+col+1) < 255)
-    neighbors++;
-  if(*(scanLine(row+1)+col) < 255)
-    neighbors++;
-  if(*(scanLine(row+1)+col-1) < 255)
-    neighbors++;
-  if(*(scanLine(row)+col-1) < 255)
-    neighbors++;
-
-  return neighbors;
-}
-
-// coordinates of the neigbour are returned in the incoordinates
-void dwImage::findNeighbour(unsigned &row, unsigned &col)
-{
-    if(*(scanLine(row-1)+col-1) < 255)
-    {
-        --row;
-        --col;
-        return;
-    }
-    if(*(scanLine(row-1)+col) < 255)
-    {
-        --row;
-        return;
-    }
-    if(*(scanLine(row-1)+col+1) < 255)
-    {
-        --row;
-        ++col;
-        return;
-    }
-    if(*(scanLine(row)+col+1) < 255)
-    {
-        ++col;
-        return;
-    }
-    if(*(scanLine(row+1)+col+1) < 255)
-    {
-        ++row;
-        ++col;
-        return;
-    }
-    if(*(scanLine(row+1)+col) < 255)
-    {
-        ++row;
-        return;
-    }
-    if(*(scanLine(row+1)+col-1) < 255)
-    {
-        ++row;
-        --col;
-        return;
-    }
-    if(*(scanLine(row)+col-1) < 255)
-    {
-        --col;
-        return;
-    }
 }
 
 //*oo
@@ -206,62 +107,10 @@ bool dwImage::isCorner(unsigned x, unsigned y) const
     return false;
 }
 
-//ooo
-//*@*
-//***
-//            x - non white, o - white, * - andy color
-bool dwImage::isEdge(unsigned x, unsigned y) const
-{
-    if( *(scanLine(y-1)+x-1) == 255 && *(scanLine(y-1)+x) == 255 && *(scanLine(y-1)+x+1) == 255)
-        return true;
-    if( *(scanLine(y-1)+x+1) == 255 && *(scanLine(y)+x+1) == 255 && *(scanLine(y+1)+x+1) == 255)
-        return true;
-    if( *(scanLine(y+1)+x-1) == 255 && *(scanLine(y+1)+x) == 255 && *(scanLine(y+1)+x+1) == 255)
-        return true;
-    if( *(scanLine(y-1)+x-1) == 255 && *(scanLine(y)+x-1) == 255 && *(scanLine(y+1)+x-1) == 255)
-        return true;
-    return false;
-}
-
-//convert to white 255 pixels which are brighter than thd in maskImg 
-void 
-dwImage::mask(dwImage & maskImg, int thd)
-{
-    //mozna uproscic i przyspieszyc przez przesuwanie wskaznikow
-    // if(margin < maskImg.margin){
-		for (int y = 0; y < height(); y++){
-			for (int x = 0; x < width(); x++){
-				if(*(maskImg.scanLine(y)+x) > thd)
-					*(scanLine(y)+x) = 255;
-			}
-		}
-    // }else{
-    // 	for (int y = margin; y < height()-margin; y++){
-    // 		for (int x = margin; x < width()-margin; x++){
-    // 			if(*(maskImg.scanLine(y)+x) > thd)
-    // 				*(scanLine(y)+x) = 255;
-    // 		}
-    // 	}
-    // }
-}
-
 //powinna byc inline
 void 
 dwImage::markPxl(Coord pxl, unsigned char color){
   *(scanLine(pxl.dy())+pxl.dx()) = color;
-}
-
-void dwImage::markNeighbours(const Coord & pxl,  unsigned char color){
-    int x = pxl.dx();
-    int y = pxl.dy();
-    *(scanLine(y + 1) + x + 1) = color;
-    *(scanLine(y) + x + 1) = color;
-    *(scanLine(y - 1) + x + 1) = color;
-    *(scanLine(y - 1) + x) = color;
-    *(scanLine(y -1) + x - 1) = color;
-    *(scanLine(y) + x - 1) = color;
-    *(scanLine(y + 1) + x - 1) = color;
-    *(scanLine(y + 1) + x) = color;
 }
 
 void dwImage::markList(const pxlList& lst, unsigned char color){
@@ -801,12 +650,14 @@ dwImage dwImage::scale(const double ratio) const
     const unsigned newWdh = wdh*ratio;
     const unsigned newHgt = hgt*ratio;
     //make sure that: ratio*(newWdh-1) == wdh-1
-    const double wdhRatio = (double)(wdh-1)/(newWdh-1);
-    const double hgtRatio = (double)(hgt-1)/(newHgt-1);
+    // const double wdhRatio = (double)(wdh-1)/(newWdh-1);
+    // const double hgtRatio = (double)(hgt-1)/(newHgt-1);
+    const double wdhRatio = (double)(wdh)/(newWdh);
+    const double hgtRatio = (double)(hgt)/(newHgt);
 
-    dwImage outImg( newWdh, newHgt);
-    for(unsigned row = 0; row < newHgt; row++){
-        for(unsigned col = 0; col < newWdh; col++){
+    dwImage outImg(newWdh, newHgt);
+    for(unsigned row = 0; row < newHgt; ++row){
+        for(unsigned col = 0; col < newWdh; ++col){
             realCoord currPxl(col*wdhRatio, row*hgtRatio);
             //unsigned char color = bicubic(currPxl);
             unsigned char color = interpolate(currPxl);

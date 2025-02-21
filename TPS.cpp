@@ -32,7 +32,7 @@ TPS::TPS(QStringList & inTxtList)
 			bool ok;
 			int lm = ln.toInt(&ok);
 			if(ok){
-                lmLst = readCoordList(lm);
+                lmLst = readCoordList();
                 if((int)lmLst.size() != lm)
                     warningStr += "Number of landmarks different than declared in LM=";
 			}else{
@@ -165,7 +165,7 @@ Coord TPS::readCoord(QString & ln, bool * ok)
     return outPxl;
 }
 
-std::vector< Coord > TPS::readCoordList(int size)
+std::vector< Coord > TPS::readCoordList()
 {
     std::vector< Coord > theList;
 
@@ -300,7 +300,7 @@ std::vector< std::vector< Coord > > TPS::readCurves(int inSize)
 			bool ok;
             int inNr = ln.toInt(&ok);
 			if(ok){
-                lst = readCoordList(inNr);
+                lst = readCoordList();
                 theClList.push_back(lst);
             }else{
 				errorStr+="Incorrect POINTS value. Cannot read points./n";
@@ -332,7 +332,7 @@ std::vector< std::vector< Coord > > TPS::readOutlines(int inSize)
             bool ok;
             int inNr = ln.toInt(&ok);
             if(ok){
-                lst = readCoordList(inNr);
+                lst = readCoordList();
                 theClList.push_back(lst);
             }else{
                 errorStr+="Incorrect POINTS value. Cannot read points./n";

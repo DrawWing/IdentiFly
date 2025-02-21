@@ -155,16 +155,6 @@ void dwRCoordList::fromCsv(const QString &inStr, const QChar sep)
     validSize = theList.size();
 }
 
-//void dwRCoordList::setConstant(double inVal)
-//{
-//    constant = inVal;
-//}
-
-//double dwRCoordList::getConstant() const
-//{
-//    return constant;
-//}
-
 void dwRCoordList::push_back(const realCoord & pxl)
 {
     theList.push_back(pxl);
@@ -219,7 +209,7 @@ realCoord dwRCoordList::centroid(void) const
 void dwRCoordList::translate(realCoord thePnt)
 {
     std::vector< realCoord >::iterator iter;
-    for(iter = theList.begin(); iter != theList.end(); iter++){
+    for(iter = theList.begin(); iter != theList.end(); ++iter){
         *iter -= thePnt;
     }
 }
@@ -227,7 +217,7 @@ void dwRCoordList::translate(realCoord thePnt)
 void dwRCoordList::add(realCoord thePnt)
 {
     std::vector< realCoord >::iterator iter;
-    for(iter = theList.begin(); iter != theList.end(); iter++){
+    for(iter = theList.begin(); iter != theList.end(); ++iter){
         *iter += thePnt;
     }
 }
@@ -273,25 +263,27 @@ double dwRCoordList::meanDistance(void) const
     return meanDist;
 }
 
-//find angle that minimize distance between 2 configurations
+// find angle that minimize distance between 2 configurations
+// both this and reference need to be scaled and centered
 double dwRCoordList::rotationAngle(const std::vector< realCoord > & reference) const
 {
 	double numerator = 0.0;
 	double denominator = 0.0;
-	for(int i = 0; i < validSize; i++){
+    for(int i = 0; i < validSize; ++i){
 		double xr = reference[i].dx(); 
 		double yr = reference[i].dy(); 
 		double xt = theList[i].dx(); 
 		double yt = theList[i].dy(); 
 		double ntemp = yr*xt - xr*yt;
 		double dtemp = xr*xt + yr*yt;
-		numerator += ntemp; //(yr*xt - xr*yt); 
-		denominator += dtemp; //(xr*xt + yr*yt); 
+        numerator += ntemp;
+        denominator += dtemp;
 	}
     double angle = atan2(numerator, denominator); // atan crushes
     return angle;
 }
 
+// find angle that minimize distance between 2 configurations
 // both this and reference need to be scaled and centered
 double dwRCoordList::rotationAngle(const dwRCoordList & reference) const
 {
@@ -315,8 +307,7 @@ double dwRCoordList::rotationAngleRaw(const dwRCoordList & reference) const
     return tmp.rotationAngle(ref);
 }
 
-void
-dwRCoordList::rotate(const double angle)
+void dwRCoordList::rotate(const double angle)
 {
 	std::vector< realCoord >::iterator iter;
 	for(iter = theList.begin(); iter != theList.end(); iter++){
@@ -324,8 +315,7 @@ dwRCoordList::rotate(const double angle)
 	}
 }
 
-void
-dwRCoordList::scale(const double factor)
+void dwRCoordList::scale(const double factor)
 {
 	std::vector< realCoord >::iterator iter;
 	for(iter = theList.begin(); iter != theList.end(); iter++){
@@ -334,12 +324,13 @@ dwRCoordList::scale(const double factor)
 }
 
 //find Procrustes distance between the 2 configurations
-double dwRCoordList::partialProcrustesDistance(const std::vector< realCoord > & reference) const
+double dwRCoordList::partialProcrustesDistance(const dwRCoordList &reference) const
 {
 	double distance = 0.0;
+    std::vector< realCoord > refVec = reference.list();
 	for(int i = 0; i < validSize; i++){
-		double xr = reference[i].dx(); 
-		double yr = reference[i].dy(); 
+        double xr = refVec[i].dx();
+        double yr = refVec[i].dy();
 		double xt = theList[i].dx(); 
 		double yt = theList[i].dy(); 
 		distance+=(xt-xr)*(xt-xr)+(yt-yr)*(yt-yr);
@@ -347,10 +338,10 @@ double dwRCoordList::partialProcrustesDistance(const std::vector< realCoord > & 
 	return sqrt(distance);//powino być _hypot() lub distance(coord, coord)
 }
 
-double dwRCoordList::procrustesDistance(const std::vector< realCoord > & reference) const
+double dwRCoordList::procrustesDistance(const dwRCoordList &reference) const
 {
 	double partial = partialProcrustesDistance(reference);
-	if( (partial < -2.0) || (partial > 2.0) )//chyba odległość nie może byc ujemna
+    if( partial > 2.0 )
 		return -1.0;
 	double full = 2.0 * asin(partial/2.0);
 	return full;
@@ -367,7 +358,7 @@ double dwRCoordList::superimposePart(const dwRCoordList & reference)
     scale(1.0/cs);
 	double angle = rotationAngle(reference.theList);
 	rotate(angle);
-	return partialProcrustesDistance(reference.theList); //partial procrustes distance
+    return partialProcrustesDistance(reference); //partial procrustes distance
 }
 
 // Superimposes partially the configuration over the reference.
@@ -746,14 +737,16 @@ void dwRCoordList::flip(const int height){
 }
 
 //Flip points horizontaly
-void dwRCoordList::flipHor(const int width){
+void dwRCoordList::flipHor(const int width)
+{
     for(unsigned i = 0; i < theList.size(); i++){
         theList.at(i).setX(width - theList.at(i).dx());
     }
 }
 
 //Rotate points 90 degree clockwise
-void dwRCoordList::rotate90(const int height){
+void dwRCoordList::rotate90(const int height)
+{
     for(unsigned i = 0; i < theList.size(); i++){
         realCoord before = theList[i];
         realCoord after(height-before.dy(), before.dx());
@@ -766,23 +759,11 @@ dwRCoordList::~dwRCoordList(void)
 	theList.clear();
 }
 
-void 
-dwRCoordList::rotate2reference(const dwRCoordList & reference){
+void dwRCoordList::rotate2reference(const dwRCoordList & reference)
+{
 	double angle = rotationAngle(reference.theList);
 	rotate(angle);
 }
-
-// Was replaced by traceABt(a,a).
-//double 
-//dwRCoordList::sumOfSquares(void) const
-//{
-//	double sum = 0.0;
-//	for(unsigned i = 0; i < theList.size(); ++i){
-//		sum += theList[i].dx() * theList[i].dx();
-//		sum += theList[i].dy() * theList[i].dy();
-//	}
-//	return sum;
-//}
 
 // output single list as vector graphics in svg format
 QString dwRCoordList::listToSVG() const
@@ -858,8 +839,7 @@ void dwRCoordList::toImg() const
 }
 
 // Trace of matix multiplication A*Bt. Bt is transposed B.
-double
-traceABt(const dwRCoordList & a, const dwRCoordList & b)
+double traceABt(const dwRCoordList & a, const dwRCoordList & b)
 {
 	double sum = 0.0;
 	if(a.theList.size() != b.theList.size())
@@ -1100,5 +1080,22 @@ dwRCoordList dwRCoordList::reverse() const
     while (i > 0)
         v2.push_back (theList[--i]);
     return v2;
+}
+
+//find in the pixel list one closes to thePxl
+realCoord dwRCoordList::findNearest(realCoord toPxl)
+{
+    double min = theList[0].distanceTo(toPxl);
+    realCoord outPxl = theList[0];
+    for(unsigned i = 1; i < theList.size(); ++i)
+    {
+        double distance = theList[i].distanceTo(toPxl);
+        if(distance < min)
+        {
+            min = distance;
+            outPxl = theList[i];
+        }
+    }
+    return outPxl;
 }
 

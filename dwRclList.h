@@ -19,6 +19,7 @@ public:
     void push_back(const dwRCoordList & );
     void fromTps(const QString &);
     void fromCsv(const QString &);
+    void fromVector(const std::vector< dwRCoordList > &inVec);
     QString readTps(const QString &);
     QString toTps(void) const;
     QString toXml(void) const;
@@ -27,7 +28,6 @@ public:
     void fromFile(const QString &);
     void fromImgDir(const QDir &);
     double superimpose(const dwRCoordList & reference);
-    dwRCoordList superimpose(void);
     dwRCoordList superimposeGPA(void);
     dwRCoordList average(void) const;
     void center(void);
@@ -50,7 +50,7 @@ public:
     unsigned size(void) const; //size of the rclList
     std::vector< double > find_distances(const dwRCoordList &) const;
     std::vector< double > distancesVarLgh(const dwRCoordList &) const;
-    std::vector< dwRCoordList > lst(void) const;
+    std::vector< dwRCoordList > list(void) const;
     std::vector< realCoord > points(void) const;
     QString classifyLda(dwRCoordList &) const;
     void reduceSize(unsigned newSize);
@@ -62,15 +62,13 @@ public:
     QString toTxt() const;
     void adjustOuliers(); //find ouliers and adjust them in identical images
     void setCoord(unsigned rclNo, unsigned coordNo, realCoord inCoord);
-
-public:
     ~dwRclList(void);
+
 private:
     QString id;
     int minRcListSize;
     int maxRcListSize;
     std::vector< dwRCoordList > rclList;
-    //std::vector< QString > strList; //stores values of "image=" !!!to be removed because ther is rcl::id
     double superimpose_once(const dwRCoordList & reference);
     void rotate2first(void);
     void rotate2reference(dwRCoordList & reference);

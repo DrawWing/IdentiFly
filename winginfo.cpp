@@ -248,34 +248,6 @@ QString WingInfo::toTxt() const
     return data;
 }
 
-////it works with Peter Edwards xls only in english
-//QString WingInfo::index() const
-//{
-//	QString data = fileName + "\n";
-//	double ci = cubitalIndex();
-//	if(ci != 999.0)
-//		data = data + QObject::tr("cubital_index ") + QString::number(ci,'f',4) + "\n";
-//	else
-//		data+="Cubital index cannot be calculated.\n";
-//	double pci = precubitalIndex();
-//	if(pci != 999.0)
-//		data = data + QObject::tr("precubital_index ") + QString::number(pci,'f',4) + "\n";
-//	else
-//		data+="Precubital index cannot be calculated.\n";
-//	double h = hantelIndex();
-//	if(h != 999.0)
-//		data = data + QObject::tr("Hantel_index ") + QString::number(h,'f',4) + "\n";
-//	else
-//		data+="Hantel index cannot be calculated.\n";
-//	double ds = discoidalShift();
-//	if(ds != 999.0)
-//		data = data + QObject::tr("discoidal_shift ") + QString::number(ds,'f',4) + "\n";
-//	else
-//		data+="Discoidalshift cannot be calculated.\n";
-
-//	return data;
-//}
-
 QString WingInfo::XmlExportHeader(QDomDocument XmlDoc) const
 {
     QString outString = "file";
@@ -860,11 +832,6 @@ std::vector< int > WingInfo::getSequence() const
 {
     return sequence;
 }
-
-//int WingInfo::getFitSize() const
-//{
-//    return fitSize;
-//}
 
 //calculate cubital index
 double WingInfo::cubitalIndex() const
