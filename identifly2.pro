@@ -16,61 +16,61 @@ LIBS += C:\programs32\opencv-build\bin\libopencv_ml481.dll
 LIBS += C:\programs32\opencv-build\bin\libopencv_imgcodecs481.dll
 
 SOURCES += \
-    TPS.cpp \
-    coord.cpp \
-    dwAdjust.cpp \
-    dwChisqr.cpp \
-    dwData.cpp \
-    dwDataSet.cpp \
-    dwImageViewer.cpp \
-    dwImg.cpp \
-    dwMarker.cpp \
-    dwOptions.cpp \
-    dwPairLR.cpp \
-    dwRCoordList.cpp \
-    dwRclList.cpp \
-    dwSLAO.cpp \
-    dwView.cpp \
-    dwldagm.cpp \
-    dwvector.cpp \
-    histogram.cpp \
-    main.cpp \
-    mainwindow.cpp \
-    nodepxl.cpp \
-    outline.cpp \
-    pxllist.cpp \
-    realcoord.cpp \
-    thresholdDialog.cpp \
-    txtwindow.cpp \
-    winginfo.cpp
+    src/TPS.cpp \
+    src/coord.cpp \
+    src/dwAdjust.cpp \
+    src/dwChisqr.cpp \
+    src/dwData.cpp \
+    src/dwDataSet.cpp \
+    src/dwImageViewer.cpp \
+    src/dwImg.cpp \
+    src/dwMarker.cpp \
+    src/dwOptions.cpp \
+    src/dwPairLR.cpp \
+    src/dwRCoordList.cpp \
+    src/dwRclList.cpp \
+    src/dwSLAO.cpp \
+    src/dwView.cpp \
+    src/dwldagm.cpp \
+    src/dwvector.cpp \
+    src/histogram.cpp \
+    src/main.cpp \
+    src/mainwindow.cpp \
+    src/nodepxl.cpp \
+    src/outline.cpp \
+    src/pxllist.cpp \
+    src/realcoord.cpp \
+    src/thresholdDialog.cpp \
+    src/txtwindow.cpp \
+    src/winginfo.cpp
 
 HEADERS += \
-    TPS.h \
-    coord.h \
-    dwAdjust.h \
-    dwChisqr.h \
-    dwData.h \
-    dwDataSet.h \
-    dwImageViewer.h \
-    dwImg.h \
-    dwMarker.h \
-    dwOptions.h \
-    dwPairLR.h \
-    dwRCoordList.h \
-    dwRclList.h \
-    dwSLAO.h \
-    dwView.h \
-    dwldagm.h \
-    dwvector.h \
-    histogram.h \
-    mainwindow.h \
-    nodepxl.h \
-    outline.h \
-    pxllist.h \
-    realcoord.h \
-    thresholdDialog.h \
-    txtwindow.h \
-    winginfo.h
+    src/TPS.h \
+    src/coord.h \
+    src/dwAdjust.h \
+    src/dwChisqr.h \
+    src/dwData.h \
+    src/dwDataSet.h \
+    src/dwImageViewer.h \
+    src/dwImg.h \
+    src/dwMarker.h \
+    src/dwOptions.h \
+    src/dwPairLR.h \
+    src/dwRCoordList.h \
+    src/dwRclList.h \
+    src/dwSLAO.h \
+    src/dwView.h \
+    src/dwldagm.h \
+    src/dwvector.h \
+    src/histogram.h \
+    src/mainwindow.h \
+    src/nodepxl.h \
+    src/outline.h \
+    src/pxllist.h \
+    src/realcoord.h \
+    src/thresholdDialog.h \
+    src/txtwindow.h \
+    src/winginfo.h
 
 TRANSLATIONS += \
     identifly2_pl_PL.ts
@@ -95,4 +95,8 @@ win32 {
 DESTDIR = $$PWD/../IdentiFly-windows-binaries
 QMAKE_POST_LINK =  windeployqt $$shell_path($$DESTDIR/$${TARGET}.exe)
 }
+
+DISTFILES += \
+    README.Rmd \
+    README.md
 
