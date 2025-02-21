@@ -25,7 +25,6 @@ public:
     QString XmlExport(QDomDocument XmlDoc) const;
     void XmlReconfiguration(QDomDocument XmlDoc);
     void XmlReconfiguration1(QDomDocument XmlDoc);
-    QString apisDistances() const;
     void fromImg(const QImage &);
     void fromTxt(const QString & inTxt);
 
@@ -35,17 +34,11 @@ public:
     double dwVersion;
     void setLandmarks(std::vector< Coord > &);
     void setLandmarks(const std::vector<realCoord> &);
-    void setCoordList(const dwRCoordList & inList);
     void setFileName(QString &); //cała ścieżka czy tylko nazwa pliku??!!!!!!!!!
-    void setDevice(QString &);
     void setOutline(QString inOutline);
     unsigned getOutlineThd() const;
-    QString getDevice() const;
     QString getOutline() const;
     std::vector< Coord > getLandmarks() const;
-    void flipHor();
-    void flipVer();
-    void rotate(); //Rotate points 90 degree clockwise
     void scale(double factor);
     double getScaleReference() const;
     std::vector< Coord > getScaleBar() const;
@@ -55,7 +48,6 @@ public:
     QString getImageText(dwImage inImg) const;
     void setResolution(double inValue);
     double getResolution() const;
-    std::vector< int > getSequence() const;
 
 private:
 //    QString softName; //software name
@@ -75,11 +67,6 @@ private:
     QString intVec2txt(std::vector< int > inPoints) const;
     std::vector< Coord > txt2points(QString & inTxt) const;
     std::vector< int > txt2intVec(QString & inTxt) const;
-    double cubitalIndex() const; //cubital index
-    double precubitalIndex() const; //precubital index
-    double hantelIndex() const; //hantel index
-    double discoidalShift() const; //discoidal shift in degrees
-    double distance(int indexA, int indexB) const; // calculate distance between 2 landmarks of indexes A and B
     double distance1(int indexA, int indexB) const; // landmarks indexes start from 1
     double degAngle1(int indexA, int indexB, int indexC) const; // landmarks indexes start from 1
 };

@@ -42,9 +42,6 @@ public:
 //    nodePxl* topLeft(); //find top left pxl
     int index(nodePxl*) const;
     nodePxl* at(int) const;
-    void deLoop(nodePxl* currPxl, unsigned);
-	void deLoop1(nodePxl* currPxl);
-	void proon();
 	double length(); //maximum lenght of the outline (slow)
 	nodePxl* lengthFrom();
 	nodePxl* lengthTo();
@@ -64,7 +61,6 @@ public:
     nodePxl *front_pxl; //bez sensu powtorzenie front????????
     nodePxl *back_pxl;
 	bool isSane() const;
-	realCoord centroid() const;
     std::vector<Coord> semilandmarks(unsigned length, Coord toPxl);
     std::vector<Coord> semilandmarks2points(unsigned length, Coord fromPxl, Coord toPxl);
     int distance(nodePxl* fromNode, nodePxl* toNode) const;

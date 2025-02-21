@@ -743,102 +743,6 @@ std::vector< QString > dwRclList::outliers(void)
     return sortStrList;
 }
 
-//std::vector< QString > dwRclList::pairOutliers(void)
-//{
-//    std::vector< double > maxValList;
-//    std::vector< QString > maxStrList;
-
-//    if(rclList.size() < 2) return maxStrList;
-
-//    dwRCoordList currRcl = rclList[0];
-//    QString currStr = currRcl.getId();
-//    currStr.chop(8); //remove last character r or l.dw.png
-
-//    dwRCoordList nextRcl = rclList[1];
-//    QString nextStr = nextRcl.getId();
-//    nextStr.chop(8);
-
-//    for(unsigned i = 0; i < rclList.size(); ){
-//        if(currStr == nextStr) //pair was found
-//        {
-//            double dist = currRcl.superimpose(nextRcl);
-
-//            maxValList.push_back(dist);
-//            maxStrList.push_back(currStr + "L.dw.png");
-
-//            ++i;
-//            if(i == rclList.size()) continue; //last pair was found
-//            currRcl = rclList[i];
-//            ++i;
-//            if(i == rclList.size()) //last file is unpaired
-//            {
-//                continue;
-//            }
-//            nextRcl = rclList[i];
-
-//        }else{ // pair does not match
-//            currRcl = nextRcl;
-//            ++i;
-//            if(i == rclList.size()) continue; // last file was unpaired
-//            nextRcl = rclList[i];
-//        }
-//        currStr = currRcl.getId();
-//        currStr.chop(8); //remove last character r or l
-//        nextStr = nextRcl.getId();
-//        nextStr.chop(8);
-//    }
-////    qSort;
-//    //nieefektywne sortowanie
-//    std::vector< double > sortValList;
-//    std::vector< QString > sortStrList;
-//    while( maxValList.size() ){
-//        std::vector< double >::iterator valIter = maxValList.begin();
-//        std::vector< QString >::iterator strIter = maxStrList.begin();
-
-//        double maxVal = *(valIter);
-//        std::vector< double >::iterator maxValIter = valIter;
-//        std::vector< QString >::iterator maxStrIter = strIter;
-//        ++valIter;
-//        ++strIter;
-
-//        for(; valIter != maxValList.end(); ++valIter, ++strIter){
-//            double theVal = *(valIter);
-//            if( theVal > maxVal){
-//                maxVal = theVal;
-//                maxValIter = valIter;
-//                maxStrIter = strIter;
-//            }
-//        }
-//        sortValList.push_back(maxVal);
-//        QString maxStr = *(maxStrIter);
-//        sortStrList.push_back(maxStr);
-//        maxValList.erase(maxValIter);
-//        maxStrList.erase(maxStrIter);
-//    }
-//    return sortStrList;
-//}
-
-dwRCoordList dwRclList::superimposeSubset(QString baseName, int inSize)
-{
-    dwRCoordList outList;
-    if(rclList.size() < 2) return outList;
-
-    dwRclList subset;
-    for(unsigned i = 0; i < rclList.size(); ++i){
-        dwRCoordList currRcl = rclList[i];
-        QString currStr = currRcl.getId();
-        if(currStr.size() < inSize)
-            continue;
-        currStr.resize(inSize);
-        if(currStr == baseName){
-            subset.push_back(currRcl);
-        }
-    }
-    if(subset.size() < 2) return outList;
-    outList = subset.superimposeGPA();
-    return outList;
-}
-
 bool dwRclList::isSizeEqual(void) const
 {
     if(minRcListSize == maxRcListSize)
@@ -914,19 +818,6 @@ std::vector< double > dwRclList::find_distances(const dwRCoordList & constLst) c
 	return outLst;
 }
 
-// find distances between landmark coordinates of different sizes
-std::vector< double > dwRclList::distancesVarLgh(const dwRCoordList & constLst) const
-{
-    std::vector< double > outLst(rclList.size(), -1.0);
-    for(unsigned i = 0; i < rclList.size(); i++){
-        dwRCoordList refLst = constLst;
-        dwRCoordList theLst = rclList[i];
-        theLst.superimposeBC(refLst);
-        outLst[i] = theLst.differenceVarLgh(refLst);
-    }
-    return outLst;
-}
-
 std::vector< dwRCoordList > dwRclList::list(void) const
 {
 	return rclList;
@@ -942,50 +833,6 @@ std::vector< realCoord > dwRclList::points() const
     }
 
     return outVec;
-}
-
-//Classification based on LDA linear discriminant analysis.
-// rclList should consist from reference at index 0 followed by sets of lda coefficients equal number of classes. 
-// Size of reference (first rcl) should be shorter by one point than cooeficients rcls. 
-// The difference is because of constant which is int he x coordinate of last point. 
-QString dwRclList::classifyLda(dwRCoordList & inLst) const
-{
-    // Verify sizes of vectors
-    unsigned refSize = rclList.at(0).size(); // reference size
-    for(unsigned species = 1; species < rclList.size(); ++species){ //skip the first configuration with reference
-        if(rclList.at(species).size() != refSize+1)
-            return QString(QObject::tr("Incorrect length of classification data.\n"));
-    }
-    if(inLst.list().size() < refSize)
-        return QObject::tr("Number of landmarks smaller than %1.").arg(refSize);
-
-    inLst.setValidSize(refSize); // if inLst is longer than refSize some points are not analysed
-    double procrustesD = inLst.superimpose(rclList.at(0)); //align the inLst to reference which is the first configuration
-    double thdDistance = 100.0;
-    qDebug() << inLst.toCsv();
-    if (procrustesD > thdDistance)
-        qDebug() << "Large procrustes distance between reference and input: " << procrustesD;
-    double maxScore = -999999.9;
-    int maxSpecies = 0;
-    for(unsigned species = 1; species < rclList.size(); ++species){ //skip the first configuration with reference
-        dwRCoordList curLst = rclList.at(species);
-        double score = 0;
-        for(unsigned i = 0; i < refSize; i++){
-            score += inLst.list().at(i).dx() * curLst.list().at(i).dx();
-            score += inLst.list().at(i).dy() * curLst.list().at(i).dy();
-        }
-        score += curLst.list().at(refSize).dx(); //constant is x coordinate of last point
-        qDebug() << score;
-        if(score > maxScore){
-            maxScore = score;
-            maxSpecies = species;
-        }
-    }
-    //QString outStr = QObject::tr("Input data classified as: ") + rclList.at(maxSpecies).getId() + "\n";
-    QString outStr = rclList.at(maxSpecies).getId() + "\n";
-    //outStr += inLst.toTps(); //debug
-    //outStr += rclList.at(1).toTps(); //debug
-    return outStr;
 }
 
 dwRclList::~dwRclList(void)
@@ -1034,16 +881,6 @@ QString dir2tps(const QDir & inDir)
 		out += dir2tps(localDir);
 	}
 	return out;
-}
-
-//reduce data length to test importance of sample size in scientific experiments
-void dwRclList::reduceSize(unsigned newSize)
-{
-	//if( rclList.size() < newSize )
-	//	return;
-	while( rclList.size() > newSize ){
-		rclList.pop_back();
-	}
 }
 
 //update one of the rcl when image changed
@@ -1134,45 +971,6 @@ QString dwRclList::toTxt() const
         outString += rclList[i].listToTxt();
     }
     return outString;
-}
-
-void dwRclList::adjustOuliers()
-{
-    if(rclList.size() < 3) return;
-
-    dwRCoordList mean = average();
-    std::vector< realCoord > meanVec = mean.list();
-
-    for(int j = 0; j < minRcListSize; ++j)
-    {
-        dwRCoordList theRcl = rclList[0];
-        std::vector< realCoord > theVec = theRcl.list();
-        realCoord meanCoord = meanVec[j];
-        double minDif = meanCoord.distanceTo(theVec[j]);
-        double maxDif = minDif;
-        unsigned minInd = 0;
-        unsigned maxInd = 0;
-        for(unsigned i = 1; i < rclList.size(); ++i){
-            theRcl = rclList[i];
-            theVec = theRcl.list();
-            double dif = meanCoord.distanceTo(theVec[j]);
-            if(dif < minDif)
-            {
-                minDif = dif;
-                minInd = i;
-            } else if(dif > maxDif)
-            {
-                maxDif = dif;
-                maxInd = i;
-            }
-        }
-        theRcl = rclList[minInd];
-        theVec = theRcl.list();
-        setCoord(maxInd, j, theVec[j]);
-        // save data to img
-        theRcl = rclList[maxInd];
-        theRcl.toImg();
-    }
 }
 
 void dwRclList::setCoord(unsigned rclNo, unsigned coordNo, realCoord inCoord)

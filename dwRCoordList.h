@@ -28,15 +28,11 @@ public:
     double superimposePart(const dwRCoordList & reference); // partially superimpose the list over reference
     void superimposeNoScaling(const dwRCoordList & reference); // superimpose the list over reference by rotation and translation only
     void preshape();
-    QString classify(const QString & resources);
-    //double distanceCVA(const dwRCoordList & cv1, const dwRCoordList & cv2, const realCoord & ref) const;
-    realCoord CVAcoefficients(const dwRCoordList & cv1, const dwRCoordList & cv2) const;
     unsigned size(void) const;
     QString toTps(void) const;
     QString toTxt(void) const;
     QString toCsv(void) const;
     QString toXml(void) const;
-//    dwData toData(void) const;
     void fromTps(const QString &);
     void fromTxt(const QString & resources);
     void translate(realCoord thePnt);
@@ -54,8 +50,6 @@ public:
     void setId(const QString & newId);
     QString getId(void) const;
     void setCoord(unsigned coordNo, realCoord inCoord);
-    double ci(void) const;
-    double ci_alpatov(void) const;
     realCoord centroid() const;
     double find_distance(const dwRCoordList & ref, unsigned index) const;
     std::vector< double > find_distances(const dwRCoordList &) const;
@@ -80,9 +74,7 @@ public:
     double yMin() const;
     double yMax() const;
     void transform(const realCoord corner, const double angle = 0.0, const double inScale = 1.0);
-    // double procrustesDistance(const std::vector< realCoord > & reference) const;
     double procrustesDistance(const dwRCoordList & reference) const;
-    // double partialProcrustesDistance(const std::vector< realCoord > & reference) const;
     double partialProcrustesDistance(const dwRCoordList & reference) const;
     dwRCoordList reverse() const; // change order from last to first
     realCoord findNearest(realCoord toPxl);

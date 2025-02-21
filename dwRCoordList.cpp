@@ -18,15 +18,13 @@ dwRCoordList::dwRCoordList(void)
 {
 	id = "";
 	validSize = 0;
-//    constant = 0;
 }
 
-//The "name" is taken from resources.
 dwRCoordList::dwRCoordList(const QString & resources)
 {
 	id = resources;
 	validSize = 0;
-	QFile in_file(resources); // ":/wings_data/apis.dw.txt");
+    QFile in_file(resources);
 	if (!in_file.open(QIODevice::ReadOnly | QIODevice::Text))
 		return;
 
@@ -45,7 +43,6 @@ dwRCoordList::dwRCoordList(const QString & resources)
 //Reads name followed by vector of real coordinates.
 //Names are in seperate lines. Pairs of X Y coordinates are in seperate lines. 
 //consequitive rcl are separated by '<'
-
 dwRCoordList::dwRCoordList(QTextStream & in)
 {
 	while (!in.atEnd()) {
@@ -395,153 +392,6 @@ void dwRCoordList::preshape()
     scale(1.0/cs);
 }
 
-//classes are in the first line of resources
-//constants are in the second lines of resources
-QString 
-dwRCoordList::classify(const QString & resources)
-{
-	QFile in_file(resources);
-	if (!in_file.open(QIODevice::ReadOnly | QIODevice::Text)){
-		QString null;
-		return null;
-	}
-
-	QTextStream in(&in_file);
-	QString line = in.readLine();
-    QChar *data = line.data();
-	std::vector< QString > names;
-	//read classes names
-    while (*data != '\0') {
-		if(data->isSpace()){ //skip spaces
-			++data;
-			continue;
-		}
-		QString name(*data);
-        ++data;
-		while(*data != '\0'){
-			if(data->isSpace()){
-				break;
-			}
-			name.push_back(*data);
-			++data;
-		}
-		names.push_back(name);
-    }
-
-	std::vector< std::vector< double > > list;
-	for(unsigned i = 0; i < names.size(); ++i){
-		std::vector< double > numbers;
-		list.push_back(numbers);
-	}	
-	//read coefficients
-	while (!in.atEnd()) {
-		for(unsigned species = 0; species < names.size(); ++species){
-			double x;
-			in >> x;
-			list[species].push_back(x);
-		}
-	}
-	//sprawdzic dlugosc vectorów porównany nie moze byc za dlugie
-	//in lda there are as many coefficients as variables + 1 constant
-	int ldaSize = (list.begin()->size() - 1)/2;
-	if( ldaSize != validSize)
-		return QString();
-	double maxScore = -99999999; //#include <limits> int const minInt = numeric_limits<int>::min();
-	QString maxSpecies;
-	std::vector< QString >::const_iterator nameIter = names.begin();
-	std::vector< std::vector< double > >::const_iterator species;
-	for(species = list.begin(); species != list.end(); ++species, ++nameIter){
-		std::vector< double > coefficients = *species;
-		std::vector< double >::const_iterator coeIter = coefficients.begin();
-		double score = *coeIter; //initialize with constant
-		++coeIter;
-
-		std::vector< realCoord >::const_iterator lmkIter = theList.begin();
-		for(int i = 0; i < validSize; i++){ //lepiej uzyc inedksoania vektora zamiast iteratorow
-			score += (*coeIter) * (lmkIter->dx());
-			++coeIter;
-			score += (*coeIter) * (lmkIter->dy());
-			++coeIter;
-			++lmkIter;
-		}
-		//score = fabs(score);
-		if(score > maxScore){
-			maxScore = score;
-			maxSpecies = *nameIter;
-		}
-	}
-	return maxSpecies;
-}
-
-//double 
-//dwRCoordList::distanceCVA(const dwRCoordList & cv1, const dwRCoordList & cv2, const realCoord & ref) const
-//{
-//	//sprawdzic dlugosc vectorów porównany nie moze byc za dlugie
-//	if(cv1.size() != cv2.size())
-//		return -1.0;
-//	if(theList.size() < cv1.size() - 1)//cv1 is longer because of constant
-//		return -1.0;
-//	//first cv
-//	double score1 = 0.0;
-//	std::vector< realCoord >::const_iterator lmkIter = theList.begin();
-//	//std::vector< realCoord > cv1vec = cv1.list();
-//	std::vector< realCoord >::const_iterator coeIter = cv1.theList.begin();
-//	for(; lmkIter != theList.end(); ++lmkIter, ++coeIter){
-//		double x = lmkIter->dx();
-//		double y = coeIter->dy();
-//		score1 += (coeIter->dx()) * (lmkIter->dx());
-//		score1 += (coeIter->dy()) * (lmkIter->dy());
-//	}
-//	score1 += coeIter->dx(); //add constant
-//
-//	//second cv
-//	double score2 = 0.0;
-//	lmkIter = theList.begin();
-//	std::vector< realCoord > cv2vec = cv2.list();
-//	coeIter = cv2vec.begin();
-//	for(; lmkIter != theList.end(); ++lmkIter, ++coeIter){
-//		score2 += (coeIter->dx()) * (lmkIter->dx());
-//		score2 += (coeIter->dy()) * (lmkIter->dy());
-//	}
-//	score2 += coeIter->dx(); //add constant
-//	realCoord out(score1, score2);
-//	return distance(ref, out);
-//}
-
-realCoord dwRCoordList::CVAcoefficients(const dwRCoordList & cv1, const dwRCoordList & cv2) const
-{
-	//sprawdzic dlugosc vectorów porównany nie moze byc za dlugie
-	if(cv1.size() != cv2.size())
-		return realCoord();
-	if(theList.size() < cv1.size() - 1)//cv1 is longer because of constant
-		return realCoord();
-	//first cv
-	double score1 = 0.0;
-	std::vector< realCoord >::const_iterator lmkIter = theList.begin();
-	//std::vector< realCoord > cv1vec = cv1.list();
-	std::vector< realCoord >::const_iterator coeIter = cv1.theList.begin();
-	for(; lmkIter != theList.end(); ++lmkIter, ++coeIter){
-		//double x = lmkIter->dx();
-		//double y = coeIter->dy();
-		score1 += (coeIter->dx()) * (lmkIter->dx());
-		score1 += (coeIter->dy()) * (lmkIter->dy());
-	}
-	score1 += coeIter->dx(); //add constant
-
-	//second cv
-	double score2 = 0.0;
-	lmkIter = theList.begin();
-	std::vector< realCoord > cv2vec = cv2.list();
-	coeIter = cv2vec.begin();
-	for(; lmkIter != theList.end(); ++lmkIter, ++coeIter){
-		score2 += (coeIter->dx()) * (lmkIter->dx());
-		score2 += (coeIter->dy()) * (lmkIter->dy());
-	}
-	score2 += coeIter->dx(); //add constant
-	realCoord out(score1, score2);
-	return out;
-}
-
 unsigned dwRCoordList::size(void) const
 {
     return theList.size();
@@ -596,24 +446,10 @@ QString dwRCoordList::toXml(void) const
 	return out;
 }
 
-//// assumes cartesian coordinates
-//dwData dwRCoordList::toData(void) const
-//{
-//    dwData out;
-//    out.setId(id);
-//    for(unsigned i=0; i < theList.size(); i++){
-//        realCoord pixel = theList[i];
-//        out.push_back(pixel.dx());
-//        out.push_back(pixel.dy());
-//    }
-//    return out;
-//}
-
 //nie czyta nazwy pliku i komentarzy
 //lepiej gdyby byl konstrktorem 
 //dane z pliku dopisywane do konca listy
-void
-dwRCoordList::fromTps(const QString & resources)
+void dwRCoordList::fromTps(const QString & resources)
 {
 	QFile in_file(resources); 
 	if (!in_file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -656,23 +492,20 @@ void dwRCoordList::fromTxt(const QString & resources)
     validSize = theList.size();
 }
 
-bool
-dwRCoordList::setValidSize(const int size)
+bool dwRCoordList::setValidSize(const int size)
 {
-        if((unsigned)size > theList.size())
-		return false;
-	validSize = size;
-	return true;
+    if((unsigned)size > theList.size())
+        return false;
+    validSize = size;
+    return true;
 }
 
-void 
-dwRCoordList::setId(const QString & newId)
+void dwRCoordList::setId(const QString & newId)
 {
 	id = newId;
 }
 
-QString 
-dwRCoordList::getId(void) const
+QString dwRCoordList::getId(void) const
 {
 	return id;
 }
@@ -709,37 +542,16 @@ std::vector< double > dwRCoordList::find_distances(const dwRCoordList & ref) con
 	return out_list;
 }
 
-//calculate cubital index
-double
-dwRCoordList::ci() const
-{
-	double a = distance(theList[1], theList[3]);
-	double b = distance(theList[0], theList[1]);
-	if(b == 0.0) return 0.0;
-	return a/b;
-}
-
-//calculate cubital index according to Alpatov (Gromisz 1967)
-double
-dwRCoordList::ci_alpatov() const
-{
-	double a = distance(theList[1], theList[3]);;
-	double b = distance(theList[0], theList[1]);
-	if(a == 0.0) return 0.0;
-	return b*100.0/a;
-}
-
 //Flip points verticaly for transformation between bitmap and cartesian coordinates
 void dwRCoordList::flip(const int height){
-	for(unsigned i = 0; i < theList.size(); i++){
-		theList.at(i).setY(height - theList.at(i).dy());
-	}
+    for(unsigned i = 0; i < theList.size(); ++i)
+        theList.at(i).setY(height - theList.at(i).dy());
 }
 
 //Flip points horizontaly
 void dwRCoordList::flipHor(const int width)
 {
-    for(unsigned i = 0; i < theList.size(); i++){
+    for(unsigned i = 0; i < theList.size(); ++i){
         theList.at(i).setX(width - theList.at(i).dx());
     }
 }
@@ -1016,7 +828,6 @@ bool dwRCoordList::isNaN()
         if( (x != x) || (y != y) ){ //is NaN
             return true;
         }
-
     }
     return false;
 }

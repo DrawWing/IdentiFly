@@ -241,7 +241,6 @@ QString WingInfo::toTxt() const
     for(unsigned i=0; i < landmarks.size(); i++){
         Coord pixel = landmarks[i];
         QString s = QString("%1\t%2\t%3\n").arg(i+1).arg(pixel.dx()).arg(imgHeight - pixel.dy());
-//        s.asprintf("%3d\t%3d\t%3d\n",i+1, pixel.dx(), imgHeight - pixel.dy());
         data+=s;
     }
     data += "\n";
@@ -457,37 +456,6 @@ void WingInfo::XmlReconfiguration1(QDomDocument XmlDoc)
     }
 }
 
-QString WingInfo::apisDistances() const
-{
-    QString outString;
-
-    double value;
-    QString valueString;
-
-    value = distance1(1,2);
-    valueString.setNum(value,'f',6);
-    outString+=valueString;
-    outString+=";";
-
-    value = distance1(1,3);
-    valueString.setNum(value,'f',6);
-    outString+=valueString;
-    outString+=";";
-
-    value = distance1(2,4);
-    valueString.setNum(value,'f',6);
-    outString+=valueString;
-    outString+=";";
-
-    value = distance1(2,5);
-    valueString.setNum(value,'f',6);
-    outString+=valueString;
-    outString+=";";
-
-    outString+="\n";
-    return outString;
-}
-
 // height = img.height coordinates in tps are cartesian not bmp.  
 QString WingInfo::toTps() const
 {
@@ -641,22 +609,10 @@ void WingInfo::setLandmarks( const std::vector< realCoord > & newJ)
     }
 }
 
-void WingInfo::setCoordList(const dwRCoordList & inList)
-{
-//    std::vector< realCoord > inVec = inList.list();
-    setLandmarks(inList.list());
-}
-
 //obecnie bez sciezki
 void WingInfo::setFileName(QString & fName)
 {
     fileName = fName;
-}
-
-//number of camera used to obtain the image
-void WingInfo::setDevice(QString & inDevice)
-{
-    device = inDevice;
 }
 
 //number of camera used to obtain the image
@@ -668,11 +624,6 @@ void WingInfo::setOutline(QString inOutline)
 unsigned WingInfo::getOutlineThd()const
 {
     return outlineThd;
-}
-
-QString WingInfo::getDevice()const
-{
-    return device;
 }
 
 QString WingInfo::getOutline() const
@@ -741,33 +692,6 @@ std::vector< Coord > WingInfo::getLandmarks() const
     return landmarks;
 }
 
-void WingInfo::flipHor()
-{
-    for(unsigned i = 0; i < landmarks.size(); ++i)
-    {
-        landmarks.at(i).setX(image->width() - landmarks.at(i).dx());
-    }
-}
-
-void WingInfo::flipVer()
-{
-    for(unsigned i = 0; i < landmarks.size(); ++i)
-    {
-        landmarks.at(i).setY(image->height() - landmarks.at(i).dy());
-    }
-}
-
-//Rotate points 90 degree clockwise
-void WingInfo::rotate()
-{
-    for(unsigned i = 0; i < landmarks.size(); ++i)
-    {
-        Coord before = landmarks[i];
-        Coord after(image->height()-before.dy(), before.dx());
-        landmarks.at(i) = after;
-    }
-}
-
 void WingInfo::scale(double factor)
 {
     for(unsigned i = 0; i < landmarks.size(); ++i)
@@ -826,87 +750,6 @@ void WingInfo::setResolution(double inValue)
 double WingInfo::getResolution() const
 {
     return resolution;
-}
-
-std::vector< int > WingInfo::getSequence() const
-{
-    return sequence;
-}
-
-//calculate cubital index
-double WingInfo::cubitalIndex() const
-{
-    if(landmarks.size() < 4)
-		return 999.0;
-    dwVector vecA(landmarks[1], landmarks[3]);
-	double a = vecA.magnitude();
-    dwVector vecB(landmarks[0], landmarks[1]);
-	double b = vecB.magnitude();
-	if(a==0.0 || b == 0.0) return 999.0;
-	return a/b;
-}
-
-//calculate precubital index
-double WingInfo::precubitalIndex() const
-{
-    if(landmarks.size() < 10)
-		return 999.0;
-    dwVector vecE(landmarks[3], landmarks[8]);
-	double e = vecE.magnitude();
-    dwVector vecF(landmarks[7], landmarks[9]);
-	double f = vecF.magnitude();
-	if(e==0.0 || f == 0.0) return 999.0;
-	return e/f;
-}
-
-//calculate Hantel index
-double WingInfo::hantelIndex() const
-{
-    if(landmarks.size() < 6)
-		return 999.0;
-    dwVector vecG(landmarks[0], landmarks[3]);
-	double h = vecG.magnitude();
-    dwVector vecH(landmarks[2], landmarks[5]);
-	double g = vecH.magnitude();
-	if(g == 0.0 || h==0.0) return 999.0;
-	return h/g;
-}
-
-//calculate discoidal shift angle
-double WingInfo::discoidalShift() const
-{
-    if(landmarks.size() < 19)
-		return 999.0;
-	//prosta  6-18
-    int a1 = landmarks[18].dy()-landmarks[6].dy();
-    int b1 = landmarks[6].dx()-landmarks[18].dx();
-    int c1 = a1*landmarks[6].dx() + b1*landmarks[6].dy();
-	//prosta prostopadla do 6-18 przechodząca przez punkt 2
-	int a2 = -b1;
-	int b2 = a1;
-    int c2 = a2*landmarks[2].dx() + b2*landmarks[2].dy();
-	//punkt przeciecia
-	double det = a1*b2-a2*b1;
-	if (det == 0)
-		return 999.0;
-	double x = (b2*c1 - b1*c2)/det;
-    double y = (a1*c2 - a2*c1)/det;
-	realCoord crossing(x, y);
-    realCoord p2(landmarks[2]);
-    realCoord p4(landmarks[4]);
-
-	dwVector vec2(p2, crossing);
-	dwVector vec4(p4, crossing);
-	return angle360(vec4, vec2)*180/M_PI;
-}
-
-// calculate distance between 2 landmarks of indexes A and B
-// landmarks indexes start from 0
-double WingInfo::distance(int indexA, int indexB) const
-{
-    dwVector vec(landmarks[indexA], landmarks[indexB]);
-    double dist = vec.magnitude();
-    return dist;
 }
 
 // calculate distance between 2 landmarks of indexes A and B
