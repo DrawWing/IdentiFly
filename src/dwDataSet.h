@@ -57,7 +57,7 @@ public:
     dwData CvaScores(dwData & inData);
     std::vector< unsigned > rowMaxIndex() const;
     std::vector< unsigned > rowMinIndex() const;
-    int pcaDim();
+    int pcaDim() const;
     void pca(int idSize);
     QString getDwXml(int idSize, int dim = 0);
     void lda();

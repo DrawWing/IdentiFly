@@ -72,8 +72,6 @@ HEADERS += \
     src/txtwindow.h \
     src/winginfo.h
 
-TRANSLATIONS += \
-    identifly2_pl_PL.ts
 CONFIG += lrelease
 CONFIG += embed_translations
 
@@ -83,9 +81,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
-    identifly.qrc
+    assets/identifly.qrc
 
-RC_ICONS = identifly.ico
+win32:RC_ICONS = assets/identifly.ico
 
 TARGET = IdentiFly
 VERSION = 2.0.0

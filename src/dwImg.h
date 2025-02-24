@@ -23,7 +23,7 @@ public:
     void markPxl(Coord, unsigned char color);
     void markList(const pxlList&, unsigned char color);
     void markList(const pxlList *, unsigned char color = 0);
-    dwImage cropOutline(const pxlList * outline, double angle);
+    dwImage cropOutline(const pxlList* outline, double angle) const;
 
     int outlineThd() const;
     void fillRow(int, unsigned char);

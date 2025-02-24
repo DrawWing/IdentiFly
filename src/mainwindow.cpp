@@ -57,7 +57,7 @@ void MainWindow::clear()
 
 void MainWindow::createActions()
 {
-    openAct = new QAction(QIcon(":/images/open-green.png"), tr("&Open"), this);
+    openAct = new QAction(QIcon(":/open-green.png"), tr("&Open"), this);
     openAct->setShortcut(tr("Ctrl+O"));
     connect(openAct, SIGNAL(triggered()), this, SLOT(openFile()));
 
@@ -65,17 +65,17 @@ void MainWindow::createActions()
     openDirAct->setShortcut(tr("Ctrl+D"));
     connect(openDirAct, SIGNAL(triggered()), this, SLOT(openDir()));
 
-    openNextAct = new QAction(QIcon(":/images/next-green.png"), tr("Open &next file"), this);
+    openNextAct = new QAction(QIcon(":/next-green.png"), tr("Open &next file"), this);
     openNextAct->setShortcut(tr("Ctrl+Right"));
     connect(openNextAct, SIGNAL(triggered()), this, SLOT(openNext()));
     openNextAct->setEnabled(false);
 
-    openPrevAct = new QAction(QIcon(":/images/prev-green.png"), tr("Open &previous file"), this);
+    openPrevAct = new QAction(QIcon(":/prev-green.png"), tr("Open &previous file"), this);
     openPrevAct->setShortcut(tr("Ctrl+Left"));
     connect(openPrevAct, SIGNAL(triggered()), this, SLOT(openPrev()));
     openPrevAct->setEnabled(false);
 
-    saveAct = new QAction(QIcon(":/images/save-green.png"), tr("&Save"), this);
+    saveAct = new QAction(QIcon(":/save-green.png"), tr("&Save"), this);
     saveAct->setShortcut(tr("Ctrl+S"));
     connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
     connect(view, SIGNAL(markersChanged()), this, SLOT(saveOn()));
@@ -83,7 +83,7 @@ void MainWindow::createActions()
     saveAsAct = new QAction(tr("Save &as"), this);
     connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
 
-    removeFileAct = new QAction(QIcon(":/images/trash-green.png"), tr("&Move to trash"), this);
+    removeFileAct = new QAction(QIcon(":/trash-green.png"), tr("&Move to trash"), this);
     removeFileAct->setShortcut(tr("Ctrl+T"));
     connect(removeFileAct, SIGNAL(triggered()), this, SLOT(removeFile()));
 
@@ -104,17 +104,17 @@ void MainWindow::createActions()
     //connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
     connect(exitAct, SIGNAL(triggered()), qApp, SLOT(closeAllWindows()));
 
-    addModeAct = new QAction(QIcon(":/images/arrowplus-green.png"), tr("&Add mode"), this);
+    addModeAct = new QAction(QIcon(":/arrowplus-green.png"), tr("&Add mode"), this);
     connect(addModeAct, SIGNAL(triggered()), this, SLOT(addMode()));
     addModeAct->setEnabled(true);
     addModeAct->setCheckable(true); //works only when action is anabled
 
-    dragModeAct = new QAction(QIcon(":/images/arrowhand-green.png"), tr("&Drag mode"), this);
+    dragModeAct = new QAction(QIcon(":/arrowhand-green.png"), tr("&Drag mode"), this);
     connect(dragModeAct, SIGNAL(triggered()), this, SLOT(dragMode()));
     dragModeAct->setEnabled(true);
     dragModeAct->setCheckable(true); //works only when action is anabled
 
-    moveModeAct = new QAction(QIcon(":/images/arrow-green.png"), tr("&Select mode"), this);
+    moveModeAct = new QAction(QIcon(":/arrow-green.png"), tr("&Select mode"), this);
     connect(moveModeAct, SIGNAL(triggered()), this, SLOT(moveMode()));
     moveModeAct->setEnabled(true);
     moveModeAct->setCheckable(true); //works only when action is anabled
@@ -151,12 +151,12 @@ void MainWindow::createActions()
     scaleDirAct = new QAction(tr("Scale director&y"), this);
     connect(scaleDirAct, SIGNAL(triggered()), this, SLOT(scaleDir()));
 
-    zoomInAct = new QAction(QIcon(":/images/zoomin-green.png"), tr("Zoom &in"), this);
+    zoomInAct = new QAction(QIcon(":/zoomin-green.png"), tr("Zoom &in"), this);
     zoomInAct->setShortcut(tr("Ctrl+Up"));
     zoomInAct->setAutoRepeat(true);
     connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
 
-    zoomOutAct = new QAction(QIcon(":/images/zoomout-green.png"), tr("Zoom &out"), this);
+    zoomOutAct = new QAction(QIcon(":/zoomout-green.png"), tr("Zoom &out"), this);
     zoomOutAct->setShortcut(tr("Ctrl+Down"));
     zoomOutAct->setAutoRepeat(true);
     connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
@@ -194,7 +194,7 @@ void MainWindow::createActions()
     dataDistAct = new QAction(tr("&Distance"), this);
     connect(dataDistAct, SIGNAL(triggered()), this, SLOT(dataDist()));
 
-    lmarkDelAct = new QAction(QIcon(":/images/arrowminus-green.png"), tr("&Delete landmark"), this);
+    lmarkDelAct = new QAction(QIcon(":/arrowminus-green.png"), tr("&Delete landmark"), this);
     lmarkDelAct->setShortcut(tr("Del"));
     connect(lmarkDelAct, SIGNAL(triggered()), this, SLOT(lmarkDel()));
 

@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>arrow_plus.png</file>
+        <file>new.png</file>
+        <file>trash-green.png</file>
+        <file>open-green.png</file>
+        <file>save-green.png</file>
+        <file>arrow-green.png</file>
+        <file>arrowminus-green.png</file>
+        <file>arrowplus-green.png</file>
+        <file>zoomin-green.png</file>
+        <file>zoomout-green.png</file>
+        <file>next-green.png</file>
+        <file>prev-green.png</file>
+        <file>arrowhand-green.png</file>
+    </qresource>
+</RCC>

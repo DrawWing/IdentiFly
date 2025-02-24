@@ -1009,7 +1009,7 @@ QString dwDataSet::getDwXml(int idSize, int dim)
 }
 
 // return maximum number of components of pca
-int dwDataSet::pcaDim()
+int dwDataSet::pcaDim() const
 {
     cv::Mat inMat = toCvMatDouble();
     cv::PCA pca(inMat, // pass the data

@@ -130,7 +130,7 @@ void dwImage::markList(const pxlList * outline, unsigned char color)
     }while(node != outline->front);
 }
 
-dwImage dwImage::cropOutline(const pxlList * outline, double angle)
+dwImage dwImage::cropOutline(const pxlList * outline, double angle) const
 {
     pxlList rotOtl = outline->copy();
     rotOtl.rotate(angle);
@@ -331,7 +331,7 @@ void dwImage::mean(int radius){
           suma+= val;
         }
       }
-      double average = suma/((2*radius+1) * (2*radius+1));
+      double average = (double)suma/((2*radius+1) * (2*radius+1));
       *(scanLine(row) + col) = average;
     }
   }
@@ -362,7 +362,7 @@ void dwImage::blur(int times){
                         cnt++;
                     }
                 }
-                double average = suma/273; //from Gaussian kernel
+                double average = (double)suma/273; //from Gaussian kernel
                 *(scanLine(row) + col) = average;
             }
         }
@@ -715,7 +715,7 @@ double dwImage::meanImg(Coord thePnt, int size) const
 
 //calculate avarage color of whole image
 double dwImage::meanImg(){
-    if( height() == 0 or width() == 0)
+    if( height() == 0 || width() == 0)
         return -1.0;
 
     unsigned sum = 0;
@@ -724,7 +724,7 @@ double dwImage::meanImg(){
             sum += *(scanLine(row) + col);
         }
     }
-    double outMean = sum/(this->height()*this->width());
+    double outMean = (double)sum/(this->height()*this->width());
     return outMean;
 }
 
