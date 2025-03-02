@@ -16,27 +16,27 @@
 
 dwRCoordList::dwRCoordList(void)
 {
-	id = "";
-	validSize = 0;
+    id = "";
+    validSize = 0;
 }
 
 dwRCoordList::dwRCoordList(const QString & resources)
 {
-	id = resources;
-	validSize = 0;
+    id = resources;
+    validSize = 0;
     QFile in_file(resources);
-	if (!in_file.open(QIODevice::ReadOnly | QIODevice::Text))
-		return;
+    if (!in_file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
 
-	QTextStream in(&in_file);
-	while (!in.atEnd()) {
-		double x;
-		double y;
-		in >> x >> y;
-		realCoord pxl(x,y);
-		theList.push_back(pxl);
-	}
-	validSize = theList.size();
+    QTextStream in(&in_file);
+    while (!in.atEnd()) {
+        double x;
+        double y;
+        in >> x >> y;
+        realCoord pxl(x,y);
+        theList.push_back(pxl);
+    }
+    validSize = theList.size();
 }
 
 //New version of reading from file
@@ -45,59 +45,59 @@ dwRCoordList::dwRCoordList(const QString & resources)
 //consequitive rcl are separated by '<'
 dwRCoordList::dwRCoordList(QTextStream & in)
 {
-	while (!in.atEnd()) {
-		QString ln = in.readLine();
-		if(ln.isEmpty())
-			continue;
-		if( ln.at(0) == QChar('<') ){ //start of the next rcl
-			validSize = theList.size();
-			return;
-		}
-		if( ln.at(0).isLetter() ){ //name (id) of the rcl
-			id = ln;
-		}else{
-			QStringList lst = ln.split(" ");
-			if(lst.size() < 2)
-				continue;
-			double x = lst.at(0).toDouble();
-			double y = lst.at(1).toDouble();
-			realCoord pxl(x,y);
-			theList.push_back(pxl);
-		}
-	}
-	validSize = theList.size();
+    while (!in.atEnd()) {
+        QString ln = in.readLine();
+        if(ln.isEmpty())
+            continue;
+        if( ln.at(0) == QChar('<') ){ //start of the next rcl
+            validSize = theList.size();
+            return;
+        }
+        if( ln.at(0).isLetter() ){ //name (id) of the rcl
+            id = ln;
+        }else{
+            QStringList lst = ln.split(" ");
+            if(lst.size() < 2)
+                continue;
+            double x = lst.at(0).toDouble();
+            double y = lst.at(1).toDouble();
+            realCoord pxl(x,y);
+            theList.push_back(pxl);
+        }
+    }
+    validSize = theList.size();
 }
 
 dwRCoordList::dwRCoordList(const std::vector< Coord > & coords)
 {
-	id = "";
+    id = "";
     std::vector< Coord >::const_iterator iter = coords.begin();
     for(unsigned i = 0; i < coords.size(); ++i, iter++){ // punkt 19 nie moze byc użyty do obliczen
-		realCoord pxl(iter->dx(), iter->dy());
-		theList.push_back(pxl);
-	}
-	validSize = theList.size();
+        realCoord pxl(iter->dx(), iter->dy());
+        theList.push_back(pxl);
+    }
+    validSize = theList.size();
 }
 
 void dwRCoordList::setList(const std::vector< Coord > & inList)
 {
-	theList.clear();
-	for(unsigned i = 0; i < inList.size(); ++i){ 
-		Coord thePnt = inList[i];
-		realCoord pxl(thePnt);
-		theList.push_back(pxl);
-	}
-	validSize = theList.size();
+    theList.clear();
+    for(unsigned i = 0; i < inList.size(); ++i){
+        Coord thePnt = inList[i];
+        realCoord pxl(thePnt);
+        theList.push_back(pxl);
+    }
+    validSize = theList.size();
 }
 
 dwRCoordList::dwRCoordList(const std::vector< realCoord > & coords)
 {
-	id = "";
+    id = "";
     std::vector< realCoord >::const_iterator iter = coords.begin();
     for(unsigned i = 0; i < coords.size(); ++i, iter++){ // punkt 19 nie moze byc użyty do obliczen
-		theList.push_back(*iter);
-	}
-	validSize = theList.size();
+        theList.push_back(*iter);
+    }
+    validSize = theList.size();
 }
 
 //remove iterator as in lower method
@@ -174,33 +174,33 @@ void dwRCoordList::clear()
 
 std::vector< realCoord > dwRCoordList::list(void) const
 {
-	return theList;
+    return theList;
 }
 
 std::vector< Coord > dwRCoordList::coordList(void) const
 {
-	std::vector< Coord > outList;
-	for(unsigned i = 0; i < theList.size(); ++i){
-		Coord coordPxl(theList[i].dx(), theList[i].dy());
-		outList.push_back(coordPxl);
-	}
-	return outList;
+    std::vector< Coord > outList;
+    for(unsigned i = 0; i < theList.size(); ++i){
+        Coord coordPxl(theList[i].dx(), theList[i].dy());
+        outList.push_back(coordPxl);
+    }
+    return outList;
 }
 
 // Calculate centroid of the list of points.
 realCoord dwRCoordList::centroid(void) const
 {
-	double meanX = 0.0;
-	double meanY = 0.0;
-	for(int i = 0; i < validSize; i++){
-		meanX += theList[i].dx();
-		meanY += theList[i].dy();
-	}
-	meanX /= validSize;
-	meanY /= validSize;
+    double meanX = 0.0;
+    double meanY = 0.0;
+    for(int i = 0; i < validSize; i++){
+        meanX += theList[i].dx();
+        meanY += theList[i].dy();
+    }
+    meanX /= validSize;
+    meanY /= validSize;
 
-	realCoord center(meanX, meanY);
-	return center;
+    realCoord center(meanX, meanY);
+    return center;
 }
 
 void dwRCoordList::translate(realCoord thePnt)
@@ -222,12 +222,12 @@ void dwRCoordList::add(realCoord thePnt)
 // does no uses validSize!!!!
 void dwRCoordList::center()
 {
-	realCoord centerPnt = centroid();
+    realCoord centerPnt = centroid();
     //mozna dac translate
-	std::vector< realCoord >::iterator iter;
-	for(iter = theList.begin(); iter != theList.end(); iter++){
-		*iter -= centerPnt;
-	}
+    std::vector< realCoord >::iterator iter;
+    for(iter = theList.begin(); iter != theList.end(); iter++){
+        *iter -= centerPnt;
+    }
 }
 
 // Find the centroid size.
@@ -264,24 +264,23 @@ double dwRCoordList::meanDistance(void) const
 // both this and reference need to be scaled and centered
 double dwRCoordList::rotationAngle(const std::vector< realCoord > & reference) const
 {
-	double numerator = 0.0;
-	double denominator = 0.0;
+    double numerator = 0.0;
+    double denominator = 0.0;
     for(int i = 0; i < validSize; ++i){
-		double xr = reference[i].dx(); 
-		double yr = reference[i].dy(); 
-		double xt = theList[i].dx(); 
-		double yt = theList[i].dy(); 
-		double ntemp = yr*xt - xr*yt;
-		double dtemp = xr*xt + yr*yt;
+        double xr = reference[i].dx();
+        double yr = reference[i].dy();
+        double xt = theList[i].dx();
+        double yt = theList[i].dy();
+        double ntemp = yr*xt - xr*yt;
+        double dtemp = xr*xt + yr*yt;
         numerator += ntemp;
         denominator += dtemp;
-	}
+    }
     double angle = atan2(numerator, denominator); // atan crushes
     return angle;
 }
 
 // find angle that minimize distance between 2 configurations
-// both this and reference need to be scaled and centered
 double dwRCoordList::rotationAngle(const dwRCoordList & reference) const
 {
     const std::vector< realCoord > refVec = reference.list();
@@ -289,6 +288,7 @@ double dwRCoordList::rotationAngle(const dwRCoordList & reference) const
 }
 
 //find angle between unscaled and untranslated configuratins
+// both this and reference need to be scaled and centered
 double dwRCoordList::rotationAngleRaw(const dwRCoordList & reference) const
 {
     dwRCoordList ref = reference;
@@ -306,42 +306,42 @@ double dwRCoordList::rotationAngleRaw(const dwRCoordList & reference) const
 
 void dwRCoordList::rotate(const double angle)
 {
-	std::vector< realCoord >::iterator iter;
-	for(iter = theList.begin(); iter != theList.end(); iter++){
-		iter->rotate(angle);
-	}
+    std::vector< realCoord >::iterator iter;
+    for(iter = theList.begin(); iter != theList.end(); iter++){
+        iter->rotate(angle);
+    }
 }
 
 void dwRCoordList::scale(const double factor)
 {
-	std::vector< realCoord >::iterator iter;
-	for(iter = theList.begin(); iter != theList.end(); iter++){
-		(*iter) *= factor;
-	}
+    std::vector< realCoord >::iterator iter;
+    for(iter = theList.begin(); iter != theList.end(); iter++){
+        (*iter) *= factor;
+    }
 }
 
 //find Procrustes distance between the 2 configurations
 double dwRCoordList::partialProcrustesDistance(const dwRCoordList &reference) const
 {
-	double distance = 0.0;
+    double distance = 0.0;
     std::vector< realCoord > refVec = reference.list();
-	for(int i = 0; i < validSize; i++){
+    for(int i = 0; i < validSize; i++){
         double xr = refVec[i].dx();
         double yr = refVec[i].dy();
-		double xt = theList[i].dx(); 
-		double yt = theList[i].dy(); 
-		distance+=(xt-xr)*(xt-xr)+(yt-yr)*(yt-yr);
-	}
-	return sqrt(distance);//powino być _hypot() lub distance(coord, coord)
+        double xt = theList[i].dx();
+        double yt = theList[i].dy();
+        distance+=(xt-xr)*(xt-xr)+(yt-yr)*(yt-yr);
+    }
+    return sqrt(distance);//powino być _hypot() lub distance(coord, coord)
 }
 
 double dwRCoordList::procrustesDistance(const dwRCoordList &reference) const
 {
-	double partial = partialProcrustesDistance(reference);
+    double partial = partialProcrustesDistance(reference);
     if( partial > 2.0 )
-		return -1.0;
-	double full = 2.0 * asin(partial/2.0);
-	return full;
+        return -1.0;
+    double full = 2.0 * asin(partial/2.0);
+    return full;
 }
 
 // Superimposes partially the configuration over the reference.
@@ -351,10 +351,10 @@ double dwRCoordList::superimposePart(const dwRCoordList & reference)
     if(reference.theList.size() < (unsigned)validSize)
         return -1.0;
     center();
-	double cs = centroidSize();
+    double cs = centroidSize();
     scale(1.0/cs);
-	double angle = rotationAngle(reference.theList);
-	rotate(angle);
+    double angle = rotationAngle(reference.theList);
+    rotate(angle);
     return partialProcrustesDistance(reference); //partial procrustes distance
 }
 
@@ -365,12 +365,9 @@ double dwRCoordList::superimpose(const dwRCoordList & reference)
     if(reference.theList.size() < (unsigned)validSize)
         return -1.0;
     superimposePart(reference);
-	double distance = procrustesDistance(reference.theList); //full procrustes distance
-
-        scale(cos(distance)); // it is bette to have cs = 1
-    // !!!!!!!  large differences large scaliing
-
-	return distance; 
+    double distance = procrustesDistance(reference.theList); //full procrustes distance
+    scale(cos(distance));
+    return distance;
 }
 
 // superimpose the list over reference by rotation and translation only
@@ -387,8 +384,8 @@ void dwRCoordList::superimposeNoScaling(const dwRCoordList & reference)
 
 void dwRCoordList::preshape()
 {
-	center();
-	double cs = centroidSize();
+    center();
+    double cs = centroidSize();
     scale(1.0/cs);
 }
 
@@ -400,50 +397,50 @@ unsigned dwRCoordList::size(void) const
 // assumes cartesian coordinates
 QString dwRCoordList::toTps(void) const
 {
-        QString out = QString("LM=%1\n").arg( theList.size() );
-        for(unsigned i=0; i < theList.size(); i++){
-                realCoord pixel = theList[i];
-                out += QString("%1 %2\n").arg(pixel.dx()).arg(pixel.dy());
-        }
-        out += "ID=" + id + "\n"; //ID= needs to be at the end of the coordinates
-        return out;
+    QString out = QString("LM=%1\n").arg( theList.size() );
+    for(unsigned i=0; i < theList.size(); i++){
+        realCoord pixel = theList[i];
+        out += QString("%1 %2\n").arg(pixel.dx()).arg(pixel.dy());
+    }
+    out += "ID=" + id + "\n"; //ID= needs to be at the end of the coordinates
+    return out;
 }
 
 // assumes cartesian coordinates
 QString dwRCoordList::toTxt(void) const
 {
-        QString out =  id + "\n";
-        for(unsigned i=0; i < theList.size(); i++)
-        {
-                realCoord pixel = theList[i];
-                out += QString(" %1 %2\n").arg(pixel.dx(), 10).arg(pixel.dy(),10); //zmienic na pixel.toTxt
-        }
-        return out;
+    QString out =  id + "\n";
+    for(unsigned i=0; i < theList.size(); i++)
+    {
+        realCoord pixel = theList[i];
+        out += QString(" %1 %2\n").arg(pixel.dx(), 10).arg(pixel.dy(),10); //zmienic na pixel.toTxt
+    }
+    return out;
 }
 
 QString dwRCoordList::toCsv(void) const
 {
-        QString out =  id + ";";
-        for(unsigned i=0; i < theList.size(); i++)
-        {
-                realCoord pixel = theList[i];
-                out += QString("%1;%2;").arg(pixel.dx(), 10).arg(pixel.dy(),10); //zmienic na pixel.toTxt
-        }
-        out += "\n";
-        return out;
+    QString out =  id + ";";
+    for(unsigned i=0; i < theList.size(); i++)
+    {
+        realCoord pixel = theList[i];
+        out += QString("%1;%2;").arg(pixel.dx(), 10).arg(pixel.dy(),10); //zmienic na pixel.toTxt
+    }
+    out += "\n";
+    return out;
 }
 
 // assumes cartesian coordinates
 QString dwRCoordList::toXml(void) const
 {
-	QString out = QString( "<pointList>\n" );
-	out += QString( "<pointListName>%1</pointListName>\n" ).arg( id );
-	for(unsigned i=0; i < theList.size(); i++){
-		realCoord pixel = theList[i];
-		out += QString( "<point pointNo=\"%1\"> <x>%2</x> <y>%3</y> </point>\n" ).arg(i).arg(pixel.dx(), 10).arg(pixel.dy(),10);
-	}
-	out += "</pointList>\n";
-	return out;
+    QString out = QString( "<pointList>\n" );
+    out += QString( "<pointListName>%1</pointListName>\n" ).arg( id );
+    for(unsigned i=0; i < theList.size(); i++){
+        realCoord pixel = theList[i];
+        out += QString( "<point pointNo=\"%1\"> <x>%2</x> <y>%3</y> </point>\n" ).arg(i).arg(pixel.dx(), 10).arg(pixel.dy(),10);
+    }
+    out += "</pointList>\n";
+    return out;
 }
 
 //nie czyta nazwy pliku i komentarzy
@@ -451,27 +448,27 @@ QString dwRCoordList::toXml(void) const
 //dane z pliku dopisywane do konca listy
 void dwRCoordList::fromTps(const QString & resources)
 {
-	QFile in_file(resources); 
-	if (!in_file.open(QIODevice::ReadOnly | QIODevice::Text))
-		return;
+    QFile in_file(resources);
+    if (!in_file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
 
-	QTextStream in(&in_file);
-	QString ln = in.readLine();
-	if( ln.startsWith("LM=") ){
-		ln.remove(0,3); //first 3 characters
-		bool ok;
-		int lm = ln.toInt(&ok);
-		if(ok){
-			for(int i = 0; i < lm; i++){
-				double x;
-				double y;
-				in >> x >> y; //brak kontroli czy cokolwiek czyta
-				realCoord pxl(x,y);
-				theList.push_back(pxl);
-			}
-			validSize = theList.size();
-		}
-	}
+    QTextStream in(&in_file);
+    QString ln = in.readLine();
+    if( ln.startsWith("LM=") ){
+        ln.remove(0,3); //first 3 characters
+        bool ok;
+        int lm = ln.toInt(&ok);
+        if(ok){
+            for(int i = 0; i < lm; i++){
+                double x;
+                double y;
+                in >> x >> y; //brak kontroli czy cokolwiek czyta
+                realCoord pxl(x,y);
+                theList.push_back(pxl);
+            }
+            validSize = theList.size();
+        }
+    }
 }
 
 void dwRCoordList::fromTxt(const QString & resources)
@@ -502,12 +499,12 @@ bool dwRCoordList::setValidSize(const int size)
 
 void dwRCoordList::setId(const QString & newId)
 {
-	id = newId;
+    id = newId;
 }
 
 QString dwRCoordList::getId(void) const
 {
-	return id;
+    return id;
 }
 
 void dwRCoordList::setCoord(unsigned coordNo, realCoord inCoord)
@@ -530,16 +527,16 @@ double dwRCoordList::find_distance(const dwRCoordList & ref, unsigned index) con
 //Find distances between landmarks of ref and landmarks of theList. 
 std::vector< double > dwRCoordList::find_distances(const dwRCoordList & ref) const
 {
-	std::vector< double > out_list(ref.size(), 0.0);
-	if(ref.size() < theList.size()) return out_list;
+    std::vector< double > out_list(ref.size(), 0.0);
+    if(ref.size() < theList.size()) return out_list;
 
-	for(unsigned i = 0; i < theList.size(); i++){
-		const realCoord p1 = theList.at(i);
-		const realCoord p2 = ref.theList.at(i);
-		double dist = distance(p1, p2);
-		out_list[i]=dist;
-	}
-	return out_list;
+    for(unsigned i = 0; i < theList.size(); i++){
+        const realCoord p1 = theList.at(i);
+        const realCoord p2 = ref.theList.at(i);
+        double dist = distance(p1, p2);
+        out_list[i]=dist;
+    }
+    return out_list;
 }
 
 //Flip points verticaly for transformation between bitmap and cartesian coordinates
@@ -568,13 +565,13 @@ void dwRCoordList::rotate90(const int height)
 
 dwRCoordList::~dwRCoordList(void)
 {
-	theList.clear();
+    theList.clear();
 }
 
 void dwRCoordList::rotate2reference(const dwRCoordList & reference)
 {
-	double angle = rotationAngle(reference.theList);
-	rotate(angle);
+    double angle = rotationAngle(reference.theList);
+    rotate(angle);
 }
 
 // output single list as vector graphics in svg format
@@ -653,14 +650,14 @@ void dwRCoordList::toImg() const
 // Trace of matix multiplication A*Bt. Bt is transposed B.
 double traceABt(const dwRCoordList & a, const dwRCoordList & b)
 {
-	double sum = 0.0;
-	if(a.theList.size() != b.theList.size())
-		return sum;
-	for(unsigned i = 0; i < a.theList.size(); ++i){
-		sum += a.theList[i].dx() * b.theList[i].dx();
-		sum += a.theList[i].dy() * b.theList[i].dy();
-	}
-	return sum;
+    double sum = 0.0;
+    if(a.theList.size() != b.theList.size())
+        return sum;
+    for(unsigned i = 0; i < a.theList.size(); ++i){
+        sum += a.theList[i].dx() * b.theList[i].dx();
+        sum += a.theList[i].dy() * b.theList[i].dy();
+    }
+    return sum;
 }
 
 //takes configuration of pixels and finds outliers
@@ -692,7 +689,7 @@ std::vector< Coord > dwRCoordList::find_outliers_list(std::vector< Coord > mean)
 
     dwRCoordList meanRcl(mean);
     meanRcl.superimpose(theList);
-	//superimpose(meanRcl);
+    //superimpose(meanRcl);
     std::vector< double > distList = find_distances(meanRcl);
     for(unsigned i = 0; i < theList.size(); i++){
         if(distList[i] > thd[i]){
@@ -716,7 +713,7 @@ void dwRCoordList::superimposeBC(dwRCoordList & reference)
     double size = distance(theList[0], theList[1]);
     scale(refSize/size);
 
-//    realCoord transPnt = theList[0] - refList[0];
+    //    realCoord transPnt = theList[0] - refList[0];
     translate(theList[0]);
     reference.translate(refList[0]);
 

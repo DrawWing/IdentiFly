@@ -1360,23 +1360,23 @@ std::vector< QString > dwDataSet::outliersMD(void)
     cv::calcCovarMatrix(dataSetMat, covar, mean, cv::COVAR_NORMAL | cv::COVAR_ROWS, CV_64F );
     covar = covar / (dataSetMat.rows - 1);
 
-    std::vector< std::pair<double, QString> > pairList;
+    std::vector< std::pair<double, QString> > pairVec;
     for(unsigned i = 0; i < dataSet.size(); ++i)
     {
         dwData theData = dataSet.at(i);
         cv::Mat theDataMat = theData.toCvMatDouble();
         double theDist = cv::Mahalanobis(theDataMat, mean, covar);
         std::pair< double, QString > thePair = {theDist, theData.getId()};
-        pairList.push_back(thePair);
+        pairVec.push_back(thePair);
     }
 
     // sort from large to small MD
-    sort(pairList.begin(), pairList.end(), std::greater<>());
+    sort(pairVec.begin(), pairVec.end(), std::greater<>());
 
     std::vector< QString > outStrList;
-    for(unsigned i = 0; i < pairList.size(); ++i)
+    for(unsigned i = 0; i < pairVec.size(); ++i)
     {
-        outStrList.push_back(pairList.at(i).second);
+        outStrList.push_back(pairVec.at(i).second);
     }
     return outStrList;
 }

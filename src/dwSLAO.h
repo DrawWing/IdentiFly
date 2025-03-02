@@ -8,10 +8,10 @@ class dwSLAO
 public:
     dwSLAO(dwRclList &inLmkList, dwRclList &inOtlList);
     dwRclList align();
-    void align(const dwRCoordList &inRef, dwRCoordList &inLmk, dwRCoordList &inOtl);
-    // dwRclList getLandmarks() const;
 
 private:
+    void align2(const dwRCoordList &inRef, dwRCoordList &inLmk, dwRCoordList &inOtl);
+
     dwRclList lmkList;
     dwRclList otlList;
 

@@ -2584,10 +2584,8 @@ void MainWindow::semiAlign()
 
     dwSLAO slao(lmkRcl, otlRcl);
     lmkRcl= slao.align();
-    // lmkRcl= slao.getLandmarks();
 
     // write aligned landmarks back to files
-    // QFileInfo inInfo(fileName);
     std::vector< dwRCoordList > tpsVec = lmkRcl.list();
     for(unsigned i = 0; i < tpsVec.size(); ++i){
         dwRCoordList rcl = tpsVec[i];

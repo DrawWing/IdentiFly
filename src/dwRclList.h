@@ -7,7 +7,6 @@
 #include <QtWidgets>
 #include <QString>
 
-//#include "dwDataSet.h"
 #include "dwRCoordList.h"
 #include "realcoord.h"
 
@@ -62,6 +61,7 @@ private:
     QString id;
     int minRcListSize;
     int maxRcListSize;
+
     std::vector< dwRCoordList > rclList;
     double superimpose_once(const dwRCoordList & reference);
     void rotate2first(void);

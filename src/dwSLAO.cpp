@@ -15,25 +15,25 @@ dwRclList dwSLAO::align()
 
     // aling all configurations to the first one
     for(unsigned i = 1; i < lmkVec.size(); ++i)
-        align(lmkVec[0], lmkVec[i], otlVec[i]);
+        align2(lmkVec[0], lmkVec[i], otlVec[i]);
 
     dwRclList meanList;
     meanList.fromVector(lmkVec);
     dwRCoordList meanOld = meanList.superimposeGPA();
 
-    const double thd = 0.00001;
+    const double thd = 0.000001;
     double procDist = 1.0;
     while(procDist > thd)
     {
         // aling all configurations to mean configuration
         for(unsigned i = 0; i < lmkVec.size(); ++i)
-            align(meanOld, lmkVec[i], otlVec[i]);
+            align2(meanOld, lmkVec[i], otlVec[i]);
 
         meanList.fromVector(lmkVec);
         dwRCoordList meanNew = meanList.superimposeGPA();
         procDist = meanOld.partialProcrustesDistance(meanNew);
-        QString csv = meanNew.toCsv();
-        qDebug() << procDist << ":" << csv;
+        // QString csv = meanNew.toCsv();
+        // qDebug() << procDist << ":" << csv;
         meanOld = meanNew;
     }
 
@@ -42,51 +42,47 @@ dwRclList dwSLAO::align()
     return outRcl;
 }
 
-void dwSLAO::align(const dwRCoordList &inRef, dwRCoordList &inLmk, dwRCoordList &inOtl)
+void dwSLAO::align2(const dwRCoordList &inRef, dwRCoordList &inSem, dwRCoordList &inOtl)
 {
-    dwRCoordList ref = inRef;
-    std::vector< realCoord > landmarks2 = inLmk.list();
+    dwRCoordList ref = inRef; // create copy of reference
+    // center reference
+    realCoord centroidRef = ref.centroid();
+    ref.translate(centroidRef);
+    // scale reference
+    double csRef = ref.centroidSize();
+    ref.scale(1.0/csRef);
+
     const double thd = 0.000001;
     double dif = 1;
     while(dif>thd)
     {
-        realCoord centroid1 = ref.centroid();
-        ref.translate(centroid1);
-
-        double cs1 = ref.centroidSize();
-        double cs2 = inLmk.centroidSize();
-        ref.scale(cs2/cs1);
-
-        double angle = ref.rotationAngleRaw(inLmk);
-        ref.rotate(angle);
-
-        realCoord centroid2 = inLmk.centroid();
-        realCoord centroid2neg = centroid2;
-        centroid2neg*=-1;
-        ref.translate(centroid2neg);
-
+        // scale reference to semilandmarks
         dwRCoordList refScaled = ref;
-        refScaled.translate(centroid1);
-        refScaled.scale(1.0/cs1);
+        double csSem = inSem.centroidSize();
+        refScaled.scale(csSem);
 
-        dwRCoordList inLmksuper = inLmk;
-        double procDist0 = inLmksuper.superimposePart(refScaled);
+        // rotate reference
+        double angle = refScaled.rotationAngleRaw(inSem);
+        refScaled.rotate(angle);
 
-        for(unsigned i = 0; i < landmarks2.size(); ++i)
+        // translate reference to align with semilandmarks
+        realCoord centroidSem = inSem.centroid();
+        centroidSem*=-1;
+        refScaled.translate(centroidSem);
+
+        dwRCoordList inSemsuper = inSem;
+        double procDist0 = inSemsuper.superimposePart(ref);
+
+        for(unsigned i = 0; i < inSem.size(); ++i)
         {
-            // QString old2 = inLmk.list()[i].toTxt();
-            realCoord nearest = inOtl.findNearest(ref.list()[i]);
-            inLmk.setCoord(i, nearest);
-            // qDebug() << ref.list()[i].toTxt() << old2 << nearest.toTxt();
+            // QString old2 = inSem.list()[i].toTxt();
+            realCoord nearest = inOtl.findNearest(refScaled.list()[i]);
+            inSem.setCoord(i, nearest);
+            // qDebug() << refScaled.list()[i].toTxt() << old2 << nearest.toTxt();
         }
-        inLmksuper = inLmk;
-        double procDist = inLmksuper.superimposePart(refScaled);
+        inSemsuper = inSem;
+        double procDist = inSemsuper.superimposePart(ref);
         dif = procDist0 - procDist;
         // qDebug() << procDist << dif;
     }
 }
-
-// dwRclList dwSLAO::getLandmarks() const
-// {
-//     return lmkList;
-// }

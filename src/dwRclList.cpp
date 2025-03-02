@@ -648,55 +648,31 @@ QString dwRclList::find_outliers(void) const
 std::vector< QString > dwRclList::oneOutlier(unsigned index)
 {
     index = index - 1; // indexing from 0
-
     dwRCoordList mean = superimposeGPA();
-    std::vector< double > maxValList;
-    std::vector< QString > maxStrList;
 
+    std::vector< std::pair<double, QString> > pairVec;
     for(unsigned i = 0; i < rclList.size(); ++i)
     {
         dwRCoordList theRcl = rclList[i];
         double maxDist = theRcl.find_distance(mean, index);
-        maxValList.push_back(maxDist);
-        maxStrList.push_back(theRcl.getId());
+        std::pair< double, QString > thePair = {maxDist, theRcl.getId()};
+        pairVec.push_back(thePair);
     }
-//    qSort;
-    //nieefektywne sortowanie
-    std::vector< double > sortValList;
-    std::vector< QString > sortStrList;
-    while( maxValList.size() ){
-        std::vector< double >::iterator valIter = maxValList.begin();
-        std::vector< QString >::iterator strIter = maxStrList.begin();
 
-        double maxVal = *(valIter);
-        std::vector< double >::iterator maxValIter = valIter;
-        std::vector< QString >::iterator maxStrIter = strIter;
-        ++valIter;
-        ++strIter;
-
-        for(; valIter != maxValList.end(); ++valIter, ++strIter){
-            double theVal = *(valIter);
-            if( theVal > maxVal){
-                maxVal = theVal;
-                maxValIter = valIter;
-                maxStrIter = strIter;
-            }
-        }
-        sortValList.push_back(maxVal);
-        QString maxStr = *(maxStrIter);
-        sortStrList.push_back(maxStr);
-        maxValList.erase(maxValIter);
-        maxStrList.erase(maxStrIter);
+    // sort from large to small MD
+    sort(pairVec.begin(), pairVec.end(), std::greater<>());
+    std::vector< QString > outStrList;
+    for(unsigned i = 0; i < pairVec.size(); ++i)
+    {
+        outStrList.push_back(pairVec.at(i).second);
     }
-    return sortStrList;
+    return outStrList;
 }
 
 std::vector< QString > dwRclList::outliers(void)
 {
     dwRCoordList mean = superimposeGPA();
-    std::vector< double > maxValList;
-    std::vector< QString > maxStrList;
-
+    std::vector< std::pair<double, QString> > valStrList;
     for(unsigned i = 0; i < rclList.size(); ++i)
     {
         dwRCoordList theRcl = rclList[i];
@@ -709,38 +685,19 @@ std::vector< QString > dwRclList::outliers(void)
                 maxDist = nextList[j];
             }
         }
-        maxValList.push_back(maxDist);
-        maxStrList.push_back(theRcl.getId());
-    }
-//    qSort;
-    //nieefektywne sortowanie
-    std::vector< double > sortValList;
-    std::vector< QString > sortStrList;
-    while( maxValList.size() ){
-        std::vector< double >::iterator valIter = maxValList.begin();
-        std::vector< QString >::iterator strIter = maxStrList.begin();
 
-        double maxVal = *(valIter);
-        std::vector< double >::iterator maxValIter = valIter;
-        std::vector< QString >::iterator maxStrIter = strIter;
-        ++valIter;
-        ++strIter;
-
-        for(; valIter != maxValList.end(); ++valIter, ++strIter){
-            double theVal = *(valIter);
-            if( theVal > maxVal){
-                maxVal = theVal;
-                maxValIter = valIter;
-                maxStrIter = strIter;
-            }
-        }
-        sortValList.push_back(maxVal);
-        QString maxStr = *(maxStrIter);
-        sortStrList.push_back(maxStr);
-        maxValList.erase(maxValIter);
-        maxStrList.erase(maxStrIter);
+        std::pair< double, QString > valStr = {maxDist, theRcl.getId()};
+        valStrList.push_back(valStr);
     }
-    return sortStrList;
+
+    // sort from large to small MD
+    sort(valStrList.begin(), valStrList.end(), std::greater<>());
+    std::vector< QString > outList;
+    for(unsigned i = 0; i < valStrList.size(); ++i)
+    {
+        outList.push_back(valStrList.at(i).second);
+    }
+    return outList;
 }
 
 bool dwRclList::isSizeEqual(void) const
