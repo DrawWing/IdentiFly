@@ -281,28 +281,29 @@ double dwRCoordList::rotationAngle(const std::vector< realCoord > & reference) c
 }
 
 // find angle that minimize distance between 2 configurations
+// both configurations need to be scaled and centered
 double dwRCoordList::rotationAngle(const dwRCoordList & reference) const
 {
     const std::vector< realCoord > refVec = reference.list();
     return rotationAngle(refVec);
 }
 
-//find angle between unscaled and untranslated configuratins
-// both this and reference need to be scaled and centered
-double dwRCoordList::rotationAngleRaw(const dwRCoordList & reference) const
-{
-    dwRCoordList ref = reference;
-    ref.center();
-    double refCS = ref.centroidSize();
-    ref.scale(1.0/refCS);
+// //find angle between unscaled and untranslated configuratins
+// // both this and reference need to be scaled and centered
+// double dwRCoordList::rotationAngleRaw(const dwRCoordList & reference) const
+// {
+//     dwRCoordList ref = reference;
+//     ref.center();
+//     double refCS = ref.centroidSize();
+//     ref.scale(1.0/refCS);
 
-    dwRCoordList tmp = *this;
-    tmp.center();
-    double tmpCS = tmp.centroidSize();
-    tmp.scale(1.0/tmpCS);
+//     dwRCoordList tmp = *this;
+//     tmp.center();
+//     double tmpCS = tmp.centroidSize();
+//     tmp.scale(1.0/tmpCS);
 
-    return tmp.rotationAngle(ref);
-}
+//     return tmp.rotationAngle(ref);
+// }
 
 void dwRCoordList::rotate(const double angle)
 {
@@ -320,19 +321,30 @@ void dwRCoordList::scale(const double factor)
     }
 }
 
-//find Procrustes distance between the 2 configurations
-double dwRCoordList::partialProcrustesDistance(const dwRCoordList &reference) const
+double dwRCoordList::squaredDist(const dwRCoordList &reference) const
 {
     double distance = 0.0;
     std::vector< realCoord > refVec = reference.list();
-    for(int i = 0; i < validSize; i++){
-        double xr = refVec[i].dx();
-        double yr = refVec[i].dy();
-        double xt = theList[i].dx();
-        double yt = theList[i].dy();
-        distance+=(xt-xr)*(xt-xr)+(yt-yr)*(yt-yr);
-    }
-    return sqrt(distance);//powino być _hypot() lub distance(coord, coord)
+    for(int i = 0; i < validSize; ++i)
+        distance += pow( refVec[i].dx()-theList[i].dx(), 2.0 ) +
+                    pow( refVec[i].dy()-theList[i].dy(), 2.0 );
+    return distance;
+}
+
+//find Procrustes distance between the 2 configurations
+double dwRCoordList::partialProcrustesDistance(const dwRCoordList &reference) const
+{
+    double distance = squaredDist(reference);
+    // double distance = 0.0;
+    // std::vector< realCoord > refVec = reference.list();
+    // for(int i = 0; i < validSize; i++){
+    //     double xr = refVec[i].dx();
+    //     double yr = refVec[i].dy();
+    //     double xt = theList[i].dx();
+    //     double yt = theList[i].dy();
+    //     distance+=(xt-xr)*(xt-xr)+(yt-yr)*(yt-yr);
+    // }
+    return sqrt(distance);
 }
 
 double dwRCoordList::procrustesDistance(const dwRCoordList &reference) const
@@ -380,6 +392,25 @@ void dwRCoordList::superimposeNoScaling(const dwRCoordList & reference)
     tmpRef.center();
     double angle = rotationAngle(tmpRef.theList);
     rotate(angle);
+}
+
+// aling with reference and scale to reference size
+// aligned configurations is centered and scaled
+// reference is unscaled and not centered
+void dwRCoordList::alignRawRef(const dwRCoordList & reference)
+{
+    dwRCoordList refScaled = reference; // copy of const reference
+    refScaled.center();
+    double csRef = reference.centroidSize();
+    refScaled.scale(1.0/csRef);
+    double angle = rotationAngle(refScaled);
+    rotate(angle);
+
+    scale(csRef);
+
+    realCoord centroidRef = reference.centroid();
+    centroidRef*=-1;
+    translate(centroidRef);
 }
 
 void dwRCoordList::preshape()

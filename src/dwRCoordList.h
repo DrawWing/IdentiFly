@@ -27,6 +27,7 @@ public:
     double superimpose(const dwRCoordList & reference); // fully superimpose the list over reference
     double superimposePart(const dwRCoordList & reference); // partially superimpose the list over reference
     void superimposeNoScaling(const dwRCoordList & reference); // superimpose the list over reference by rotation and translation only
+    void alignRawRef(const dwRCoordList & reference);
     void preshape();
     unsigned size(void) const;
     QString toTps(void) const;
@@ -43,7 +44,7 @@ public:
     double centroidSize(void) const ;
     double rotationAngle(const std::vector< realCoord > & reference) const; //find angle that minimize distance between 2 configurations
     double rotationAngle(const dwRCoordList & reference) const; //find angle that minimize distance between 2 configurations
-    double rotationAngleRaw(const dwRCoordList & reference) const; //find angle between unscaled and untranslated configuratins
+    // double rotationAngleRaw(const dwRCoordList & reference) const; //find angle between unscaled and untranslated configuratins
     double meanDistance(void) const; //mean distance from centroid to points
     bool setValidSize(const int);
     void setList(const std::vector< Coord > & inList);
@@ -74,8 +75,9 @@ public:
     double yMin() const;
     double yMax() const;
     void transform(const realCoord corner, const double angle = 0.0, const double inScale = 1.0);
-    double procrustesDistance(const dwRCoordList & reference) const;
+    double squaredDist(const dwRCoordList & reference) const;
     double partialProcrustesDistance(const dwRCoordList & reference) const;
+    double procrustesDistance(const dwRCoordList & reference) const;
     dwRCoordList reverse() const; // change order from last to first
     realCoord findNearest(realCoord toPxl);
 

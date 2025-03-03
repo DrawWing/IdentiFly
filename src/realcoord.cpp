@@ -69,7 +69,7 @@ void realCoord::rotate(double angle)
 
 double realCoord::distanceTo(const realCoord & p2) const
 {
-    return _hypot (x-p2.dx(), y-p2.dy());
+    return hypot (x-p2.dx(), y-p2.dy());
 }
 
 std::ostream& operator<<(std::ostream& s, realCoord c)
@@ -80,6 +80,6 @@ std::ostream& operator<<(std::ostream& s, realCoord c)
 //  distance between 2 points.
 double distance (const realCoord & p1, const realCoord & p2)
 {
-	return _hypot (p1.dx()-p2.dx(), p1.dy()-p2.dy());
+    return _hypot (p1.dx()-p2.dx(), p1.dy()-p2.dy());
 }
 

@@ -52,37 +52,27 @@ void dwSLAO::align2(const dwRCoordList &inRef, dwRCoordList &inSem, dwRCoordList
     double csRef = ref.centroidSize();
     ref.scale(1.0/csRef);
 
-    const double thd = 0.000001;
-    double dif = 1;
-    while(dif>thd)
+    dwRCoordList scaledRef = ref;
+    scaledRef.alignRawRef(inSem);
+    double dist0 = inSem.squaredDist(scaledRef);
+    for(unsigned i = 0; i < inSem.size(); ++i)
     {
-        // scale reference to semilandmarks
-        dwRCoordList refScaled = ref;
-        double csSem = inSem.centroidSize();
-        refScaled.scale(csSem);
+        realCoord nearest = inOtl.findNearest(scaledRef.list()[i]);
+        inSem.setCoord(i, nearest);
+    }
+    double dist = inSem.squaredDist(scaledRef);
 
-        // rotate reference
-        double angle = refScaled.rotationAngleRaw(inSem);
-        refScaled.rotate(angle);
-
-        // translate reference to align with semilandmarks
-        realCoord centroidSem = inSem.centroid();
-        centroidSem*=-1;
-        refScaled.translate(centroidSem);
-
-        dwRCoordList inSemsuper = inSem;
-        double procDist0 = inSemsuper.superimposePart(ref);
-
+    while(dist0 > dist)
+    {
+        dwRCoordList scaledRef = ref;
+        scaledRef.alignRawRef(inSem);
+        dist0 = dist;
         for(unsigned i = 0; i < inSem.size(); ++i)
         {
-            // QString old2 = inSem.list()[i].toTxt();
-            realCoord nearest = inOtl.findNearest(refScaled.list()[i]);
+            realCoord nearest = inOtl.findNearest(scaledRef.list()[i]);
             inSem.setCoord(i, nearest);
-            // qDebug() << refScaled.list()[i].toTxt() << old2 << nearest.toTxt();
         }
-        inSemsuper = inSem;
-        double procDist = inSemsuper.superimposePart(ref);
-        dif = procDist0 - procDist;
-        // qDebug() << procDist << dif;
+        dist = inSem.squaredDist(scaledRef);
     }
 }
+
