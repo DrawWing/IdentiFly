@@ -144,27 +144,34 @@ void dwFileRename::move2trash(QFileInfo inFileInfo)
 
 QString dwFileRename::rename(QDir inDir)
 {
-    QString oldLstName = inDir.absolutePath();
-    oldLstName += "/oldList.txt";
-    QStringList oldLst = readStrLst(oldLstName);
-    if(oldLst.size() == 0) return("Old list is empty.");
-    int duplicates = oldLst.removeDuplicates();
-    if(duplicates > 0)
-    {
-        QString error = QString("Number of duplicates in old list: %1").arg(duplicates);
-        return error;
+    QString inFileName = inDir.absolutePath();
+    inFileName += "/rename.txt";
+    QFile in_file(inFileName);
+    if (!in_file.open(QIODevice::ReadOnly | QFile::Text)) {
+        return  QString("Cannot open file %1:\n%2.").arg(inFileName, in_file.errorString());
     }
 
-    QString newLstName = inDir.absolutePath();
-    newLstName += "/newList.txt";
-    QStringList newLst = readStrLst(newLstName);
-    if(newLst.size() != oldLst.size()) return("Sizes of old and new list differs.");
+    QTextStream in(&in_file);
+    in.setCodec("UTF-8");
+    // qt6   in.setEncoding(QStringConverter::Utf8);
+    QStringList oldLst;
+    QStringList newLst;
+    while (!in.atEnd()) {
+        QString ln = in.readLine();
+        QStringList lnList = ln.split('\t');
+        if(lnList.size() < 2)
+            continue;
+        oldLst.push_back(lnList[0].trimmed());
+        newLst.push_back(lnList[1].trimmed());
+    }
+
+    int duplicates = oldLst.removeDuplicates();
+    if(duplicates > 0)
+        return QString("Number of duplicates in old list: %1").arg(duplicates);
+
     duplicates = newLst.removeDuplicates();
     if(duplicates > 0)
-    {
-        QString error = QString("Number of duplicates in new list: %1").arg(duplicates);
-        return error;
-    }
+        return QString("Number of duplicates in new list: %1").arg(duplicates);
 
     for(int i = 0; i < oldLst.size(); ++i)
     {
@@ -187,7 +194,7 @@ QString dwFileRename::rename(QDir inDir)
 //  | QDir::NoDotAndDotDot prevents recurvive loops
 void dwFileRename::addSufix(QDir inDir)
 {
-//    QString sufix = "-";
+    //    QString sufix = "-";
 
     QFileInfoList localFileInfoList = inDir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name );
     if(localFileInfoList.size() == 0) return;
@@ -249,27 +256,4 @@ void dwFileRename::addPrefix(QDir inDir, QString prefix)
         theFile.rename(fileName);
         theFile.close();
     }
-}
-
-QStringList dwFileRename::readStrLst(QString inFileName)
-{
-    QStringList outLst;
-    if (inFileName.isEmpty())
-        return outLst;
-
-    QFile in_file(inFileName);
-    if (!in_file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return outLst;
-
-    QTextStream in(&in_file);
-    in.setCodec("UTF-8");
-// qt6   in.setEncoding(QStringConverter::Utf8);
-    while (!in.atEnd()) {
-        QString ln = in.readLine();
-        ln = ln.trimmed();
-        if(ln.isEmpty())
-            continue;
-        outLst.push_back(ln);
-    }
-    return outLst;
 }

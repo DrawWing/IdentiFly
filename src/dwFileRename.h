@@ -19,7 +19,6 @@ public:
     void addSufix(QDir inDir);
     void addDirPrefix(QDir inDir);
     void addPrefix(QDir inDir, QString prefix);
-    QStringList readStrLst(QString inFileName);
 private:
     void addPrefixRec(QDir inDir, QString prefix);
 };
