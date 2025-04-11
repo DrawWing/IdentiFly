@@ -298,6 +298,9 @@ void MainWindow::createActions()
     renameAct = new QAction(tr("Rename"), this);
     connect(renameAct, SIGNAL(triggered()), this, SLOT(rename()));
 
+    addDirPrefixAct = new QAction(tr("Add Directory Prefix"), this);
+    connect(addDirPrefixAct, SIGNAL(triggered()), this, SLOT(addDirPrefix()));
+
     testAct = new QAction("Test", this);
     connect(testAct, SIGNAL(triggered()), this, SLOT(test()));
 
@@ -405,6 +408,7 @@ void MainWindow::createMenus()
     testMenu->addAction(convertCsvTpsAct);
     testMenu->addAction(reconfigAct);
     testMenu->addAction(renameAct);
+    testMenu->addAction(addDirPrefixAct);
     testMenu->addAction(testAct);
     // testMenu->addAction(setImageTextRawAct);
     // // testMenu->addAction(alignDataAct);
@@ -427,7 +431,6 @@ void MainWindow::createMenus()
     // testMenu->addAction(openDirRefAct);
     // testMenu->addAction(exportDirRefCsvAct);
     // testMenu->addAction(exportUsingXmlAct);
-    // testMenu->addAction(addDirPrefixAct);
     // testMenu->addAction(removeFileListAct);
 
     menuBar()->addMenu(fileMenu);
@@ -967,6 +970,22 @@ void MainWindow::rename()
     QDir inDir( inDirName );
     dwFileRename renamer;
     renamer.rename(inDir);
+}
+
+// add prefix to file name reflecting direectories hierarchy
+void MainWindow::addDirPrefix()
+{
+    QString inDirName = QFileDialog::getExistingDirectory(
+        this, tr("Choose a directory"),
+        filePath, QFileDialog::ShowDirsOnly);
+
+    if (inDirName.isEmpty())
+        return;
+
+    QDir inDir( inDirName );
+    dwFileRename renamer;
+    //    renamer.addSufix(inDir);
+    renamer.addDirPrefix(inDir);
 }
 
 void MainWindow::updateRecentFileActions()

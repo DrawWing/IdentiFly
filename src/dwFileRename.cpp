@@ -168,12 +168,7 @@ QString dwFileRename::rename(QDir inDir)
 
     for(int i = 0; i < oldLst.size(); ++i)
     {
-        // QString oldName = inDir.absolutePath();
-        // oldName += "/";
         QString oldName = oldLst[i];
-
-        // QString newName = inDir.absolutePath();
-        // newName += "/";
         QString newName = newLst[i];
 
         if(oldName == newName)
@@ -241,8 +236,7 @@ void dwFileRename::addPrefixRec(QDir inDir, QString prefix)
 
 void dwFileRename::addPrefix(QDir inDir, QString prefix)
 {
-    QStringList extList = (QStringList() << "*.png" << "*.jpg");
-//    QFileInfoList localFileInfoList = inDir.entryInfoList(QStringList("*.png"), QDir::Files, QDir::Name );
+    QStringList extList = (QStringList() << "*.png" << "*.jpg" << "*.bmp");
     QFileInfoList localFileInfoList = inDir.entryInfoList(extList, QDir::Files, QDir::Name );
 
     if(localFileInfoList.size() == 0) return;

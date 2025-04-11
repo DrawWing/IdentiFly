@@ -46,6 +46,7 @@ private slots:
     bool saveAs();
     void saveOn();
     void rename();
+    void addDirPrefix();
     void updateStatus( QPointF );
     void addMode();
     void dragMode();
@@ -229,6 +230,7 @@ private:
     QAction *convertCsvTpsAct;
     QAction *reconfigAct;
     QAction *renameAct;
+    QAction *addDirPrefixAct;
     QAction *testAct;
 
     QLabel * protoLbl; // for statusbar
