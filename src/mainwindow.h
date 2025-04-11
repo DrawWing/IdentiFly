@@ -45,6 +45,7 @@ private slots:
     bool save();
     bool saveAs();
     void saveOn();
+    void rename();
     void updateStatus( QPointF );
     void addMode();
     void dragMode();
@@ -227,6 +228,7 @@ private:
     QAction *setImageTextAct;
     QAction *convertCsvTpsAct;
     QAction *reconfigAct;
+    QAction *renameAct;
     QAction *testAct;
 
     QLabel * protoLbl; // for statusbar

@@ -17,9 +17,9 @@ dwRclList dwSLAO::align()
     for(unsigned i = 1; i < lmkVec.size(); ++i)
         align2(lmkVec[0], lmkVec[i], otlVec[i]);
 
-    dwRclList meanList;
-    meanList.fromVector(lmkVec);
-    dwRCoordList meanOld = meanList.superimposeGPA();
+    dwRclList alignedRcl;
+    alignedRcl.fromVector(lmkVec);
+    dwRCoordList meanOld = alignedRcl.superimposeGPA();
 
     const double thd = 0.000001;
     double procDist = 1.0;
@@ -29,12 +29,11 @@ dwRclList dwSLAO::align()
         for(unsigned i = 0; i < lmkVec.size(); ++i)
             align2(meanOld, lmkVec[i], otlVec[i]);
 
-        meanList.fromVector(lmkVec);
-        dwRCoordList meanNew = meanList.superimposeGPA();
+        alignedRcl.fromVector(lmkVec);
+        dwRCoordList meanNew = alignedRcl.superimposeGPA();
         procDist = meanOld.partialProcrustesDistance(meanNew);
-        // QString csv = meanNew.toCsv();
-        // qDebug() << procDist << ":" << csv;
         meanOld = meanNew;
+        qDebug() << procDist;
     }
 
     dwRclList outRcl;
@@ -74,5 +73,6 @@ void dwSLAO::align2(const dwRCoordList &inRef, dwRCoordList &inSem, dwRCoordList
         }
         dist = inSem.squaredDist(scaledRef);
     }
+    // qDebug() << inSem.getId();
 }
 

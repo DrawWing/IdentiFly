@@ -22,6 +22,7 @@ SOURCES += \
     src/dwChisqr.cpp \
     src/dwData.cpp \
     src/dwDataSet.cpp \
+    src/dwFileRename.cpp \
     src/dwImageViewer.cpp \
     src/dwImg.cpp \
     src/dwMarker.cpp \
@@ -51,6 +52,7 @@ HEADERS += \
     src/dwChisqr.h \
     src/dwData.h \
     src/dwDataSet.h \
+    src/dwFileRename.h \
     src/dwImageViewer.h \
     src/dwImg.h \
     src/dwMarker.h \

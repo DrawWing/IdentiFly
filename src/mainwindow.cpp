@@ -19,6 +19,7 @@
 #include "dwPairLR.h"
 #include "dwldagm.h"
 #include "dwImageViewer.h"
+#include "dwFileRename.h"
 
 #include "dwSLAO.h"
 
@@ -294,6 +295,9 @@ void MainWindow::createActions()
     reconfigAct = new QAction(tr("&Reconfiguration"), this);
     connect(reconfigAct, SIGNAL(triggered()), this, SLOT(reconfig()));
 
+    renameAct = new QAction(tr("Rename"), this);
+    connect(renameAct, SIGNAL(triggered()), this, SLOT(rename()));
+
     testAct = new QAction("Test", this);
     connect(testAct, SIGNAL(triggered()), this, SLOT(test()));
 
@@ -400,6 +404,7 @@ void MainWindow::createMenus()
     testMenu->addAction(setImageTextAct);
     testMenu->addAction(convertCsvTpsAct);
     testMenu->addAction(reconfigAct);
+    testMenu->addAction(renameAct);
     testMenu->addAction(testAct);
     // testMenu->addAction(setImageTextRawAct);
     // // testMenu->addAction(alignDataAct);
@@ -417,14 +422,11 @@ void MainWindow::createMenus()
     // testMenu->addAction(grayscaleDirAct);
     // testMenu->addAction(lmarkAdjOneAct);
     // testMenu->addAction(lmarkPredAct);
-    // //    testMenu->addAction(fitDirFLAct);
     // testMenu->addAction(lmarkAddOneAct);
     // testMenu->addAction(reconfigAct);
-    // //    testMenu->addAction(lmarkAdjustAct);
     // testMenu->addAction(openDirRefAct);
     // testMenu->addAction(exportDirRefCsvAct);
     // testMenu->addAction(exportUsingXmlAct);
-    // testMenu->addAction(renameAct);
     // testMenu->addAction(addDirPrefixAct);
     // testMenu->addAction(removeFileListAct);
 
@@ -439,9 +441,9 @@ void MainWindow::createMenus()
     menuBar()->addMenu(idMenu);
     menuBar()->addMenu(helpMenu);
 
-    // #ifdef QT_DEBUG
+    #ifdef QT_DEBUG
     menuBar()->addMenu(testMenu);
-    // #endif
+    #endif
 }
 
 void MainWindow::createStatusBar()
@@ -950,6 +952,21 @@ void MainWindow::saveOn()
 {
     setWindowModified(true);
     saveAct->setEnabled(true);
+}
+
+// remame files or directories in directory accordint to txt files
+void MainWindow::rename()
+{
+    QString inDirName = QFileDialog::getExistingDirectory(
+        this, tr("Choose a directory"),
+        filePath, QFileDialog::ShowDirsOnly);
+
+    if (inDirName.isEmpty())
+        return;
+
+    QDir inDir( inDirName );
+    dwFileRename renamer;
+    renamer.rename(inDir);
 }
 
 void MainWindow::updateRecentFileActions()

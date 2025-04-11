@@ -405,9 +405,7 @@ void dwRCoordList::alignRawRef(const dwRCoordList & reference)
     refScaled.scale(1.0/csRef);
     double angle = rotationAngle(refScaled);
     rotate(angle);
-
     scale(csRef);
-
     realCoord centroidRef = reference.centroid();
     centroidRef*=-1;
     translate(centroidRef);
