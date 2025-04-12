@@ -62,6 +62,7 @@ private slots:
     void rotate();
     void grayscale();
     void crop();
+    void grayscaleDir();
     void cropDir();
     void scaleDir();
     void threshold(int); // used by thresholdDialog
@@ -178,6 +179,7 @@ private:
     QAction *rotateAct;
     QAction *grayscaleAct;
     QAction *cropAct;
+    QAction *grayscaleDirAct;
     QAction *cropDirAct;
     QAction *scaleDirAct;
 

@@ -146,6 +146,9 @@ void MainWindow::createActions()
     cropAct = new QAction(tr("&Crop"), this);
     connect(cropAct, SIGNAL(triggered()), this, SLOT(crop()));
 
+    grayscaleDirAct = new QAction(tr("Convert to grayscale &directory"), this);
+    connect(grayscaleDirAct, SIGNAL(triggered()), this, SLOT(grayscaleDir()));
+
     cropDirAct = new QAction(tr("Crop d&irectory"), this);
     connect(cropDirAct, SIGNAL(triggered()), this, SLOT(cropDir()));
 
@@ -340,6 +343,8 @@ void MainWindow::createMenus()
     editMenu->addAction(rotateAct);
     editMenu->addAction(grayscaleAct);
     editMenu->addAction(cropAct);
+    editMenu->addSeparator();
+    editMenu->addAction(grayscaleDirAct);
     editMenu->addAction(cropDirAct);
     editMenu->addAction(scaleDirAct);
 
@@ -1449,6 +1454,36 @@ void MainWindow::crop()
     screenImg = wingImg;
     view->setImg(screenImg);
     saveOn();
+}
+
+void MainWindow::grayscaleDir(){
+    QString inDirName = QFileDialog::getExistingDirectory(this, tr("Choose a directory"),
+                                                          filePath, QFileDialog::ShowDirsOnly);
+    if (inDirName.isEmpty())
+        return;
+
+    QDir inDir( inDirName );
+    filePath = inDir.absolutePath();
+    QFileInfoList localFileInfoList = inDir.entryInfoList(QStringList("*.png"), QDir::Files, QDir::Name );
+    if(localFileInfoList.size() == 0)
+        return;
+    QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
+    for (int i = 0; i < localFileInfoList.size(); ++i) {
+        QFileInfo localFileInfo = localFileInfoList.at(i);
+        QString fileName = localFileInfo.absoluteFilePath();
+        statusBar()->showMessage(tr("Reading file: %1").arg(fileName));
+        QApplication::processEvents(); // for statusBar message refresh
+
+        dwImage img(fileName);
+        if(img.isNull()) continue;
+        if(!img.isGrayTable())
+        {
+            img = img.convertToGray8();
+            img.save( fileName, "PNG");
+        }
+    }
+    QApplication::restoreOverrideCursor();
+    statusBar()->showMessage(tr("Finished"), 2000);
 }
 
 void MainWindow::cropDir()
