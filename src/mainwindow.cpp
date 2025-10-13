@@ -452,6 +452,7 @@ void MainWindow::createMenus()
     #ifdef QT_DEBUG
     menuBar()->addMenu(testMenu);
     #endif
+    // menuBar()->addMenu(testMenu);
 }
 
 void MainWindow::createStatusBar()
@@ -974,7 +975,9 @@ void MainWindow::rename()
 
     QDir inDir( inDirName );
     dwFileRename renamer;
-    renamer.rename(inDir);
+    QString error = renamer.rename(inDir);
+    if(!error.isEmpty())
+        QMessageBox::warning(this, QGuiApplication::applicationDisplayName(), error);
 }
 
 // add prefix to file name reflecting direectories hierarchy
