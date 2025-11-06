@@ -1450,12 +1450,18 @@ void MainWindow::crop()
 
     // save only the largest outline
     pxlList * otl = maybeWingsOutlines.maxOutline();
-    dwImage wingImg = inImg.simpleCrop(otl);
+    Coord topLeft;
+    dwImage wingImg = inImg.simpleCrop(otl, topLeft);
     if(wingImg.isNull())
         return;
 
     screenImg = wingImg;
     view->setImg(screenImg);
+
+    dwRCoordList points = view->landmarks();
+    points.translate(topLeft);
+    view->setMarkers(points.coordList());
+
     saveOn();
 }
 
@@ -1561,7 +1567,8 @@ void MainWindow::cropDir()
             if( otl->clockwise || (otl->xSize() < (int)sizeThd) )  // clockwise otl is white spot on black background
                 continue;
 
-            dwImage wingImg = inImg.simpleCrop( &(*otl), margin);
+            Coord topLeft;
+            dwImage wingImg = inImg.simpleCrop( &(*otl), topLeft, margin);
 
             QString cntStr;
             cntStr.setNum(wingCount);

@@ -145,7 +145,7 @@ void WingInfo::toImg(QImage & img) const
 {
     QString outTxt;
 
-    QString value;
+    // QString value;
     if(landmarks.size() > 0){
         QString value = points2txt(landmarks);
         QString outKey = "landmarks:" + value;

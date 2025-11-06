@@ -580,10 +580,9 @@ unsigned dwImage::interpolate(const realCoord pxl) const
     return out;
 }
 
-dwImage dwImage::simpleCrop(pxlList * outline, const int margin) const
+// use topleft to translate landmarks
+dwImage dwImage::simpleCrop(pxlList * outline, Coord &topLeft, const int margin) const
 {
-//    const int margin = 10;
-
     //find extrema of the rotated outline
     Coord topPxl = (outline->top())->pxl;
     if(topPxl.dy() < margin)
@@ -603,6 +602,7 @@ dwImage dwImage::simpleCrop(pxlList * outline, const int margin) const
     int wdh = bottomPxl.dy() - topPxl.dy();
     int lgh = rightPxl.dx() - leftPxl.dx();
 
+    topLeft.setXY(leftPxl.dx()-margin,topPxl.dy()-margin);
 
     dwImage outImg;
     outImg = copy(leftPxl.dx()-margin, topPxl.dy()-margin, lgh+2*margin, wdh+2*margin);

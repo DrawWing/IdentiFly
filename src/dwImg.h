@@ -40,7 +40,7 @@ public:
     // int getMargin() const;
     void addMargin(int, unsigned char color = 0xFF);
     unsigned interpolate(const realCoord pxl) const;
-    dwImage simpleCrop( pxlList * outline, const int margin = 10) const;
+    dwImage simpleCrop(pxlList * outline, Coord &topLeft, const int margin = 10) const;
     dwImage crop(const realCoord corner, const unsigned xSize, const unsigned ySize, const double angle) const;
     dwImage scale(const double ratio) const;
     dwImage getRotated() const;
