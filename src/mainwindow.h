@@ -122,6 +122,7 @@ private slots:
 
     void getImageText();
     void setImageText();
+    void resetTxtDir();
     void convertCsvTps();
     void reconfig();
     void test();
@@ -229,6 +230,7 @@ private:
     QAction *aboutDwAct;
     QAction *getImageTextAct;
     QAction *setImageTextAct;
+    QAction *resetTxtDirAct;
     QAction *convertCsvTpsAct;
     QAction *reconfigAct;
     QAction *renameAct;

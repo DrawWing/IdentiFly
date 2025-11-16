@@ -292,6 +292,9 @@ void MainWindow::createActions()
     setImageTextAct = new QAction(tr("Set image &text"), this);
     connect(setImageTextAct, SIGNAL(triggered()), this, SLOT(setImageText()));
 
+    resetTxtDirAct = new QAction(tr("&Reset image text in directory"), this);
+    connect(resetTxtDirAct, SIGNAL(triggered()), this, SLOT(resetTxtDir()));
+
     convertCsvTpsAct = new QAction(tr("&Convert CSV to TPS"), this);
     connect(convertCsvTpsAct, SIGNAL(triggered()), this, SLOT(convertCsvTps()));
 
@@ -305,7 +308,7 @@ void MainWindow::createActions()
     connect(addDirPrefixAct, SIGNAL(triggered()), this, SLOT(addDirPrefix()));
 
     testAct = new QAction("Test", this);
-    connect(testAct, SIGNAL(triggered()), this, SLOT(test()));
+    connect(testAct, SIGNAL(triggered()), this, SLOT(resetTxtDir()));
 
 }
 
@@ -410,6 +413,7 @@ void MainWindow::createMenus()
     testMenu = new QMenu(tr("&Test"), this);
     testMenu->addAction(getImageTextAct);
     testMenu->addAction(setImageTextAct);
+    testMenu->addAction(resetTxtDirAct);
     testMenu->addAction(convertCsvTpsAct);
     testMenu->addAction(reconfigAct);
     testMenu->addAction(renameAct);
@@ -3265,6 +3269,46 @@ void MainWindow::setImageText()
 
     info.fromTxt(inText);
     saveOn();
+}
+
+// remove old format of image text
+void MainWindow::resetTxtDir()
+{
+    QString inDirName = QFileDialog::getExistingDirectory(this, tr("Choose input directory"), filePath, QFileDialog::ShowDirsOnly);
+    if(inDirName.isEmpty())
+        return;
+
+    QString outDirName = QFileDialog::getExistingDirectory(this, tr("Choose output directory"), filePath, QFileDialog::ShowDirsOnly);
+    if(outDirName.isEmpty())
+        return;
+    QDir outDir( outDirName );
+
+    QDir inDir( inDirName );
+    filePath = inDir.absolutePath();
+    QFileInfoList localFileInfoList = inDir.entryInfoList(QStringList("*.png"), QDir::Files, QDir::Name );
+    if(localFileInfoList.size()==0)
+        return;
+    QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
+    for (int i = 0; i < localFileInfoList.size(); ++i) {
+        QFileInfo localFileInfo = localFileInfoList.at(i);
+        QString fileName = localFileInfo.absoluteFilePath();
+        statusBar()->showMessage(tr("Reading file: %1").arg(fileName));
+        QApplication::processEvents(); // for statusBar message refresh
+
+        dwImage img(fileName);
+        WingInfo inInfo;
+        inInfo.fromImg(img);
+
+        // in order to completly clear image text you need to create new image
+        QImage outImg =img.dwCopy();
+        std::vector < Coord > inLandmarks = inInfo.getLandmarks();
+        inInfo.toImg(outImg);
+
+        QString outFileName = outDir.path()+"/"+ localFileInfo.fileName();
+        outImg.save( outFileName, "PNG");
+    }
+    QApplication::restoreOverrideCursor();
+    statusBar()->showMessage(tr("Finished"), 2000);
 }
 
 // convert csv to tps
