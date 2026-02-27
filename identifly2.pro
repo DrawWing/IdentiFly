@@ -97,6 +97,7 @@ QMAKE_POST_LINK =  windeployqt $$shell_path($$DESTDIR/$${TARGET}.exe)
 }
 
 DISTFILES += \
+    bin/IdentiFly1_8.zip \
     README.Rmd \
     README.md
 
