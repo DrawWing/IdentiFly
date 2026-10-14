@@ -31,7 +31,7 @@ std::vector< QString > dwPairLR::outliers(QDir inDir)
     if(inStringList.size() < 2)
         return outList;
 
-    std::vector< std::pair<double, QString> > pairVec;
+    std::vector< std::pair<double, std::pair<QString, QString> > > pairVec;
     std::vector< dwRCoordList > rclList = rcl.list();
     for(int i = 0; i < inStringList.size(); ++i)
     {
@@ -50,15 +50,19 @@ std::vector< QString > dwPairLR::outliers(QDir inDir)
         nextRcl.scale(1.0/cs);
 
         double dist = currRcl.superimpose(nextRcl);
-        std::pair< double, QString > valStr = {dist, theStr};
-        pairVec.push_back(valStr);
+        pairVec.push_back({dist, {theStr, pairStr}});
     }
 
     // sort from large to small MD
     sort(pairVec.begin(), pairVec.end(), std::greater<>());
+
     for(unsigned i = 0; i < pairVec.size(); ++i)
     {
-        outList.push_back(pairVec.at(i).second);
+        const QString first = pairVec.at(i).second.first;
+        const QString second = pairVec.at(i).second.second;
+
+        outList.push_back(first);
+        outList.push_back(second);
     }
     return outList;
 }
