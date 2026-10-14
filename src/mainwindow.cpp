@@ -2127,18 +2127,17 @@ void MainWindow::lmarkPairOut()
 {
     QString inDirName = QFileDialog::getExistingDirectory(this, tr("Choose a directory"),
                                                           filePath, QFileDialog::ShowDirsOnly);
-    if (inDirName.isEmpty())
+
+    dwRclList rcl = readDirData(inDirName);
+    if(rcl.size() < 2)
         return;
 
-    QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
-    QDir inDir( inDirName );
-
     dwPairLR pairLR;
-    std::vector< QString > sortStrList = pairLR.outliers(inDir);
+    std::vector< QString > sortStrList = pairLR.outliers(rcl);
 
     QList< QFileInfo > theFileList;
     for(unsigned i = 0; i < sortStrList.size(); ++i){
-        QString theStr = inDir.absolutePath() + "/" + sortStrList[i];
+        QString theStr = sortStrList[i];
         QFileInfo theInfo(theStr);
         theFileList.push_back(theInfo);
     }
@@ -2152,8 +2151,6 @@ void MainWindow::lmarkPairOut()
         inFileInfo = fileInfoList.at(fileInfoCount);
         openDwPng(inFileInfo.absoluteFilePath());
     }
-
-    QApplication::restoreOverrideCursor();
 }
 
 void MainWindow::protoSet()
