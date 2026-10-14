@@ -2000,27 +2000,26 @@ void MainWindow::lmarkFitDir()
     statusBar()->showMessage(tr("Finished"), 2000);
 }
 
-// find outliers and open them starting from the worst
-void MainWindow::lmarkOut()
+// read data from dw.png files in directory
+dwRclList MainWindow::readDirData(QString &inDirName)
 {
-    QString inDirName = QFileDialog::getExistingDirectory(this, tr("Choose a directory"),
-                                                          filePath, QFileDialog::ShowDirsOnly);
-
+    dwRclList rcl;
     if (inDirName.isEmpty())
-        return;
+        return rcl;
 
-    QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
     QDir inDir( inDirName );
     filePath = inDir.absolutePath();
-
-    dwRclList rcl;
     rcl.setId(inDir.dirName());
+
+    QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
+
     QStringList extList = (QStringList() << "*.dw.png");
     QFileInfoList fileList = inDir.entryInfoList(extList, QDir::Files, QDir::Name );
     for (int j = 0; j < fileList.size(); ++j) {
         QFileInfo localFileInfo = fileList.at(j);
         QString fileName = localFileInfo.absoluteFilePath();
         statusBar()->showMessage(tr("Reading file: %1").arg(fileName));
+        QApplication::processEvents();
         dwImage img(fileName);
         WingInfo localInfo;
         localInfo.fromImg(img);
@@ -2028,40 +2027,40 @@ void MainWindow::lmarkOut()
         coordinates.setId(localFileInfo.absoluteFilePath());
         rcl.push_back(coordinates);
     }
-
-    QString zeroCS = rcl.findZeroCS();
-    if(!zeroCS.isEmpty()){
-        QApplication::restoreOverrideCursor();
-        zeroCS.prepend("Centroid size = 0\n");
-        QMessageBox::warning(this, tr("Warning"), zeroCS);
-        return;
-    }
-
-    if(!rcl.isSizeEqual()){
-        QApplication::restoreOverrideCursor();
-        QString sizeOutliers = rcl.sizeOutliers();
-        QMessageBox::warning(this, tr("Warning"), sizeOutliers);
-        return;
-    }
+    QApplication::restoreOverrideCursor();
+    statusBar()->showMessage(tr("Reading files finished."), 1000);
 
     if(rcl.size() == 0){
-        QApplication::restoreOverrideCursor();
         QMessageBox::warning(this, tr("Warning"), tr("No dw.png files found"));
-        return;
     }
+
+    QString error = rcl.isSizeOk();
+    if(!error.isEmpty()){
+        rcl.clear();
+        QMessageBox::warning(this, tr("Warning"), error);
+    }
+
+    return rcl;
+}
+
+// find outliers and open them starting from the worst
+void MainWindow::lmarkOut()
+{
+    QString inDirName = QFileDialog::getExistingDirectory(this, tr("Choose a directory"),
+                                                          filePath, QFileDialog::ShowDirsOnly);
+
+    dwRclList rcl = readDirData(inDirName);
+    if(rcl.size() == 0)
+        return;
 
     reference = rcl.superimposeGPA();
     reference.center();
     reference.scale(1.0/reference.centroidSize());
     statusBar()->showMessage(tr("Finished"));
 
-    ///
     dwDataSet theDataSet;
     theDataSet.fromRclList(rcl);
     std::vector< QString > outList = theDataSet.outliersMD();
-    ///
-    // std::vector< QString > outList = rcl.outliers();
-    ///
 
     QList< QFileInfo > theFileList;
     for(unsigned i = 0; i < outList.size(); ++i)
@@ -2080,8 +2079,6 @@ void MainWindow::lmarkOut()
         inFileInfo = fileInfoList.at(fileInfoCount);
         openDwPng(inFileInfo.absoluteFilePath());
     }
-
-    QApplication::restoreOverrideCursor();
 }
 
 // find pairs outliers
@@ -2089,60 +2086,16 @@ void MainWindow::lmarkOneOut()
 {
     QString inDirName = QFileDialog::getExistingDirectory(this, tr("Choose a directory"),
                                                           filePath, QFileDialog::ShowDirsOnly);
-    if (inDirName.isEmpty())
+
+    dwRclList rcl = readDirData(inDirName);
+    if(rcl.size() == 0)
         return;
-
-    QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
-    QDir inDir( inDirName );
-    filePath = inDir.absolutePath();
-
-    dwRclList rcl;
-    //rcl.fromImgDir(inDir);
-    ///
-    rcl.setId(inDir.dirName());
-    QStringList extList = (QStringList() << "*.dw.png");
-    QFileInfoList fileList = inDir.entryInfoList(extList, QDir::Files, QDir::Name );
-    for (int j = 0; j < fileList.size(); ++j) {
-        QFileInfo localFileInfo = fileList.at(j);
-        QString fileName = localFileInfo.absoluteFilePath();
-        statusBar()->showMessage(tr("Reading file: %1").arg(fileName));
-        dwImage img(fileName);
-        WingInfo localInfo;
-        localInfo.fromImg(img);
-        dwRCoordList coordinates(localInfo.getLandmarks());
-        coordinates.setId(localFileInfo.absoluteFilePath());
-        rcl.push_back(coordinates);
-    }
-
-    QString zeroCS = rcl.findZeroCS();
-    if(!zeroCS.isEmpty()){
-        QApplication::restoreOverrideCursor();
-        zeroCS.prepend("Centroid size = 0\n");
-        QMessageBox::warning(this, tr("Warning"), zeroCS);
-        return;
-    }
-
-    if(!rcl.isSizeEqual()){
-        QApplication::restoreOverrideCursor();
-        QString sizeOutliers = rcl.sizeOutliers();
-        QMessageBox::warning(this, tr("Warning"), sizeOutliers);
-        return;
-    }
-
-    if(rcl.size() == 0){
-        QApplication::restoreOverrideCursor();
-        QMessageBox::warning(this, tr("Warning"), tr("No dw.png files found"));
-        return;
-    }
 
     bool ok;
     int landmarkMax = rcl.getMinSize();
-    QApplication::restoreOverrideCursor();
     int theOne = QInputDialog::getInt(this, "", tr("Landmark number"), 1, 1, landmarkMax, 1, &ok);
     if(!ok)
         return;
-
-    QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
 
     reference = rcl.superimposeGPA();
     reference.center();
@@ -2167,8 +2120,6 @@ void MainWindow::lmarkOneOut()
         inFileInfo = fileInfoList.at(fileInfoCount);
         openDwPng(inFileInfo.absoluteFilePath());
     }
-
-    QApplication::restoreOverrideCursor();
 }
 
 // find pairs outliers

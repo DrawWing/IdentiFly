@@ -536,114 +536,114 @@ std::vector< QString >  dwRclList::getIdList() const
     return outList;
 }
 
-//Find errors in landmarks position.
-//Error is when destance from mean is greater than threshold thd.
-QString dwRclList::find_outliers(const double thd) const
-{
-	QString outStr;
-	dwRCoordList mean = average();
-	/////
-	//std::vector< std::vector< double > > distances;
-	//std::vector< double > sdSumLst(minRcListSize, 0.0);
-	//for(int wingNo = 0; wingNo < rclList.size(); ++wingNo){
-	//	std::vector< double > distanceList = rclList[wingNo].find_distances(mean);
-	//	distances.push_back(distanceList);
-	//	for(int i = 0; i < minRcListSize; i++){
-	//		sdSumLst[i] += distanceList[i];
-	//	}
-	//}
-	//std::vector< double > sdMeanLst(minRcListSize, 0.0);
-	//for(int i = 0; i < minRcListSize; i++){
-	//	sdMeanLst[i] = sdSumLst[i]/rclList.size();
-	//}
-	//std::vector< double > sdLst(minRcListSize, 0.0);
-	//for(int wingNo = 0; wingNo < rclList.size(); ++wingNo){
-	//	std::vector< double > distanceList = distances[wingNo];
-	//	for(int i = 0; i < minRcListSize; i++){
-	//		double diff = sdMeanLst[i] - distanceList[i];
-	//		sdLst[i] += diff * diff;
-	//	}
-	//}
-	//for(int i = 0; i < minRcListSize; i++){
-	//	sdLst[i] += sdLst[i]/rclList.size();
-	//}
-	/////
-	std::vector< double > maxValList(minRcListSize, 0.0);
-	std::vector< QString > maxStrList(minRcListSize, "");
+// //Find errors in landmarks position.
+// //Error is when destance from mean is greater than threshold thd.
+// QString dwRclList::find_outliers(const double thd) const
+// {
+// 	QString outStr;
+// 	dwRCoordList mean = average();
+// 	/////
+// 	//std::vector< std::vector< double > > distances;
+// 	//std::vector< double > sdSumLst(minRcListSize, 0.0);
+// 	//for(int wingNo = 0; wingNo < rclList.size(); ++wingNo){
+// 	//	std::vector< double > distanceList = rclList[wingNo].find_distances(mean);
+// 	//	distances.push_back(distanceList);
+// 	//	for(int i = 0; i < minRcListSize; i++){
+// 	//		sdSumLst[i] += distanceList[i];
+// 	//	}
+// 	//}
+// 	//std::vector< double > sdMeanLst(minRcListSize, 0.0);
+// 	//for(int i = 0; i < minRcListSize; i++){
+// 	//	sdMeanLst[i] = sdSumLst[i]/rclList.size();
+// 	//}
+// 	//std::vector< double > sdLst(minRcListSize, 0.0);
+// 	//for(int wingNo = 0; wingNo < rclList.size(); ++wingNo){
+// 	//	std::vector< double > distanceList = distances[wingNo];
+// 	//	for(int i = 0; i < minRcListSize; i++){
+// 	//		double diff = sdMeanLst[i] - distanceList[i];
+// 	//		sdLst[i] += diff * diff;
+// 	//	}
+// 	//}
+// 	//for(int i = 0; i < minRcListSize; i++){
+// 	//	sdLst[i] += sdLst[i]/rclList.size();
+// 	//}
+// 	/////
+// 	std::vector< double > maxValList(minRcListSize, 0.0);
+// 	std::vector< QString > maxStrList(minRcListSize, "");
 
-	std::vector< dwRCoordList >::const_iterator rclIter;
-	int cnt = 0; //do usunięcia
-	for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++, cnt++){
-		std::vector< double > nextList = rclIter->find_distances(mean);
-		for(int i = 0; i < minRcListSize; i++){
-			if(nextList[i] > maxValList[i]){
-				maxValList[i] = nextList[i];
-				QString maxStr = QString("wing: %1, lanmark %2, distance %3").arg(rclIter->getId()).arg(i).arg(nextList[i]);
-				maxStrList[i] = maxStr;
-			}
-		}
-	}
-	for(int i = 0; i < minRcListSize; i++){
-		if(maxValList[i] > thd){
-			QString maxStr = maxStrList[i];
-			outStr = outStr + maxStr + "\n";
-		}
-	}
-	return outStr;
-}
+// 	std::vector< dwRCoordList >::const_iterator rclIter;
+// 	int cnt = 0; //do usunięcia
+// 	for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++, cnt++){
+// 		std::vector< double > nextList = rclIter->find_distances(mean);
+// 		for(int i = 0; i < minRcListSize; i++){
+// 			if(nextList[i] > maxValList[i]){
+// 				maxValList[i] = nextList[i];
+// 				QString maxStr = QString("wing: %1, lanmark %2, distance %3").arg(rclIter->getId()).arg(i).arg(nextList[i]);
+// 				maxStrList[i] = maxStr;
+// 			}
+// 		}
+// 	}
+// 	for(int i = 0; i < minRcListSize; i++){
+// 		if(maxValList[i] > thd){
+// 			QString maxStr = maxStrList[i];
+// 			outStr = outStr + maxStr + "\n";
+// 		}
+// 	}
+// 	return outStr;
+// }
 
-//Find errors in landmarks position. 
-//Error is when destance from mean is greater than threshold thd.
-//Threshold is different for different points.
-QString dwRclList::find_outliers(void) const
-{
-    const double thd[]={
-        0.013, //0
-        0.0125, //1
-        0.015, //2
-        0.0125, //3
-        0.014, //4
-        0.013, //5
-        0.012, //6
-        0.013, //7
-        0.014, //8
-        0.014, //9
-        0.012, //10
-        0.012, //11
-        0.012, //12
-        0.012, //13
-        0.013, //14
-        0.012, //15
-        0.0125, //16
-        0.013, //17
-        0.013, //18
-    };
+// //Find errors in landmarks position.
+// //Error is when destance from mean is greater than threshold thd.
+// //Threshold is different for different points.
+// QString dwRclList::find_outliers(void) const
+// {
+//     const double thd[]={
+//         0.013, //0
+//         0.0125, //1
+//         0.015, //2
+//         0.0125, //3
+//         0.014, //4
+//         0.013, //5
+//         0.012, //6
+//         0.013, //7
+//         0.014, //8
+//         0.014, //9
+//         0.012, //10
+//         0.012, //11
+//         0.012, //12
+//         0.012, //13
+//         0.013, //14
+//         0.012, //15
+//         0.0125, //16
+//         0.013, //17
+//         0.013, //18
+//     };
 
-    QString outStr;
-    dwRCoordList mean = average();
-    std::vector< double > maxValList(minRcListSize, 0.0);
-    std::vector< QString > maxStrList(minRcListSize, "");
+//     QString outStr;
+//     dwRCoordList mean = average();
+//     std::vector< double > maxValList(minRcListSize, 0.0);
+//     std::vector< QString > maxStrList(minRcListSize, "");
 
-    std::vector< dwRCoordList >::const_iterator rclIter;
-    for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-        std::vector< double > nextList = rclIter->find_distances(mean);
-        for(int i = 0; i < minRcListSize; i++){
-            if(nextList[i] > maxValList[i]){
-                maxValList[i] = nextList[i];
-                //: translation optional
-                QString maxStr = QString("wing: %1, landmark %2, distance %3").arg(rclIter->getId()).arg(i).arg(nextList[i]);
-                maxStrList[i] = maxStr;
-            }
-        }
-    }
-    for(int i = 0; i < minRcListSize; i++){
-        if(maxValList[i] > thd[i]){
-            QString maxStr = maxStrList[i];
-            outStr = outStr + maxStr + "\n";
-        }
-    }
-    return outStr;
-}
+//     std::vector< dwRCoordList >::const_iterator rclIter;
+//     for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
+//         std::vector< double > nextList = rclIter->find_distances(mean);
+//         for(int i = 0; i < minRcListSize; i++){
+//             if(nextList[i] > maxValList[i]){
+//                 maxValList[i] = nextList[i];
+//                 //: translation optional
+//                 QString maxStr = QString("wing: %1, landmark %2, distance %3").arg(rclIter->getId()).arg(i).arg(nextList[i]);
+//                 maxStrList[i] = maxStr;
+//             }
+//         }
+//     }
+//     for(int i = 0; i < minRcListSize; i++){
+//         if(maxValList[i] > thd[i]){
+//             QString maxStr = maxStrList[i];
+//             outStr = outStr + maxStr + "\n";
+//         }
+//     }
+//     return outStr;
+// }
 
 std::vector< QString > dwRclList::oneOutlier(unsigned index)
 {
@@ -669,74 +669,76 @@ std::vector< QString > dwRclList::oneOutlier(unsigned index)
     return outStrList;
 }
 
-std::vector< QString > dwRclList::outliers(void)
-{
-    dwRCoordList mean = superimposeGPA();
-    std::vector< std::pair<double, QString> > valStrList;
-    for(unsigned i = 0; i < rclList.size(); ++i)
-    {
-        dwRCoordList theRcl = rclList[i];
-        std::vector< double > nextList = theRcl.find_distances(mean);
-        double maxDist = 0.0;
-        for(int j = 0; j < minRcListSize; ++j)
-        {
-            if(nextList[j] > maxDist)
-            {
-                maxDist = nextList[j];
-            }
-        }
+// std::vector< QString > dwRclList::outliers(void)
+// {
+//     dwRCoordList mean = superimposeGPA();
+//     std::vector< std::pair<double, QString> > valStrList;
+//     for(unsigned i = 0; i < rclList.size(); ++i)
+//     {
+//         dwRCoordList theRcl = rclList[i];
+//         std::vector< double > nextList = theRcl.find_distances(mean);
+//         double maxDist = 0.0;
+//         for(int j = 0; j < minRcListSize; ++j)
+//         {
+//             if(nextList[j] > maxDist)
+//             {
+//                 maxDist = nextList[j];
+//             }
+//         }
 
-        std::pair< double, QString > valStr = {maxDist, theRcl.getId()};
-        valStrList.push_back(valStr);
-    }
+//         std::pair< double, QString > valStr = {maxDist, theRcl.getId()};
+//         valStrList.push_back(valStr);
+//     }
 
-    // sort from large to small MD
-    sort(valStrList.begin(), valStrList.end(), std::greater<>());
-    std::vector< QString > outList;
-    for(unsigned i = 0; i < valStrList.size(); ++i)
-    {
-        outList.push_back(valStrList.at(i).second);
-    }
-    return outList;
-}
+//     // sort from large to small MD
+//     sort(valStrList.begin(), valStrList.end(), std::greater<>());
+//     std::vector< QString > outList;
+//     for(unsigned i = 0; i < valStrList.size(); ++i)
+//     {
+//         outList.push_back(valStrList.at(i).second);
+//     }
+//     return outList;
+// }
 
-bool dwRclList::isSizeEqual(void) const
-{
-    if(minRcListSize == maxRcListSize)
-        return true;
-    else
-        return false;
-}
-
-QString dwRclList::sizeOutliers(void) const
+QString dwRclList::isSizeOk(void) const
 {
     QString outString;
-    unsigned theSize = rclList[0].size();
-    for(unsigned i = 1; i < rclList.size(); ++i){
-        if(rclList[i].size() == theSize)
-            continue;
-        outString += rclList[i].getId();
-        outString += "\n";
+    if(minRcListSize < 3)
+    {
+        outString += "At least one of the images has fewer than 3 landmarks:\n";
+        outString += sizeOutliers();
+        return outString;
+    }
+    if(minRcListSize != maxRcListSize)
+    {
+        outString += "At least one of the images differs in number of landmarks:\n";
+        outString += sizeOutliers();
+        return outString;
     }
     return outString;
 }
 
-QString dwRclList::findZeroCS(void) const
+// find elements of rclList with unexpected number of lenamarks
+QString dwRclList::sizeOutliers(void) const
 {
     QString outString;
-    int count = 0;
+    unsigned theSize = rclList[0].size();
+    if(theSize < 3)
+    {
+        outString += rclList[0].getId();
+        return outString;
+    }
+
     for(unsigned i = 1; i < rclList.size(); ++i){
-        double cs = rclList[i].centroidSize();
-        if(cs == 0)
+        if(rclList[i].size() < 3)
         {
-            if(count > 20) //truncate too long output
-            {
-                outString += "...\n";
-                return outString;
-            }
-            outString += rclList[i].getId();
-            outString += "\n";
-            ++count;
+            outString += rclList[0].getId();
+            return outString;
+        }
+        if(rclList[i].size() != theSize)
+        {
+            outString += rclList[0].getId();
+            return outString;
         }
     }
     return outString;

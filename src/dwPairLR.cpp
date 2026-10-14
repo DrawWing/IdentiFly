@@ -18,7 +18,6 @@ std::vector< QString > dwPairLR::outliers(QDir inDir)
     for (int j = 0; j < hivList.size(); ++j) {
         QFileInfo localFileInfo = hivList.at(j);
         QString fileName = localFileInfo.absoluteFilePath();
-        //        statusBar()->showMessage(tr("Reading file: %1").arg(fileName));
         dwImage img(fileName);
         WingInfo localInfo;
         localInfo.fromImg(img);
@@ -56,13 +55,23 @@ std::vector< QString > dwPairLR::outliers(QDir inDir)
     // sort from large to small MD
     sort(pairVec.begin(), pairVec.end(), std::greater<>());
 
+    // // lambda version
+    // sort(pairVec.begin(), pairVec.end(),
+    //      [](const std::pair<double, std::pair<QString, QString> > &a,
+    //         const std::pair<double, std::pair<QString, QString> > &b) {
+    //          return a.first > b.first;
+    //      });
+
     for(unsigned i = 0; i < pairVec.size(); ++i)
     {
         const QString first = pairVec.at(i).second.first;
         const QString second = pairVec.at(i).second.second;
 
-        outList.push_back(first);
-        outList.push_back(second);
+        if (std::find(outList.begin(), outList.end(), first) == outList.end())
+            outList.push_back(first);
+        if (std::find(outList.begin(), outList.end(), second) == outList.end())
+            outList.push_back(second);
+
     }
     return outList;
 }

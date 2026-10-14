@@ -84,6 +84,7 @@ private slots:
     void lmarkResetDir();
     void lmarkFit();
     void lmarkFitDir();
+    dwRclList readDirData(QString &inDirName);
     void lmarkOut();
     void lmarkOneOut();
     void lmarkPairOut();

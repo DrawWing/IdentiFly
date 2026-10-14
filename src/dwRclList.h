@@ -36,13 +36,12 @@ public:
     void setId(QString inId);
     QString getId() const;
     std::vector< QString >  getIdList() const;
-    QString find_outliers(const double) const;
-    QString find_outliers(void) const;
+    // QString find_outliers(const double) const;
+    // QString find_outliers(void) const;
     std::vector< QString > oneOutlier(unsigned index);
-    std::vector< QString > outliers(void);
-    bool isSizeEqual(void) const;
+    // std::vector< QString > outliers(void);
+    QString isSizeOk(void) const;
     QString sizeOutliers(void) const;
-    QString findZeroCS(void) const;
     double meanCS(void) const; //Calculate average centroid size of the list.
     unsigned size(void) const; //size of the rclList
     std::vector< double > find_distances(const dwRCoordList &) const;
