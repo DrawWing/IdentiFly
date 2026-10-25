@@ -2571,56 +2571,103 @@ void MainWindow::semiLand2Dir()
     statusBar()->showMessage(tr("Finished"), 2000);
 }
 
+// Align configurations of semilandmarks in a directory to a common outline-based mean shape.
+// The method reads each .dw.png, makes SLAO alignment, and writes aligned semilandmarks back.
 void MainWindow::semiAlign()
 {
     QString inDirName = QFileDialog::getExistingDirectory(this, tr("Choose a directory"),
                                                           filePath, QFileDialog::ShowDirsOnly);
-
     if (inDirName.isEmpty())
         return;
 
-    QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
-    QDir inDir( inDirName );
+    QDir inDir(inDirName);
+    if (!inDir.exists()) {
+        QMessageBox::warning(this, tr("Warning"), tr("Directory does not exist."));
+        return;
+    }
+
     filePath = inDir.absolutePath();
+    QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
+
+    QStringList extList = (QStringList() << "*.dw.png");
+    QFileInfoList fileList = inDir.entryInfoList(extList, QDir::Files, QDir::Name);
+    if (fileList.isEmpty()) {
+        QApplication::restoreOverrideCursor();
+        QMessageBox::warning(this, tr("Warning"), tr("No .dw.png files found in the selected directory."));
+        return;
+    }
 
     dwRclList lmkRcl;
     dwRclList otlRcl;
     lmkRcl.setId(inDir.dirName());
-    QStringList extList = (QStringList() << "*.dw.png");
-    QFileInfoList fileList = inDir.entryInfoList(extList, QDir::Files, QDir::Name );
+
     for (int i = 0; i < fileList.size(); ++i)
     {
         QFileInfo localFileInfo = fileList.at(i);
         QString fileName = localFileInfo.absoluteFilePath();
         statusBar()->showMessage(tr("Reading file: %1").arg(fileName));
+        QApplication::processEvents();
+
         dwImage img(fileName);
+        if (img.isNull()) {
+            statusBar()->showMessage(tr("Skipping unreadable file: %1").arg(fileName), 2000);
+            continue;
+        }
+
         WingInfo localInfo;
         localInfo.fromImg(img);
+
         dwRCoordList lmkList(localInfo.getLandmarks());
-        if(lmkList.size() == 0)
+        if (lmkList.size() == 0) {
+            statusBar()->showMessage(tr("Skipping file with no landmarks: %1").arg(fileName), 2000);
             continue;
-        lmkList.setId(localFileInfo.absoluteFilePath());
+        }
 
         QString outlineString = localInfo.getOutline();
-        pxlList outline;
-        if(!outlineString.isEmpty())
-            outline.fromTxt(outlineString);
-        else
+        if (outlineString.isEmpty()) {
+            statusBar()->showMessage(tr("Skipping file with no outline: %1").arg(fileName), 2000);
             continue;
-        std::vector< Coord > otlVec = outline.toVec();
-        dwRCoordList otlList(otlVec);
+        }
 
+        pxlList outline;
+        outline.fromTxt(outlineString);
+        std::vector< Coord > otlVec = outline.toVec();
+        if (otlVec.empty()) {
+            statusBar()->showMessage(tr("Skipping file with empty outline: %1").arg(fileName), 2000);
+            continue;
+        }
+
+        dwRCoordList otlList(otlVec);
+        lmkList.setId(localFileInfo.absoluteFilePath());
         lmkRcl.push_back(lmkList);
         otlRcl.push_back(otlList);
-
     }
 
-    dwSLAO slao(lmkRcl, otlRcl);
-    lmkRcl= slao.align();
+    if (lmkRcl.size() == 0 || otlRcl.size() == 0) {
+        QApplication::restoreOverrideCursor();
+        QMessageBox::warning(this, tr("Warning"), tr("No valid landmark/outline pairs were found."));
+        return;
+    }
 
-    // write aligned landmarks back to files
+    if (lmkRcl.size() != otlRcl.size()) {
+        QApplication::restoreOverrideCursor();
+        QMessageBox::warning(this, tr("Warning"), tr("Landmark and outline collections are inconsistent."));
+        return;
+    }
+
+    QString error = lmkRcl.isSizeOk();
+    if (!error.isEmpty()) {
+        QApplication::restoreOverrideCursor();
+        QMessageBox::warning(this, tr("Warning"), error);
+        return;
+    }
+
+    statusBar()->showMessage(tr("Analysis in progress."));
+    dwSLAO slao(lmkRcl, otlRcl);
+    lmkRcl = slao.alignIterate();
+
     std::vector< dwRCoordList > tpsVec = lmkRcl.list();
-    for(unsigned i = 0; i < tpsVec.size(); ++i){
+    for (unsigned i = 0; i < tpsVec.size(); ++i) {
         dwRCoordList rcl = tpsVec[i];
         QString theImgName = rcl.getId();
         dwImage theImg(theImgName);
@@ -2629,17 +2676,29 @@ void MainWindow::semiAlign()
             statusBar()->showMessage(tr("Cannot open file %1").arg(theImgName), 2000);
             continue;
         }
+
+        if (rcl.size() == 0) {
+            statusBar()->showMessage(tr("Skipping empty result for %1").arg(theImgName), 2000);
+            continue;
+        }
+
         statusBar()->showMessage(tr("Writing %1").arg(theImgName));
+        QApplication::processEvents();
 
         WingInfo pngInfo;
         pngInfo.fromImg(theImg);
         std::vector< realCoord > junc = rcl.list();
         pngInfo.setLandmarks(junc);
         pngInfo.toImg(theImg);
-        theImg.save( theImgName, "PNG");
+
+        bool saved = theImg.save(theImgName, "PNG");
+        if (!saved) {
+            statusBar()->showMessage(tr("Failed to save %1").arg(theImgName), 2000);
+        }
     }
 
     QApplication::restoreOverrideCursor();
+    statusBar()->showMessage(tr("Analysis finished."), 2000);
 }
 
 void MainWindow::setScaleBar()

@@ -7,10 +7,11 @@ class dwSLAO
 {
 public:
     dwSLAO(dwRclList &inLmkList, dwRclList &inOtlList);
-    dwRclList align();
+    dwRclList alignOnce();
+    dwRclList alignIterate();
 
 private:
-    void align2(const dwRCoordList &inRef, dwRCoordList &inLmk, dwRCoordList &inOtl);
+    void alignToOutline(const dwRCoordList &inRef, dwRCoordList &inLmk, dwRCoordList &inOtl);
 
     dwRclList lmkList;
     dwRclList otlList;
