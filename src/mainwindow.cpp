@@ -2589,6 +2589,9 @@ void MainWindow::semiAlign()
     filePath = inDir.absolutePath();
     QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
 
+    QString outDirPath;
+    QDir outDir;
+
     QStringList extList = (QStringList() << "*.dw.png");
     QFileInfoList fileList = inDir.entryInfoList(extList, QDir::Files, QDir::Name);
     if (fileList.isEmpty()) {
@@ -2666,10 +2669,32 @@ void MainWindow::semiAlign()
     dwSLAO slao(lmkRcl, otlRcl);
     lmkRcl = slao.alignIterate();
 
+    outDirPath = inDir.absolutePath() + "-aligned";
+    outDir.setPath(outDirPath);
+    if (outDir.exists()) {
+        int suffix = 1;
+        do {
+            outDirPath = inDir.absolutePath() + "-aligned-" + QString::number(suffix);
+            outDir.setPath(outDirPath);
+            ++suffix;
+        } while (outDir.exists());
+    }
+
+    QDir baseDir;
+    if (!baseDir.mkpath(outDirPath)) {
+        QApplication::restoreOverrideCursor();
+        QMessageBox::warning(this, tr("Warning"),
+                             tr("Cannot create output directory: %1").arg(outDirPath));
+        return;
+    }
+    outDir.setPath(outDirPath);
+
     std::vector< dwRCoordList > tpsVec = lmkRcl.list();
     for (unsigned i = 0; i < tpsVec.size(); ++i) {
         dwRCoordList rcl = tpsVec[i];
         QString theImgName = rcl.getId();
+        QFileInfo srcFileInfo(theImgName);
+        QString outImgName = outDir.absoluteFilePath(srcFileInfo.fileName());
         dwImage theImg(theImgName);
 
         if (theImg.isNull()) {
@@ -2682,7 +2707,7 @@ void MainWindow::semiAlign()
             continue;
         }
 
-        statusBar()->showMessage(tr("Writing %1").arg(theImgName));
+        statusBar()->showMessage(tr("Writing %1").arg(outImgName));
         QApplication::processEvents();
 
         WingInfo pngInfo;
@@ -2691,14 +2716,14 @@ void MainWindow::semiAlign()
         pngInfo.setLandmarks(junc);
         pngInfo.toImg(theImg);
 
-        bool saved = theImg.save(theImgName, "PNG");
+        bool saved = theImg.save(outImgName, "PNG");
         if (!saved) {
-            statusBar()->showMessage(tr("Failed to save %1").arg(theImgName), 2000);
+            statusBar()->showMessage(tr("Failed to save %1").arg(outImgName), 2000);
         }
     }
 
     QApplication::restoreOverrideCursor();
-    statusBar()->showMessage(tr("Analysis finished."), 2000);
+    statusBar()->showMessage(tr("Analysis output saved to %1").arg(outDirPath), 4000);
 }
 
 void MainWindow::setScaleBar()
@@ -3439,4 +3464,3 @@ void MainWindow::test()
 
     QApplication::restoreOverrideCursor();
 }
-
