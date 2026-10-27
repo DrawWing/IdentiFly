@@ -402,7 +402,7 @@ void MainWindow::createMenus()
     idMenu->addAction(idFileAct);
     idMenu->addAction(idAct);
     idMenu->addAction(idDirAct);
-    // //    idMenu->addAction(getIdInfoAct);
+    //    idMenu->addAction(getIdInfoAct);
     idMenu->addAction(idDirAllAct);
     idMenu->addAction(idDirDirAct);
     idMenu->addAction(idDataAct);
@@ -419,28 +419,6 @@ void MainWindow::createMenus()
     testMenu->addAction(renameAct);
     testMenu->addAction(addDirPrefixAct);
     testMenu->addAction(testAct);
-    // testMenu->addAction(setImageTextRawAct);
-    // // testMenu->addAction(alignDataAct);
-    // testMenu->addAction(getIdInfoAct);
-    // // testMenu->addAction(getIdDwXmlAct);
-    // // testMenu->addAction(imageAverageAct);
-    // testMenu->addAction(removeBgdDirAct);
-    // testMenu->addAction(removeBorderDirAct);
-    // testMenu->addAction(scaleDirAct);
-    // testMenu->addAction(clearTxtDirAct);
-    // testMenu->addAction(idDirAllAct);
-    // testMenu->addAction(flipHorDirAct);
-    // testMenu->addAction(flipVerDirAct);
-    // testMenu->addAction(rotateDirAct);
-    // testMenu->addAction(grayscaleDirAct);
-    // testMenu->addAction(lmarkAdjOneAct);
-    // testMenu->addAction(lmarkPredAct);
-    // testMenu->addAction(lmarkAddOneAct);
-    // testMenu->addAction(reconfigAct);
-    // testMenu->addAction(openDirRefAct);
-    // testMenu->addAction(exportDirRefCsvAct);
-    // testMenu->addAction(exportUsingXmlAct);
-    // testMenu->addAction(removeFileListAct);
 
     menuBar()->addMenu(fileMenu);
     menuBar()->addMenu(modeMenu);
@@ -456,7 +434,6 @@ void MainWindow::createMenus()
     #ifdef QT_DEBUG
     menuBar()->addMenu(testMenu);
     #endif
-    // menuBar()->addMenu(testMenu);
 }
 
 void MainWindow::createStatusBar()
@@ -2346,7 +2323,8 @@ QDomDocument MainWindow::loadXmlDoc(QString &inFileName)
     return xmlDoc;
 }
 
-// find outline
+// Detect the longest outline by thresholding, let the user adjust the threshold,
+// and save the resulting outline to the image metadata for later semilandmark work.
 void MainWindow::semiOutline()
 {
     if(isNoImage())
@@ -2402,6 +2380,8 @@ void MainWindow::semiOutline()
     //    }
 }
 
+// Process every .dw.png in a directory, detect its longes outline by thresholding,
+// and save the outline back into each image so the whole batch is ready for semilandmarking.
 void MainWindow::semiOutlineDir()
 {
     bool ok;
@@ -2461,7 +2441,7 @@ void MainWindow::semiOutlineDir()
     statusBar()->showMessage(tr("Finished"), 2000);
 }
 
-// find semilandmarks
+// Generate semilandmarks along the current outline using a single anchor landmark.
 void MainWindow::semiLand1()
 {
     QString outlineString = info.getOutline();
@@ -2490,6 +2470,8 @@ void MainWindow::semiLand1()
     view->setMarkers(semilandmarks);
 }
 
+// Generate semilandmarks along the current outline between two selected landmarks.
+// Semilandmarks are added starting from the first landmark counterclockwise.
 void MainWindow::semiLand2()
 {
     QString outlineString = info.getOutline();
@@ -2519,6 +2501,8 @@ void MainWindow::semiLand2()
     view->setMarkers(semilandmarks);
 }
 
+// Batch-generate semilandmarks for all .dw.png files in a directory, using
+// the first two landmarks in each image as start/end anchors on its outline.
 void MainWindow::semiLand2Dir()
 {
     bool ok;
