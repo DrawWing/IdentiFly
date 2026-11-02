@@ -1,3 +1,20 @@
+/*
+    Copyright (C) 2026 Adam Tofilski
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include "dwldagm.h"
 #include "dwDataSet.h"
 #include "dwChisqr.h"
@@ -257,7 +274,6 @@ bool dwLdaGm::isSane()
     // fill the clasName
     clasName = cvMeans.getRowNames();
 //    unsigned clasNumber = clasName.size();
-
     // can be with constant
 //    if(cf.columns() != 2*reference.size())
 //        error+="Size of reference and classification functions is not equal.";
@@ -517,7 +533,6 @@ dwDataSet dwLdaGm::cvaMD(dwRclList & inList)
             cv::eigen(covmat,E,V);
             // convert eigenvalues vector to cov matrix
             // diagonal is from eigenvalues the rest is 0
-
             // remove pc with negative eigenvalues
             int validDim = 0;
             for(int i = 0; i < E.rows; ++i)
@@ -595,19 +610,16 @@ dwDataSet dwLdaGm::cvaProb(dwRclList & inList)
 //            double mahDist = Mahalanobis(scoresMat, mean1Mat, icovar);
 //            dwChisqr chi;
 //            double probability = chi.probability(cvCoe.rows(), mahDist*mahDist);
-
 //            dwDataSet dicovar; //debug
 //            dicovar.fromCvMatDouble(icovar); //debug
 //            dwDataSet dmean1Mat; //debug
 //            dmean1Mat.fromCvMatDouble(mean1Mat); //debug
-
             // eigenvalue docomposition
             // PCA of CVA scores
             cv::Mat E, V; // E - eigenvalues, V - coefficients
             cv::eigen(covmat,E,V);
             // convert eigenvalues vector to cov matrix
             // diagonal is from eigenvalues the rest is 0
-
 //            // tak only dimensions with fixed fraction of total variance, taking non negative is much better
 //            int validDim = 2;
 //            double varSum = E.at< double >(0,0) + E.at< double >(0,1);
@@ -621,7 +633,6 @@ dwDataSet dwLdaGm::cvaProb(dwRclList & inList)
 //                else
 //                    break;
 //            }
-
             // remove pc with negative eigenvalues
             int validDim = 0;
             for(int i = 0; i < E.rows; ++i)
@@ -655,7 +666,6 @@ dwDataSet dwLdaGm::cvaProb(dwRclList & inList)
 //            }
 //            cv::Mat theScores = scoresMat * V.t();
 //            cv::Mat theMean = mean1Mat * V.t();
-
 //            cv::Mat theIcovar;
 //            invert(A, theIcovar, DECOMP_SVD);
 //            double theDist = Mahalanobis(theScores, theMean, theIcovar);
@@ -667,7 +677,6 @@ dwDataSet dwLdaGm::cvaProb(dwRclList & inList)
         }
         outDataSet.push_back(outData);
 //        outDist->push_back(outDistData);
-
     //    std::cout << scoresMat;
     //    cv::FileStorage storage("test.xml", cv::FileStorage::WRITE);
     //    storage << "scores" << scoresMat;
@@ -782,7 +791,6 @@ QImage dwLdaGm::cvaDiagram(dwRclList & inList,  unsigned cvX, unsigned cvY)
 {
 //    unsigned cvX = 0; // cv for x axis -1
 //    unsigned cvY = 1; // cv for Y axis -1
-
     // assume the sime size of all covariance matrices
     unsigned maxSize = cvCovVec.at(0).size();
     if(cvX == cvY || cvX > maxSize || cvY > maxSize)
@@ -806,7 +814,6 @@ QImage dwLdaGm::cvaDiagram(dwRclList & inList,  unsigned cvX, unsigned cvY)
 //        theList.superimpose(reference);
 //        dwData inData;
 //        inData.fromRCoordList(theList);
-
 //        //paint data points
 //        dwData scores = cvCoe.CvaScores(inData);
 ////        std::vector< double > scoresVec = scores.getData();
@@ -856,10 +863,8 @@ QImage dwLdaGm::cvaDiagram(dwRclList & inList,  unsigned cvX, unsigned cvY)
         QPointF theMean( meansMat.at < double >(i,cvX) , meansMat.at < double >(i,cvY));
         mean[i] = theMean;
         //    getErrorEllipse(double chisquare_val, QPointF mean, cv::Mat covmat){
-
         //Get the eigenvalues and eigenvectors
         cv::Mat eigenvalues, eigenvectors;
-//        cv::eigen(covmat, true, eigenvalues, eigenvectors);
         cv::eigen(covmat, eigenvalues, eigenvectors);
 
         //debug
@@ -869,7 +874,6 @@ QImage dwLdaGm::cvaDiagram(dwRclList & inList,  unsigned cvX, unsigned cvY)
 //        double eigenVec11 = eigenvectors.at<double>(1,1);
 //        double eigenVal0 = eigenvalues.at<double>(0);
 //        double eigenVal1 = eigenvalues.at<double>(1);
-
         //Calculate the angle between the largest eigenvector and the x-axis
         double angleRad = atan2(eigenvectors.at<double>(0,cvY), eigenvectors.at<double>(0,cvX));
 
@@ -947,20 +951,6 @@ QImage dwLdaGm::cvaDiagram(dwRclList & inList,  unsigned cvX, unsigned cvY)
         precission = -log(theFactor)-1;
 
     double txtScale = 0.0025*sizeMax;
-    //            textItem->setScale(0.04);
-    //            QTransform Transform = textItem->transform();
-    //            qreal m11 = 0.04;    // Horizontal scaling
-    //            qreal m12 = transform.m12();    // Vertical shearing
-    //            qreal m13 = transform.m13();    // Horizontal Projection
-    //            qreal m21 = transform.m21();    // Horizontal shearing
-    //            qreal m22 = -0.04;    // vertical scaling
-    //            // minus sign for vertical flip
-    //            qreal m23 = transform.m23();    // Vertical Projection
-    //            qreal m31 = transform.m31();    // Horizontal Position (DX)
-    //            qreal m32 = transform.m32();    // Vertical Position (DY)
-    //            qreal m33 = transform.m33();    // Addtional Projection Factor
-    //            transform.setMatrix(m11, m12, m13, m21, m22, m23, m31, m32, m33);
-//    QTransform txtTransform(0.04, 0.0, 0.0, 0.0, -0.04, 0.0, 0.0, 0.0, 1.0);
     QTransform txtTransform(txtScale, 0.0, 0.0, 0.0, -txtScale, 0.0, 0.0, 0.0, 1.0);
 
     pen.setColor(Qt::black);
@@ -1093,7 +1083,6 @@ QImage dwLdaGm::cvaDiagram(dwRclList & inList,  unsigned cvX, unsigned cvY)
 //        textItem->setPos(mean[i]);
     }
     /// ellips names end
-
 /// points start
     std::vector< dwRCoordList > inVec = inList.list();
     for( unsigned i = 0; i < inVec.size(); ++i)
@@ -1136,7 +1125,6 @@ QImage dwLdaGm::cvaDiagram(dwRclList & inList,  unsigned cvX, unsigned cvY)
 //    generator.setViewBox(QRect(0, 0, wdh, hgt));
 //    generator.setTitle("SVG Generated by IdentiFly"); //tr()removed
 //    generator.setDescription("SVG Generated by IdentiFly");
-
 //    QPainter painterSVG;
 //    painterSVG.begin(&generator);
 //    scene.render(&painterSVG, target, sceneFrame);
@@ -1145,68 +1133,6 @@ QImage dwLdaGm::cvaDiagram(dwRclList & inList,  unsigned cvX, unsigned cvY)
 
     return img.mirrored();
 }
-
-
-//void dwLdaGm::svm()
-//{
-//    dwDataSet dataSet;
-//    dataSet.fromCsv("car_cau_mel_aligned.csv");
-
-//    Mat labelsMat = dataSet.id2CvMat();
-//    Mat trainingDataMat = dataSet.toCvMatFloat();
-
-////    float v[970];
-////    for(int i =0; i< labelsMat.rows; ++i)
-////    {
-////        float a = labelsMat.at<float>(i,0);
-////        v[i] = a;
-////    }
-
-//    // Set up SVM's parameters
-//    CvSVMParams params;
-//    params.svm_type    = CvSVM::NU_SVC;
-//    params.nu    = 0.8;
-//    params.kernel_type = CvSVM::LINEAR;
-//    params.term_crit   = cvTermCriteria(CV_TERMCRIT_ITER, 100, 1e-6);
-
-//    // Train the SVM
-//    CvSVM SVM;
-//    SVM.train_auto(trainingDataMat, labelsMat, Mat(), Mat(), params);
-
-//    std::vector< float > results;
-//    for(int i = 0; i < trainingDataMat.rows; ++i)
-//    {
-//        Mat sampleMat = trainingDataMat.row(i);
-//        float response = SVM.predict(sampleMat);
-//        results.push_back(response);
-//    }
-
-//    SVM.save("svmModel.xml", "nameString");
-//}
-
-//void dwLdaGm::bayes()
-//{
-//    dwDataSet dataSet;
-//    dataSet.fromCsv("car_cau_mel_aligned.csv");
-
-//    Mat labelsMat = dataSet.id2CvMat();
-//    Mat trainingDataMat = dataSet.toCvMatFloat();
-
-//    // Train the SVM
-//    CvNormalBayesClassifier classifier;
-//    classifier.train(trainingDataMat, labelsMat);
-
-//    std::vector< float > results;
-//    for(int i = 0; i < trainingDataMat.rows; ++i)
-//    {
-//        Mat sampleMat = trainingDataMat.row(i);
-//        float response = classifier.predict(sampleMat);
-//        results.push_back(response);
-//    }
-
-//    classifier.save("bayesModel.xml", "nameString");
-//}
-
 dwDataSet dwLdaGm::confusionMat(dwDataSet inData, int idSize)
 {
     std::vector< std::vector< int > > outTab;
@@ -1377,7 +1303,6 @@ double dwLdaGm::mahDist(dwData inData, dwData inMean, dwDataSet inCov)
     cv::eigen(covmat,E,V);
     // convert eigenvalues vector to cov matrix
     // diagonal is from eigenvalues the rest is 0
-
     // remove pc with negative eigenvalues
     int validDim = 0;
     for(int i = 0; i < E.rows; ++i)
@@ -1389,7 +1314,7 @@ double dwLdaGm::mahDist(dwData inData, dwData inMean, dwDataSet inCov)
     }
     cv::Mat A = Mat::zeros( validDim, validDim, CV_64FC1);
     for(int i = 0; i < validDim; ++i)
-    { // czy jest uzasadnione zmienić offdiagonal na zera
+    { // should offdiagonal be set to zero here?
         A.at< double >(i,i) = E.at< double >(0,i);
     }
     cv::Mat partV(V.t(), cv::Range(0,V.rows), cv::Range(0,validDim));
@@ -1401,32 +1326,6 @@ double dwLdaGm::mahDist(dwData inData, dwData inMean, dwDataSet inCov)
 
     return theDist;
 }
-
-    // debug
-    //        QString inStr = inData.toCsv(); //debug
-    //        QFile file("e:/wings/test/debug/inData.txt");
-    //        if (!file.open(QIODevice::WriteOnly)) {
-    //            std::cerr << "Cannot open file for writing: "
-    //                      << qPrintable(file.errorString()) << std::endl;
-    //        }
-    //        QTextStream out(&file);
-    //        out << inStr;
-    //        file.close();
-    // debug
-
-//            // tak only dimensions with fixed fraction of total variance, taking non negative is much better
-//            int validDim = 2;
-//            double varSum = E.at< double >(0,0) + E.at< double >(0,1);
-//            for(int i = 2; i < E.rows; ++i)
-//            {
-//                if(E.at< double >(0,i) > varSum*0.01)
-//                {
-//                    varSum += E.at< double >(0,i);
-//                    ++validDim;
-//                }
-//                else
-//                    break;
-//            }
 
 // approximation of the cdf = cumulative distribution function
 // of the standard normal distribution

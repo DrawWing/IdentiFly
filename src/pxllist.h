@@ -1,3 +1,20 @@
+/*
+    Copyright (C) 2026 Adam Tofilski
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #ifndef PXLLIST_H
 #define PXLLIST_H
 
@@ -25,7 +42,7 @@ public:
 	bool isOK() const;
 	void log(std::ofstream&) const;
 	void save(std::ofstream&) const;
-	void append(Coord);//do usuniecia
+	void append(Coord);//to be removed
 	void push_back(Coord);
 	void push_back(nodePxl*);
 	void preAppend(nodePxl*);
@@ -52,7 +69,7 @@ public:
 	int xSize(); //dlugosc 
 	int ySize(); //wysokosc
 
-	nodePxl* front;//byc moze nie potrzebne w cyklicznych listach
+	nodePxl* front;//may be unnecessary in cyclic lists
 	nodePxl* back;
 	//private:
 	unsigned size;

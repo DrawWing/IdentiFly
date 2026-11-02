@@ -1,3 +1,20 @@
+/*
+    Copyright (C) 2026 Adam Tofilski
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include <QFile>
 #include <QStringList>
 
@@ -7,7 +24,7 @@ TPS::TPS(void)
 {
 }
 
-//nie czyta outlines
+//does not read outlines
 TPS::TPS(QStringList & inTxtList)
 {
     txtList = inTxtList;
@@ -21,7 +38,6 @@ TPS::TPS(QStringList & inTxtList)
 //	QFile in_file(resources);
 //	if (!in_file.open(QIODevice::ReadOnly | QIODevice::Text))
 //		return;
-
 //	QTextStream in(&in_file);
 //	while (!in.atEnd()) {
     for(lineNo = 0; lineNo < txtList.size(); ++lineNo)
@@ -122,20 +138,6 @@ bool TPS::isKeyword(QString & inTxt)
     }
     return false;
 }
-
-//void TPS::procKeyword(QString & inTxt)
-//{
-//    if( inTxt.startsWith("LM=", Qt::CaseInsensitive) ){
-//        inTxt.remove(0,3); //first 3 characters
-//        bool ok;
-//        int inNr = inTxt.toInt(&ok);
-////        if(ok){
-////            lmLst = readCoordList(in, inNr);
-////        }else{
-////            errorStr+="Incorrect LM value. Cannot read landmarks./n";
-////        }
-//    }
-//}
 
 Coord TPS::readCoord(QString & ln, bool * ok)
 {

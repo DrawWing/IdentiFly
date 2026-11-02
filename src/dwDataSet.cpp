@@ -1,3 +1,20 @@
+/*
+    Copyright (C) 2026 Adam Tofilski
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include <QFile>
 #include <QRegularExpression>
 #include <opencv2/opencv.hpp>
@@ -136,68 +153,6 @@ void dwDataSet::fromCvMatDouble(const cv::Mat & inMat)
         dataSet.push_back(inData);
     }
 }
-
-//void dwDataSet::fromCvMat2Cov(const cv::Mat & inMat, QString & inId, QString & preId, QString &preHead)
-//{
-//    if(inMat.dims > 2)
-//        return;
-//    dataSet.clear();
-//    fromCvMatDouble(inMat);
-
-//    header.clear();
-//    if(preId == "")
-//    {
-//        QString prefix = "x";
-//        int count = 1;
-//        for (unsigned i=0; i < dataSet[0].size(); ++i)
-//        {
-//            QString valString = QString::number(count);
-//            QString output = prefix+valString;
-//            dataSet[i].setId(output);
-//            if(prefix == "x")
-//                prefix = "y";
-//            else
-//            {
-//                prefix = "x";
-//                ++count;
-//            }
-//        }
-//    }else{
-//        for (unsigned i=0; i < dataSet[0].size(); ++i)
-//        {
-//            QString valString = QString::number(i+1);
-//            QString output = preId+valString;
-//            dataSet[i].setId(output);
-//        }
-//    }
-//    if(preHead == "")
-//    {
-//        QString prefix = "x";
-//        int count = 1;
-//        for (unsigned i=0; i < dataSet[0].size(); ++i)
-//        {
-//            QString valString = QString::number(count);
-//            QString output = prefix+valString;
-//            header.push_back(output);
-//            if(prefix == "x")
-//                prefix = "y";
-//            else
-//            {
-//                prefix = "x";
-//                ++count;
-//            }
-//        }
-//    }else{
-//        for (unsigned i=0; i < dataSet[0].size(); ++i)
-//        {
-//            QString valString = QString::number(i+1);
-//            QString output = preId+valString;
-//            header.push_back(output);
-//        }
-//    }
-
-//    id = inId;
-//}
 
 void dwDataSet::fromRclList(const dwRclList & inList)
 {
@@ -406,7 +361,7 @@ QString dwDataSet::toHtmlMaxValue() const
     outTable += "</td>";
 
     outTable += "<td align=\"center\">";
-//    outTable += "prawdopodobieństwo";
+//    outTable += "prawdopodobienstwo";
     outTable += "probability";
     outTable += "</td>";
 
@@ -689,16 +644,6 @@ void dwDataSet::setDataId(const std::vector< QString > &inVec)
     }
 }
 
-//void dwDataSet::setIdName()
-//{
-//    if(clasName.size() != dataSet.size())
-//        return;
-//    for (unsigned i=0; i < dataSet.size(); ++i)
-//    {
-//        dataSet[i].setId(clasName[i]);
-//    }
-//}
-
 void dwDataSet::setIdCoord()
 {
     QString prefix = "x";
@@ -902,7 +847,6 @@ QString dwDataSet::getDwXml(int idSize, int dim)
 //    QString testTxt = testSet.toXml();
 //    testFile<<testTxt.toStdString();
 //    testFile.close();
-
     // format output
     std::vector< QString > clasNameXml = strListHtmlEscaped(clasName);
 
@@ -945,66 +889,8 @@ QString dwDataSet::getDwXml(int idSize, int dim)
         outTxt += cov.toXml();
     }
     outTxt += "</covariances>\n";
-
-    ///
-//        dwDataSet distances;
-//        tmpStr = "distances";
-//        distances.setId(tmpStr);
-
-//        for(unsigned i = 0; i < splitVec.size(); ++i)
-//        {
-//            cv::Mat scoresMat = splitVec[i];
-//            dwDataSet scoresSet;
-//            scoresSet.fromCvMatDouble(scoresMat);
-//            dwData distData = scoresSet.eDistance(means.at(i));
-//            double theMean = distData.mean();
-//            double theSD = distData.sd();
-//            double theSize = distData.size();
-//            dwData theData;
-//            theData.push_back(theMean);
-//            theData.push_back(theSD);
-//            theData.push_back(theSize);
-//            distances.push_back(theData);
-//        }
-//        std::vector< QString > theHeader;
-//        theHeader.push_back("mean");
-//        theHeader.push_back("sd");
-//        theHeader.push_back("n");
-//        distances.setHeader(theHeader);
-//        distances.setDataId(clasName);
-//        outTxt += distances.toXml();
-    ///
-
     outTxt += "</cva>\n";
     outTxt += "</identifly>\n";
-
-//    cv::FileStorage fs( "E:/wings/test/debug/pca.xml", cv::FileStorage::WRITE );
-//    fs << "Size" << 26;
-//    if( !pcaScores.empty() )
-//        fs << "PCAscores" << pcaScores;
-//    if( !pcaValues.empty() )
-//        fs << "PCAeigenvalues" << pcaValues;
-//    if( !pcaVector.empty() )
-//        fs << "PCAeigenvector" << pcaVector;
-//    if( !pcaMean.empty() )
-//        fs << "PCAmeans" << pcaMean;
-//    if( !clasMat.empty() )
-//        fs << "Classificationdata" << clasMat;
-//    if( !ldaValues.empty() )
-//        fs << "LDAeigenvalues" << ldaValues;
-//    if( !ldaVector.empty() )
-//        fs << "LDAeigenvectors" << ldaVector;
-//    if( !ldaScores.empty() )
-//        fs << "LDAscores" << ldaScores;
-//    for(unsigned i = 0; i < splitVec.size(); ++i)
-//    {
-//        if( !covaVec[i].empty() )
-//            fs << "covarianceMatrix" << covaVec[i];
-//    }
-//    if( !meanVec.empty() )
-//        fs << "LDAmeans" << meanVec;
-//    fs.release();
-
     return outTxt;
 }
 
@@ -1093,7 +979,6 @@ void dwDataSet::pca(int idSize)
     // QString testTxt = testSet.toXml();
     // testFile<<testTxt.toStdString();
     // testFile.close();
-
     // format output
     QString outTxt= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     outTxt += "<identifly version=\"\t1.0\t\">\n"; //add version from qapplication
@@ -1136,44 +1021,6 @@ void dwDataSet::pca(int idSize)
     outTxt += "</covariances>\n";
     outTxt += "</cva>\n";
     outTxt += "</identifly>\n";
-//    outTxt += toTable();
-
-    // std::ofstream outFile;
-    // outFile.open("E:/wings/test/debug/cva.dw.xml", std::ofstream::out);
-    // //    QString xmlDir = QCoreApplication::applicationDirPath();
-    // //    xmlDir += "/dwxml/classification_.dw.xml";
-    // //    outFile.open(qPrintable(xmlDir), std::ofstream::out);
-    // outFile<<outTxt.toStdString();
-    // outFile.close();
-
-    // cv::FileStorage fs( "E:/wings/test/debug/pca.xml", cv::FileStorage::WRITE );
-    // fs << "Size" << 26;
-    // if( !pcaScores.empty() )
-    //     fs << "PCAscores" << pcaScores;
-    // if( !pcaValues.empty() )
-    //     fs << "PCAeigenvalues" << pcaValues;
-    // if( !pcaVector.empty() )
-    //     fs << "PCAeigenvector" << pcaVector;
-    // if( !pcaMean.empty() )
-    //     fs << "PCAmeans" << pcaMean;
-    // if( !clasMat.empty() )
-    //     fs << "Classificationdata" << clasMat;
-    // if( !ldaValues.empty() )
-    //     fs << "LDAeigenvalues" << ldaValues;
-    // if( !ldaVector.empty() )
-    //     fs << "LDAeigenvectors" << ldaVector;
-    // if( !ldaScores.empty() )
-    //     fs << "LDAscores" << ldaScores;
-    // if( !testMat.empty() )
-    //     fs << "LDAtest" << testMat;
-    // for(unsigned i = 0; i < splitVec.size(); ++i)
-    // {
-    //     if( !covaVec[i].empty() )
-    //         fs << "covarianceMatrix" << covaVec[i];
-    // }
-    // if( !meanVec.empty() )
-    //     fs << "LDAmeans" << meanVec;
-    // fs.release();
 }
 
 void  dwDataSet::lda()

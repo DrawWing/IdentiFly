@@ -1,3 +1,20 @@
+/*
+    Copyright (C) 2026 Adam Tofilski
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include "dwAdjust.h"
 #include "winginfo.h"
 
@@ -8,29 +25,11 @@ dwAdjust::dwAdjust(dwImage & inImg, const dwImage & master)
     masterInfo.fromImg(master);
     masterPoints = masterInfo.getLandmarks();
 
-//    radius = inRadius;
-//    size = radius/4;
     radius = 20;
     size = 20;
-
-//    init(inImg, master);
-//}
-
-//void dwAdjust::init(dwImage & inImg, const dwImage & master)
-//{
-
-    // tehre is no need to use vector becaue adjusted are alwasys full configurations
-//    int lastIndex = masterPoints.size() - 1;
-//    dwVector masterVec(masterPoints[0], masterPoints[lastIndex]);
-//    double masterDist = coordDistance(masterPoints[0], masterPoints[lastIndex]);
-
     WingInfo theInfo;
     theInfo.fromImg(inImg);
     thePoints = theInfo.getLandmarks();
-//    dwVector theVec(thePoints[0], thePoints[lastIndex]);
-//    double theDist = coordDistance(thePoints[0], thePoints[lastIndex]);
-//    angle = angle360(masterVec, theVec); //change to superposition
-//    scale = theDist/masterDist;
 
     dwRCoordList masterList(masterPoints);
     dwRCoordList theList(thePoints);
@@ -64,7 +63,6 @@ dwAdjust::dwAdjust(dwImage & inImg, const dwImage & master)
 
 // in order to use inPolint there is need of rescaling
 //std::vector< Coord >  dwAdjust::fitLandmarks( std::vector< Coord > & inPoints)
-
 std::vector< Coord >  dwAdjust::adjusted()
 {
     std::vector< Coord > fittedPoints = thePoints;

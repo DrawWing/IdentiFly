@@ -1,4 +1,21 @@
-﻿// Class for reading and manipulation configuration of landmarks.
+/*
+    Copyright (C) 2026 Adam Tofilski
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
+// Class for reading and manipulation configuration of landmarks.
 // The operations include Procrustes suprposition
 // validSize determines number of coordinates used in superposition,
 // other coordinates are translated, scaled and rotated but not superimposed
@@ -72,7 +89,7 @@ dwRCoordList::dwRCoordList(const std::vector< Coord > & coords)
 {
     id = "";
     std::vector< Coord >::const_iterator iter = coords.begin();
-    for(unsigned i = 0; i < coords.size(); ++i, iter++){ // punkt 19 nie moze byc użyty do obliczen
+    for(unsigned i = 0; i < coords.size(); ++i, iter++){ // point 19 cannot be used for calculations
         realCoord pxl(iter->dx(), iter->dy());
         theList.push_back(pxl);
     }
@@ -94,7 +111,7 @@ dwRCoordList::dwRCoordList(const std::vector< realCoord > & coords)
 {
     id = "";
     std::vector< realCoord >::const_iterator iter = coords.begin();
-    for(unsigned i = 0; i < coords.size(); ++i, iter++){ // punkt 19 nie moze byc użyty do obliczen
+    for(unsigned i = 0; i < coords.size(); ++i, iter++){ // point 19 cannot be used for calculations
         theList.push_back(*iter);
     }
     validSize = theList.size();
@@ -287,24 +304,6 @@ double dwRCoordList::rotationAngle(const dwRCoordList & reference) const
     const std::vector< realCoord > refVec = reference.list();
     return rotationAngle(refVec);
 }
-
-// //find angle between unscaled and untranslated configuratins
-// // both this and reference need to be scaled and centered
-// double dwRCoordList::rotationAngleRaw(const dwRCoordList & reference) const
-// {
-//     dwRCoordList ref = reference;
-//     ref.center();
-//     double refCS = ref.centroidSize();
-//     ref.scale(1.0/refCS);
-
-//     dwRCoordList tmp = *this;
-//     tmp.center();
-//     double tmpCS = tmp.centroidSize();
-//     tmp.scale(1.0/tmpCS);
-
-//     return tmp.rotationAngle(ref);
-// }
-
 void dwRCoordList::rotate(const double angle)
 {
     std::vector< realCoord >::iterator iter;
@@ -472,9 +471,9 @@ QString dwRCoordList::toXml(void) const
     return out;
 }
 
-//nie czyta nazwy pliku i komentarzy
+//does not read file name and comments
 //lepiej gdyby byl konstrktorem 
-//dane z pliku dopisywane do konca listy
+//data from file are appended to the end of the list
 void dwRCoordList::fromTps(const QString & resources)
 {
     QFile in_file(resources);
@@ -491,7 +490,7 @@ void dwRCoordList::fromTps(const QString & resources)
             for(int i = 0; i < lm; i++){
                 double x;
                 double y;
-                in >> x >> y; //brak kontroli czy cokolwiek czyta
+                in >> x >> y; //no check whether anything is actually read
                 realCoord pxl(x,y);
                 theList.push_back(pxl);
             }
@@ -935,4 +934,3 @@ realCoord dwRCoordList::findNearest(realCoord toPxl)
     }
     return outPxl;
 }
-

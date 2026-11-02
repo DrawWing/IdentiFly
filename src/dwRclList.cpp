@@ -1,4 +1,21 @@
-﻿#include <QFile>
+/*
+    Copyright (C) 2026 Adam Tofilski
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
+#include <QFile>
 #include <QTextStream>
 
 #include "dwRclList.h"
@@ -35,7 +52,7 @@ void dwRclList::push_back(const dwRCoordList & rcl)
 		maxRcListSize = size;
 }
 
-//nie czyta nazwy pliku i komentarzy
+//does not read file name and comments
 //coordinates are in cartesian coordinates; convert here or elswere
 void dwRclList::fromTps(const QString & resources)
 {
@@ -61,7 +78,7 @@ void dwRclList::fromTps(const QString & resources)
                 {
                     double x;
                     double y;
-                    in >> x >> y; //brak kontroli czy cokolwiek czyta
+                    in >> x >> y; //no check whether anything is actually read
                     realCoord pxl(x,y);
                     theVec.push_back(pxl);
                 }
@@ -277,35 +294,6 @@ QString dwRclList::toCsv(void) const
     }
     return output;
 }
-
-//dwDataSet dwRclList::toDataSet(void) const
-//{
-//    dwDataSet outData;
-
-//    outData.setId(id);
-
-//    std::vector< QString > header;
-//    for (int i=0; i < maxRcListSize; ++i)
-//    {
-//        QString valString = QString::number(i+1);
-//        QString output = "x"+valString;
-//        header.push_back(output);
-//        output = "y"+valString;
-//        header.push_back(output);
-//    }
-//    outData.setHeader(header);
-
-//    std::vector< dwRCoordList >::const_iterator rclIter;
-//    for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-//        dwData outData;
-//        outData.fromRCoordList(*rclIter);
-//    }
-//    return outData;
-//}
-
-//Reads name followed by vector of real coordinates.
-//Names are in seperate lines. Pairs of X Y coordinates are in seperate lines. 
-//consequitive rcl are separated by '<'
 void dwRclList::fromFile(const QString & resources)
 {
 	QFile in_file(resources); 
@@ -535,116 +523,6 @@ std::vector< QString >  dwRclList::getIdList() const
     }
     return outList;
 }
-
-// //Find errors in landmarks position.
-// //Error is when destance from mean is greater than threshold thd.
-// QString dwRclList::find_outliers(const double thd) const
-// {
-// 	QString outStr;
-// 	dwRCoordList mean = average();
-// 	/////
-// 	//std::vector< std::vector< double > > distances;
-// 	//std::vector< double > sdSumLst(minRcListSize, 0.0);
-// 	//for(int wingNo = 0; wingNo < rclList.size(); ++wingNo){
-// 	//	std::vector< double > distanceList = rclList[wingNo].find_distances(mean);
-// 	//	distances.push_back(distanceList);
-// 	//	for(int i = 0; i < minRcListSize; i++){
-// 	//		sdSumLst[i] += distanceList[i];
-// 	//	}
-// 	//}
-// 	//std::vector< double > sdMeanLst(minRcListSize, 0.0);
-// 	//for(int i = 0; i < minRcListSize; i++){
-// 	//	sdMeanLst[i] = sdSumLst[i]/rclList.size();
-// 	//}
-// 	//std::vector< double > sdLst(minRcListSize, 0.0);
-// 	//for(int wingNo = 0; wingNo < rclList.size(); ++wingNo){
-// 	//	std::vector< double > distanceList = distances[wingNo];
-// 	//	for(int i = 0; i < minRcListSize; i++){
-// 	//		double diff = sdMeanLst[i] - distanceList[i];
-// 	//		sdLst[i] += diff * diff;
-// 	//	}
-// 	//}
-// 	//for(int i = 0; i < minRcListSize; i++){
-// 	//	sdLst[i] += sdLst[i]/rclList.size();
-// 	//}
-// 	/////
-// 	std::vector< double > maxValList(minRcListSize, 0.0);
-// 	std::vector< QString > maxStrList(minRcListSize, "");
-
-// 	std::vector< dwRCoordList >::const_iterator rclIter;
-// 	int cnt = 0; //do usunięcia
-// 	for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++, cnt++){
-// 		std::vector< double > nextList = rclIter->find_distances(mean);
-// 		for(int i = 0; i < minRcListSize; i++){
-// 			if(nextList[i] > maxValList[i]){
-// 				maxValList[i] = nextList[i];
-// 				QString maxStr = QString("wing: %1, lanmark %2, distance %3").arg(rclIter->getId()).arg(i).arg(nextList[i]);
-// 				maxStrList[i] = maxStr;
-// 			}
-// 		}
-// 	}
-// 	for(int i = 0; i < minRcListSize; i++){
-// 		if(maxValList[i] > thd){
-// 			QString maxStr = maxStrList[i];
-// 			outStr = outStr + maxStr + "\n";
-// 		}
-// 	}
-// 	return outStr;
-// }
-
-// //Find errors in landmarks position.
-// //Error is when destance from mean is greater than threshold thd.
-// //Threshold is different for different points.
-// QString dwRclList::find_outliers(void) const
-// {
-//     const double thd[]={
-//         0.013, //0
-//         0.0125, //1
-//         0.015, //2
-//         0.0125, //3
-//         0.014, //4
-//         0.013, //5
-//         0.012, //6
-//         0.013, //7
-//         0.014, //8
-//         0.014, //9
-//         0.012, //10
-//         0.012, //11
-//         0.012, //12
-//         0.012, //13
-//         0.013, //14
-//         0.012, //15
-//         0.0125, //16
-//         0.013, //17
-//         0.013, //18
-//     };
-
-//     QString outStr;
-//     dwRCoordList mean = average();
-//     std::vector< double > maxValList(minRcListSize, 0.0);
-//     std::vector< QString > maxStrList(minRcListSize, "");
-
-//     std::vector< dwRCoordList >::const_iterator rclIter;
-//     for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-//         std::vector< double > nextList = rclIter->find_distances(mean);
-//         for(int i = 0; i < minRcListSize; i++){
-//             if(nextList[i] > maxValList[i]){
-//                 maxValList[i] = nextList[i];
-//                 //: translation optional
-//                 QString maxStr = QString("wing: %1, landmark %2, distance %3").arg(rclIter->getId()).arg(i).arg(nextList[i]);
-//                 maxStrList[i] = maxStr;
-//             }
-//         }
-//     }
-//     for(int i = 0; i < minRcListSize; i++){
-//         if(maxValList[i] > thd[i]){
-//             QString maxStr = maxStrList[i];
-//             outStr = outStr + maxStr + "\n";
-//         }
-//     }
-//     return outStr;
-// }
-
 std::vector< QString > dwRclList::oneOutlier(unsigned index)
 {
     index = index - 1; // indexing from 0
@@ -668,38 +546,6 @@ std::vector< QString > dwRclList::oneOutlier(unsigned index)
     }
     return outStrList;
 }
-
-// std::vector< QString > dwRclList::outliers(void)
-// {
-//     dwRCoordList mean = superimposeGPA();
-//     std::vector< std::pair<double, QString> > valStrList;
-//     for(unsigned i = 0; i < rclList.size(); ++i)
-//     {
-//         dwRCoordList theRcl = rclList[i];
-//         std::vector< double > nextList = theRcl.find_distances(mean);
-//         double maxDist = 0.0;
-//         for(int j = 0; j < minRcListSize; ++j)
-//         {
-//             if(nextList[j] > maxDist)
-//             {
-//                 maxDist = nextList[j];
-//             }
-//         }
-
-//         std::pair< double, QString > valStr = {maxDist, theRcl.getId()};
-//         valStrList.push_back(valStr);
-//     }
-
-//     // sort from large to small MD
-//     sort(valStrList.begin(), valStrList.end(), std::greater<>());
-//     std::vector< QString > outList;
-//     for(unsigned i = 0; i < valStrList.size(); ++i)
-//     {
-//         outList.push_back(valStrList.at(i).second);
-//     }
-//     return outList;
-// }
-
 QString dwRclList::isSizeOk(void) const
 {
     QString outString;
@@ -751,7 +597,7 @@ double dwRclList::meanCS(void) const
     int count = 0;
     std::vector< dwRCoordList >::const_iterator rclIter;
     for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-        dwRCoordList rcl = *rclIter; //konieczne bo centroidSize nie jest const.
+        dwRCoordList rcl = *rclIter; //needed because centroidSize is not const.
         totalCS += rcl.centroidSize();
         ++count;
     }

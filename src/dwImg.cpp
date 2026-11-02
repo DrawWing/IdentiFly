@@ -1,4 +1,21 @@
-﻿#include <QVector>
+/*
+    Copyright (C) 2026 Adam Tofilski
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
+#include <QVector>
 #include <qimage.h>
 #include <QDebug>
 
@@ -23,7 +40,7 @@ dwImage::dwImage(const dwImage &img)
 {
 }
 
-//wiesza sie kiedy fileName nie jest dw.png
+//hangs when fileName is not .dw.png
 dwImage::dwImage( const QString & fileName, const char * format )
     :QImage(fileName, format)
 {
@@ -85,8 +102,8 @@ void dwImage::from(QImage * img){
 	//copy image pixels
 	unsigned char * pd = bits();
 	unsigned char * ps = img->bits();
-    for(int i=0; i < img->sizeInBytes(); i++) //czy to jest bezpieczne czy rozmiar determinuje numBytes
-//        for(int i=0; i < img->numBytes(); i++) //czy to jest bezpieczne czy rozmiar determinuje numBytes
+    for(int i=0; i < img->sizeInBytes(); i++) //is this safe, or should numBytes be determined by image size?
+//        for(int i=0; i < img->numBytes(); i++) //is this safe, or should numBytes be determined by image size?
         pd[i]=ps[i];
 }
 
@@ -107,7 +124,7 @@ bool dwImage::isCorner(unsigned x, unsigned y) const
     return false;
 }
 
-//powinna byc inline
+//should be inline
 void 
 dwImage::markPxl(Coord pxl, unsigned char color){
   *(scanLine(pxl.dy())+pxl.dx()) = color;
@@ -232,7 +249,7 @@ void dwImage::clearBorder(double thdFraction, unsigned char colorThd)
 			return; //error
 	}while( change );
 
-	row = height()-1; // powinno być -1
+	row = height()-1; // should be -1
 	do{
 		change = false;
 		int cnt = 0;
@@ -433,29 +450,6 @@ bool dwImage::isGrayTable() const
 	return true;
 }
 
-//// Graustufen Bild erstellen, mit selben Dimensionen aber Format Indexed8
-//QImage img_gray(img.width(), img.height(), QImage::Format_Indexed8);           
-//
-//// Colortable erstellen für Graustufen
-//QVector<QRgb> grayscales;
-//for (int i=0; i<256; ++i)
-//    grayscales.push_back(qRgb(i,i,i));
-///
-/// colortable dem graustufen bild zuweisen
-//img_gray.setColorTable(grayscales);
-//
-//// farben übertragen
-//for (int y=0; y<img.height(); ++y)
-//    for (int x=0; x<img.width(); ++x)
-//    {
-//           // farbwert holen
-//           QRgb rgb = img.pixel(x,y);
-//           // umrechnen in graustufe
-//           unsigned char gray = 0.299*qRed(rgb) + 0.587*qGreen(rgb) + 0.114*qBlue(rgb);
-//           // dem graustufen bild den wert zuweisen
-//           img_gray.setPixel(x,y, gray);
-//     }
-
 // Convert image to 8 bit per pixel grayscale format. 
 // Returns grayscale image
 dwImage dwImage::convertToGray8() const
@@ -520,11 +514,6 @@ void dwImage::qimageInfo()
     QVector<QRgb> ct = colorTable();
     qDebug() << ct;
 }
-
-// int dwImage::getMargin() const
-// {
-// 	return margin;
-// }
 
 //use the plane equation to interpolate pixel vaues 
 //it does not work for last row and column !!!
@@ -810,4 +799,3 @@ dwImage & dwImage::operator=( const QImage & img)
   this->QImage::operator=(img);
   return *this;
 }
-

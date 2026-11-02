@@ -1,3 +1,20 @@
+/*
+    Copyright (C) 2026 Adam Tofilski
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 // mozliwe problemy 
 // - next or prev is the same as the node
 
@@ -28,10 +45,10 @@ pxlList::pxlList(std::list<Coord> * l)
   std::list<Coord>::iterator iter;
   for(iter = l->begin(); iter != l->end(); iter++ )
     append(* iter);
-  cyclic = true; //nie potrzebne bo i tak jest cyclic
+  cyclic = true; //not needed because it is cyclic anyway
 }
 
-//destruktor jest w klaskie Outline
+//destructor is in class Outline
 //pxlList::~pxlList()
 //{
 //	clear();
@@ -56,12 +73,12 @@ pxlList::fromList(std::list<Coord> * l)
     append(* iter);
 }
 
-//wczytaj pxlList z pliku tekstowego
-//format pliku
+//read pxlList from a text file
+//file format
 void
 pxlList::fromFile(std::ifstream  & inFile)
 {
-	//sprawdzic czy lista jest pusta
+	//check whether the list is empty
 	int x;
 	int y;
 	while(inFile >> x >> y) {
@@ -231,7 +248,7 @@ pxlList::append(Coord pxl){
 }
 
 //powinien zwracac poprzedni nodePxl
-//ale wtedy nie moze usunac ostanitego pixela
+//but then it cannot remove the last pixel
 void
 pxlList::erase(nodePxl* node){
 	if(size==0)
@@ -283,7 +300,7 @@ pxlList::push_back(Coord pxl){
     front = newNode;
     back = newNode;
     newNode->prev=newNode;
-    newNode->next=newNode;//jesli lista zerowa tworzenie tutaj poprawic
+    newNode->next=newNode;//if the list is empty, fix creation here
   }
   size++;
 }
@@ -444,26 +461,6 @@ nodePxl* pxlList::rightCW(){
   return rightPxl;
 }
 
-////find far right pxl; top right in CCW
-//nodePxl* pxlList::farRight(nodePxl *rightNode)
-//{
-//    nodePxl* p = rightNode;
-//    Coord pxl = p->pxl;
-//    int rightVal=pxl.dx();
-//    int val=rightVal;
-//    nodePxl* farRightPxl = p;
-//    p=p->next;
-//    pxl= p->pxl;
-//    val = pxl.dx();
-//    while(val == rightVal){
-//      farRightPxl = p;
-//      p=p->next;
-//      pxl= p->pxl;
-//      val = pxl.dx();
-//    }
-//    return farRightPxl;
-//}
-
 //find left pixel
 nodePxl* pxlList::left(){
   nodePxl* p = front;
@@ -481,40 +478,6 @@ nodePxl* pxlList::left(){
   }
   return leftPxl;
 }
-
-////find top left pixel
-//nodePxl* pxlList::topLeft(){
-//    nodePxl* leftPxl = left();
-//    nodePxl* topLeftPxl = leftPxl;
-
-//    nodePxl* p = leftPxl;
-//    Coord pxl = p->pxl;
-//    int val = pxl.dy();
-//    while(pxl.dy() < val){
-//      val = pxl.dy();
-//      topLeftPxl = p;
-
-//      p = p->next;
-//      pxl = p->pxl;;
-//    }
-
-//    p = leftPxl;
-//    p = p->prev;
-//    pxl = p->pxl;
-//    val = pxl.dy();
-//    while(pxl.dy() < val){
-//      val = pxl.dy();
-//      topLeftPxl = p;
-
-//      p = p->prev;
-//      pxl = p->pxl;;
-//    }
-
-//    return topLeftPxl;
-//}
-
-//return index of node in the list
-//it there is no node in the list return -1
 int pxlList::index(nodePxl* node) const{
   int cnt = 0;
   nodePxl* p = back;

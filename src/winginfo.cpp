@@ -1,4 +1,21 @@
-﻿#include "winginfo.h"
+/*
+    Copyright (C) 2026 Adam Tofilski
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
+#include "winginfo.h"
 #include "dwvector.h"
 #include <QtGui>
 
@@ -478,40 +495,6 @@ QString WingInfo::toTps() const
         str+="SCALE="+scaleStr+"\n";
     }
 
-//    if(!outline.isEmpty())
-//    {
-//        QString outlineStr;
-//        QStringList strLst = outline.split(" ");
-//        if(strLst.size() != 2)
-//            return str;
-
-//        QString coordStr = strLst.at(0);
-//        Coord pxl(-9999,-9999);
-//        pxl.fromTxt(coordStr);
-
-//        QString chainStr = strLst.at(1);
-
-//        QString strNum;
-//        outlineStr+="OUTLINES=1\n";
-//        strNum.setNum(chainStr.size());
-//        outlineStr+="CHAIN="+strNum+"\n";
-
-//        strNum.setNum(pxl.dx());
-//        outlineStr+=strNum+" ";
-//        strNum.setNum(pxl.dy());
-//        outlineStr+=strNum+"\n";
-
-////        outlineStr+=chainStr+"\n";
-//        while(chainStr.size())
-//        {
-//            QString subStr = chainStr.left(100);
-//            outlineStr+=subStr+"\n";
-//            chainStr.remove(0, 100);
-//        }
-
-//        if(strLst.size() == 2 && pxl.dx()!=-9999 && pxl.dx()!=-9999 )
-//            str+=outlineStr;
-//    }
 	return str;
 }
 
@@ -609,7 +592,7 @@ void WingInfo::setLandmarks( const std::vector< realCoord > & newJ)
     }
 }
 
-//obecnie bez sciezki
+//currently without path
 void WingInfo::setFileName(QString & fName)
 {
     fileName = fName;

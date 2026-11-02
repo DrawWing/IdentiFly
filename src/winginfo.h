@@ -1,4 +1,21 @@
-﻿#ifndef WINGINFO_H
+/*
+    Copyright (C) 2026 Adam Tofilski
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
+#ifndef WINGINFO_H
 #define WINGINFO_H
 
 #include <QDomDocument> // for xml
@@ -34,7 +51,7 @@ public:
     double dwVersion;
     void setLandmarks(std::vector< Coord > &);
     void setLandmarks(const std::vector<realCoord> &);
-    void setFileName(QString &); //cała ścieżka czy tylko nazwa pliku??!!!!!!!!!
+    void setFileName(QString &); //full path or only file name?
     void setOutline(QString inOutline);
     unsigned getOutlineThd() const;
     QString getOutline() const;
@@ -61,7 +78,7 @@ private:
     QString device;
     double resolution; //image resolution in pixels per meter
 
-    QString fileName; //obecnie bez sciezki
+    QString fileName; //currently without path
     const QImage * image;
     QString points2txt(std::vector< Coord > inPoints) const;
     QString intVec2txt(std::vector< int > inPoints) const;

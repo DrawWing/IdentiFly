@@ -1,3 +1,20 @@
+/*
+    Copyright (C) 2026 Adam Tofilski
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include "dwPairLR.h"
 #include "dwRclList.h"
 #include "winginfo.h"
@@ -5,77 +22,6 @@
 dwPairLR::dwPairLR()
 {
 }
-
-// std::vector< QString > dwPairLR::outliers(QDir inDir)
-// {
-//     std::vector< QString > outList;
-
-//     QStringList inStringList;
-//     dwRclList rcl;
-//     rcl.setId(inDir.dirName());
-//     QStringList extList = (QStringList() << "*.dw.png");
-//     QFileInfoList hivList = inDir.entryInfoList(extList, QDir::Files, QDir::Name );
-//     for (int j = 0; j < hivList.size(); ++j) {
-//         QFileInfo localFileInfo = hivList.at(j);
-//         QString fileName = localFileInfo.absoluteFilePath();
-//         dwImage img(fileName);
-//         WingInfo localInfo;
-//         localInfo.fromImg(img);
-//         dwRCoordList coordinates(localInfo.getLandmarks());
-//         coordinates.setId(localFileInfo.absoluteFilePath());
-//         rcl.push_back(coordinates);
-//         inStringList.push_back(localFileInfo.fileName());
-//     }
-
-//     if(inStringList.size() < 2)
-//         return outList;
-
-//     std::vector< std::pair<double, std::pair<QString, QString> > > pairVec;
-//     std::vector< dwRCoordList > rclList = rcl.list();
-//     for(int i = 0; i < inStringList.size(); ++i)
-//     {
-//         QString theStr = inStringList[i];
-//         int RLindex;
-//         int listIndex;
-//         QString pairStr = findPairLR(theStr, inStringList, &RLindex, &listIndex);
-//         if(pairStr.isEmpty())
-//             continue; // no pair was found
-
-//         dwRCoordList currRcl = rclList[i];
-//         // !!! crash in line below if number of landmarks differ in pair
-//         dwRCoordList nextRcl = rclList[listIndex];
-//         nextRcl.center();
-//         double cs = nextRcl.centroidSize();
-//         nextRcl.scale(1.0/cs);
-
-//         double dist = currRcl.superimpose(nextRcl);
-//         pairVec.push_back({dist, {theStr, pairStr}});
-//     }
-
-//     // sort from large to small MD
-//     sort(pairVec.begin(), pairVec.end(), std::greater<>());
-
-//     // // lambda version
-//     // sort(pairVec.begin(), pairVec.end(),
-//     //      [](const std::pair<double, std::pair<QString, QString> > &a,
-//     //         const std::pair<double, std::pair<QString, QString> > &b) {
-//     //          return a.first > b.first;
-//     //      });
-
-//     for(unsigned i = 0; i < pairVec.size(); ++i)
-//     {
-//         const QString first = pairVec.at(i).second.first;
-//         const QString second = pairVec.at(i).second.second;
-
-//         if (std::find(outList.begin(), outList.end(), first) == outList.end())
-//             outList.push_back(first);
-//         if (std::find(outList.begin(), outList.end(), second) == outList.end())
-//             outList.push_back(second);
-
-//     }
-//     return outList;
-// }
-
 std::vector< QString > dwPairLR::outliers(dwRclList rcl)
 {
     std::vector< QString > outList;

@@ -1,3 +1,20 @@
+/*
+    Copyright (C) 2026 Adam Tofilski
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include "dwvector.h"
 #include <math.h>
 
@@ -56,7 +73,7 @@ double dwVector::magnitude()
 double dwVector::toRadians() const
 {
     double angle;
-    dwVector vCopy(dx, dy); //nie chce zniszczyc vectora dla ktorego wywolywana jest funkcja
+    dwVector vCopy(dx, dy); //avoid destroying the vector for which this function is called
     if(dy == 0)
     {
         if(dx > 0)
@@ -201,4 +218,3 @@ dwVector dwVector::multiply(double c) const
     dwVector outVec(dx * c, dy * c);
     return outVec;
 }
-
