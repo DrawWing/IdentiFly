@@ -4,6 +4,7 @@
 # IdentiFly ![](docs/README-identifly48.png)
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 IdentiFly is a software for semi-automatic classification based on
@@ -19,8 +20,8 @@ honey bee subspecies and lineages.
 No installation is required just download binaries and unpack them:
 
 1.  Download the ZIP file:
-    [IdentiFly1_8.zip](http://www.drawwing.org/files/IdentiFly1_8.zip)
+    [IdentiFly-2_0-win32.zip](https://github.com/DrawWing/IdentiFly/releases/download/v2.0.0/IdentiFly-2_0-win32.zip)
 
-2.  Unpack the ZIP file and copy IdentiFly directory to your hard drive.
+2.  Unzip the directory and copy it to your hard drive.
 
 3.  Run the IdentiFly.exe
