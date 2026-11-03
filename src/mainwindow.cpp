@@ -21,7 +21,6 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QStatusBar>
-
 #include <QDebug> // qDebug
 
 #include "dwOptions.h"
@@ -37,7 +36,6 @@
 #include "dwldagm.h"
 #include "dwImageViewer.h"
 #include "dwFileRename.h"
-
 #include "dwSLAO.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -460,9 +458,6 @@ void MainWindow::createStatusBar()
     protoLbl = new QLabel;
     protoLbl->setFrameStyle(QFrame::Panel | QFrame::Sunken);
     protoUpdate();
-    // QFileInfo protoFileInfo(protoFilePath);
-    // QString protoFileName = protoFileInfo.fileName();
-    // protoLbl->setText(protoFileName);
     protoLbl->setToolTip(tr("Prototype file"));
     statusBar()->addPermanentWidget(protoLbl);
 
@@ -1033,7 +1028,6 @@ void MainWindow::resetActions()
     // zoomInAct->setEnabled(false);
     // zoomOutAct->setEnabled(false);
     // zoomSlider->setEnabled(false);
-    //////////////////
     // saveAsAct->setEnabled(false);
     // removeFileAct->setEnabled(false);
     // dataLmakAct->setEnabled(false);
@@ -1059,10 +1053,10 @@ void MainWindow::readSettings()
     recentFiles = settings.value("recentFiles").toStringList();
     updateRecentFileActions();
     filePath = settings.value("filePath").toString();
-    QString idDefault = QCoreApplication::applicationDirPath()+"/dwxml/apis-mellifera-lineages-classification.dw.xml";
+    QString idDefault = QCoreApplication::applicationDirPath()+"/dwxml/Apis-mellifera-lineages.dw.xml";
     idFilePath = settings.value("idFilePath", idDefault).toString();
 
-    QString prDefault = QCoreApplication::applicationDirPath()+"/dwxml/apis-worker-prototype.dw.png";
+    QString prDefault = QCoreApplication::applicationDirPath()+"/dwxml/Apis-worker-prototype.dw.png";
     protoFilePath = settings.value("protoFilePath", prDefault).toString();
 
     QPoint pos = settings.value("pos", QPoint(200, 200)).toPoint();
@@ -2153,15 +2147,8 @@ void MainWindow::protoSet()
 
     protoFilePath = inFileName;
     protoUpdate();
-    // QFileInfo protoFileInfo(protoFilePath);
-    // QString protoFileName = protoFileInfo.fileName();
-    // protoLbl->setText(protoFileName); // update status bar
-    // prototypeImg.load(protoFilePath);
-    // if(prototypeImg.isNull())
-    //     QMessageBox::warning(this, tr("Warning"),
-    //                          tr("Cannot open file %1")
-    //                              .arg(protoFilePath));
 }
+
 void MainWindow::protoUpdate()
 {
     prototypeImg.load(protoFilePath);
@@ -2194,28 +2181,36 @@ void MainWindow::protoUpdate()
     }
 
     QString prototypeName = lda.getPrototype();
-
-    QFileInfo idFileInfo(idFilePath);
-    protoFilePath = idFileInfo.path() + "/" + prototypeName;
-
-    prototypeImg.load(protoFilePath);
-    if(!prototypeImg.isNull())
+    if(prototypeName.isEmpty())
     {
-        QFileInfo protoFileInfo(protoFilePath);
-        QString protoFileName = protoFileInfo.fileName();
-        protoLbl->setText(protoFileName); // update status bar
-        return;
+        QMessageBox::warning(this, tr("Warning"),
+                             tr("Prototype missing in dw.xml."));
     }
-    QMessageBox::warning(this, tr("Warning"),
-                         tr("Cannot open file %1")
-                             .arg(protoFilePath));
+    else
+    {
+        QFileInfo idFileInfo(idFilePath);
+        protoFilePath = idFileInfo.path() + "/" + prototypeName;
+
+        prototypeImg.load(protoFilePath);
+        if(!prototypeImg.isNull())
+        {
+            QFileInfo protoFileInfo(protoFilePath);
+            QString protoFileName = protoFileInfo.fileName();
+            protoLbl->setText(protoFileName); // update status bar
+            return;
+        }
+        QMessageBox::warning(this, tr("Warning"),
+                             tr("Cannot open file %1")
+                                 .arg(protoFilePath));
+    }
+
     protoDefault();
 
 }
 
 void MainWindow::protoDefault()
 {
-    protoFilePath = QCoreApplication::applicationDirPath()+"/dwxml/apis-worker-prototype.dw.png";
+    protoFilePath = QCoreApplication::applicationDirPath()+"/dwxml/Apis-worker-prototype.dw.png";
     prototypeImg.load(protoFilePath);
     if(!prototypeImg.isNull())
     {
@@ -2225,7 +2220,7 @@ void MainWindow::protoDefault()
         return;
     }
     QMessageBox::critical(this,
-                         "Reinstallation Required",
+                         "Missing folder: dwxml",
                          "A critical issue has been detected. Please reinstall the application to ensure proper functionality.");
 }
 
