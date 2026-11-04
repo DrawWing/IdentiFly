@@ -106,7 +106,3 @@ for(dll, OPENCV_DLLS) {
 QMAKE_POST_LINK += $$escape_expand(\\n\\t) $$QMAKE_MKDIR $$shell_path($$DESTDIR/dwxml)
 QMAKE_POST_LINK += $$escape_expand(\\n\\t) $$QMAKE_COPY_DIR $$shell_path($$PWD/dwxml) $$shell_path($$DESTDIR/dwxml)
 }
-
-DISTFILES += \
-    README.Rmd \
-    README.md

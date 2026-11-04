@@ -65,7 +65,7 @@ For a complete overview of the interface, menu structure, workflows,
 measurements, and interpretation of classification results, see the full
 guide:
 
-- [docs/USER_GUIDE.rmd](docs/USER_GUIDE.rmd)
+- [docs/USER_GUIDE.html](docs/USER_GUIDE.html)
 
 ## Open source
 
