@@ -1,6 +1,6 @@
 ---
 title: "IdentiFly User Guide"
-subtitle: "<https://github.com/DrawWing/IdentiFly>"
+subtitle: "<https://drawwing.github.io/IdentiFly/USER_GUIDE.html>"
 author: 
   - name: "Adam Tofilski"
     affiliation: University of Agriculture in Krakow, Poland

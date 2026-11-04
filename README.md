@@ -62,10 +62,8 @@ The workflow includes:
 ## User guide
 
 For a complete overview of the interface, menu structure, workflows,
-measurements, and interpretation of classification results, see the full
-guide:
-
-- [docs/USER_GUIDE.html](docs/USER_GUIDE.html)
+measurements, and interpretation of classification results, see the
+[USER_GUIDE](https://drawwing.github.io/IdentiFly/USER_GUIDE.html).
 
 ## Open source
 
