@@ -64,6 +64,11 @@ inline bool operator==(realCoord a, realCoord b)
     return a.dx()==b.dx() && a.dy()==b.dy();
 }
 
+inline bool operator!=(realCoord a, realCoord b)
+{
+    return !(a == b);
+}
+
 inline realCoord & realCoord::operator*=( const double p )
 {
     x*=p; y*=p; return *this;

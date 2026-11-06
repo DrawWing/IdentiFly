@@ -204,6 +204,13 @@ std::vector< Coord > dwRCoordList::coordList(void) const
     return outList;
 }
 
+realCoord dwRCoordList::at(unsigned i) const
+{
+    if(i >= theList.size())
+        return realCoord();
+    return theList.at(i);
+}
+
 // Calculate centroid of the list of points.
 realCoord dwRCoordList::centroid(void) const
 {
@@ -236,15 +243,11 @@ void dwRCoordList::add(realCoord thePnt)
     }
 }
 
-// does no uses validSize!!!!
+// does no uses validSize!!!
+// translate to centroid
 void dwRCoordList::center()
 {
-    realCoord centerPnt = centroid();
-    //mozna dac translate
-    std::vector< realCoord >::iterator iter;
-    for(iter = theList.begin(); iter != theList.end(); iter++){
-        *iter -= centerPnt;
-    }
+    translate(centroid());
 }
 
 // Find the centroid size.
@@ -394,7 +397,7 @@ void dwRCoordList::superimposeNoScaling(const dwRCoordList & reference)
 }
 
 // aling with reference and scale to reference size
-// aligned configurations is centered and scaled
+// aligned configurations must be centered and scaled
 // reference is unscaled and not centered
 void dwRCoordList::alignRawRef(const dwRCoordList & reference)
 {
@@ -919,7 +922,7 @@ dwRCoordList dwRCoordList::reverse() const
 }
 
 //find in the pixel list one closes to thePxl
-realCoord dwRCoordList::findNearest(realCoord toPxl)
+realCoord dwRCoordList::findNearest(realCoord toPxl) const
 {
     double min = theList[0].distanceTo(toPxl);
     realCoord outPxl = theList[0];

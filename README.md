@@ -79,3 +79,15 @@ Apidologie 49: 172-184. <https://doi.org/10.1007/s13592-017-0538-y>
 Kaur H., Ganie S.A., Tofilski A. 2024. Morphometric identification of an
 unknown honey bee colony: an example from north India. Journal of
 Apicultural Science 68:155-166. <https://doi.org/10.2478/JAS-2024-0013>
+
+## Software metadata (SoftwareX)
+
+| Metadata | Value |
+|----|----|
+| Current software version | v2.0.0 |
+| Permanent link to executables of this version | <https://github.com/DrawWing/IdentiFly/releases/tag/v2.0.0> |
+| Legal Software License | GPL-3.0 |
+| Computing platforms/Operating Systems | Windows (binary package); Linux/macOS (build from source) |
+| Installation requirements & dependencies | Qt (specify exact version used to build), C++ compiler |
+| Link to user manual | <https://drawwing.github.io/IdentiFly/USER_GUIDE.html> |
+| Support email for questions | *add your contact email* |

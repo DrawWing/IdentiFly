@@ -41,6 +41,7 @@ public:
     void clear();
     std::vector< realCoord > list() const;
     std::vector< Coord > coordList() const;
+    realCoord at(unsigned i) const;
     double superimpose(const dwRCoordList & reference); // fully superimpose the list over reference
     double superimposePart(const dwRCoordList & reference); // partially superimpose the list over reference
     void superimposeNoScaling(const dwRCoordList & reference); // superimpose the list over reference by rotation and translation only
@@ -96,7 +97,7 @@ public:
     double partialProcrustesDistance(const dwRCoordList & reference) const;
     double procrustesDistance(const dwRCoordList & reference) const;
     dwRCoordList reverse() const; // change order from last to first
-    realCoord findNearest(realCoord toPxl);
+    realCoord findNearest(realCoord toPxl) const;
 
 private:
     QString id;

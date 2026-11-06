@@ -74,7 +74,7 @@ dwRclList dwSLAO::alignIterate()
         PDold = PDnew;
         meanOld = meanNew;
         ++iter;
-        qDebug() << PDnew;
+        // qDebug() << PDnew;
     }
 
     dwRclList outRcl;
@@ -83,15 +83,11 @@ dwRclList dwSLAO::alignIterate()
 }
 
 // Move along outline each semilandmark in a configuration in order to minimize distance to reference
-void dwSLAO::alignToOutline(const dwRCoordList &inRef, dwRCoordList &inCon, dwRCoordList &inOtl)
+void dwSLAO::alignToOutline(const dwRCoordList &inRef, dwRCoordList &inCon, const dwRCoordList &inOtl)
 {
     dwRCoordList ref = inRef; // create copy of reference
-    // center reference
-    realCoord centroidRef = ref.centroid();
-    ref.translate(centroidRef);
-    // scale reference
-    double csRef = ref.centroidSize();
-    ref.scale(1.0/csRef);
+    ref.center();
+    ref.scale(1.0/ref.centroidSize());
 
     dwRCoordList scaledRef = ref;
     scaledRef.alignRawRef(inCon);
@@ -114,5 +110,6 @@ void dwSLAO::alignToOutline(const dwRCoordList &inRef, dwRCoordList &inCon, dwRC
             inCon.setCoord(i, nearest);
         }
         dist = inCon.squaredDist(scaledRef);
+        // qDebug() << dist;
     }
 }

@@ -28,7 +28,7 @@ public:
     dwRclList alignIterate();
 
 private:
-    void alignToOutline(const dwRCoordList &inRef, dwRCoordList &inLmk, dwRCoordList &inOtl);
+    void alignToOutline(const dwRCoordList &inRef, dwRCoordList &inLmk, const dwRCoordList &inOtl);
 
     dwRclList lmkList;
     dwRclList otlList;
