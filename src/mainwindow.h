@@ -119,6 +119,7 @@ private slots:
     void semiOutline();
     void semiOutlineDir();
     void semiLand1();
+    void semiLand1Dir();
     void semiLand2();
     void semiLand2Dir();
     void semiAlign();
@@ -228,6 +229,7 @@ private:
     QAction *semiOutlineAct;
     QAction *semiOutlineDirAct;
     QAction *semiLandAct;
+    QAction *semiLandDirAct;
     QAction *semiLand2Act;
     QAction *semiLand2DirAct;
     QAction *semiAlignAct;

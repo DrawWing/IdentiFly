@@ -255,10 +255,13 @@ void MainWindow::createActions()
     semiLandAct = new QAction(tr("Semilandmarks &1 point"), this);
     connect(semiLandAct, SIGNAL(triggered()), this, SLOT(semiLand1()));
 
+    semiLandDirAct = new QAction(tr("Semilandmarks 1 point - directory"), this);
+    connect(semiLandDirAct, SIGNAL(triggered()), this, SLOT(semiLand1Dir()));
+
     semiLand2Act = new QAction(tr("Semilandmarks &2 points"), this);
     connect(semiLand2Act, SIGNAL(triggered()), this, SLOT(semiLand2()));
 
-    semiLand2DirAct = new QAction(tr("Semilandmarks &2 points - directory"), this);
+    semiLand2DirAct = new QAction(tr("Semilandmarks 2 points - directory"), this);
     connect(semiLand2DirAct, SIGNAL(triggered()), this, SLOT(semiLand2Dir()));
 
     semiAlignAct = new QAction(tr("Align semilandmarks"), this);
@@ -404,6 +407,7 @@ void MainWindow::createMenus()
     semiMenu->addAction(semiAlignAct);
     semiMenu->addSeparator();
     semiMenu->addAction(semiOutlineDirAct);
+    semiMenu->addAction(semiLandDirAct);
     semiMenu->addAction(semiLand2DirAct);
 
     scaleMenu = new QMenu(tr("&Scale"), this);
@@ -2473,6 +2477,59 @@ void MainWindow::semiLand1()
 
     std::vector<Coord> semilandmarks = outline.semilandmarks(semiLndSize, lastPoint);
     view->setMarkers(semilandmarks);
+}
+
+// Batch-generate semilandmarks for all .dw.png files in a directory, using
+// the first landmark in each image as start anchor on its outline.
+void MainWindow::semiLand1Dir()
+{
+    bool ok;
+    unsigned char semiLndSize = QInputDialog::getInt(this, "", tr("Number of semilandmarks"),
+                                                     50, 0, 99, 1, &ok);
+    if(!ok)
+        return;
+
+    QString inDirName = QFileDialog
+        ::getExistingDirectory(this, tr("Choose a directory"),
+                               filePath, QFileDialog::ShowDirsOnly);
+    if (inDirName.isEmpty())
+        return;
+
+    clear();
+
+    QApplication::setOverrideCursor( QCursor(Qt::WaitCursor) );
+    QDir inDir( inDirName );
+    filePath = inDir.absolutePath();
+    QFileInfoList localFileInfoList = inDir.entryInfoList(QStringList("*.dw.png"), QDir::Files, QDir::Name );
+    if(localFileInfoList.size() == 0)
+        return;
+    for (int i = 0; i < localFileInfoList.size(); ++i) {
+        QFileInfo localFileInfo = localFileInfoList.at(i);
+        QString fileName = localFileInfo.absoluteFilePath();
+        statusBar()->showMessage(tr("Reading file: %1").arg(fileName));
+        QApplication::processEvents(); // for statusBar message refresh
+
+        dwImage theImg(fileName);
+        WingInfo theInfo;
+        theInfo.fromImg(theImg);
+
+        QString outlineString = theInfo.getOutline();
+        if(outlineString.isEmpty())
+            continue; // report error
+        pxlList outline;
+        outline.fromTxt(outlineString);
+
+        std::vector < Coord > landmarks = theInfo.getLandmarks();
+        if(landmarks.size() < 1)
+            continue; // report error
+        Coord lastPoint = landmarks[0];
+        std::vector<Coord> semilandmarks = outline.semilandmarks(semiLndSize, lastPoint);
+        theInfo.setLandmarks(semilandmarks);
+        theInfo.toImg(theImg);
+        theImg.save(fileName, "PNG");
+    }
+    QApplication::restoreOverrideCursor();
+    statusBar()->showMessage(tr("Finished"), 2000);
 }
 
 // Generate semilandmarks along the current outline between two selected landmarks.
