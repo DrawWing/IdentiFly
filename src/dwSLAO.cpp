@@ -113,3 +113,43 @@ void dwSLAO::alignToOutline(const dwRCoordList &inRef, dwRCoordList &inCon, cons
         // qDebug() << dist;
     }
 }
+
+// // Move along outline each semilandmark in a configuration in order to minimize distance to reference
+// void dwSLAO::alignToOutline(const dwRCoordList &inRef, dwRCoordList &inCon, const dwRCoordList &inOtl)
+// {
+//     std::vector< bool > semiVec;
+//     semiVec.resize(inCon.size(), true);
+//     semiVec[0] = false; // assuming the first landmark is fixed, not a semilandmark
+
+//     dwRCoordList ref = inRef; // create copy of reference
+//     ref.center();
+//     ref.scale(1.0/ref.centroidSize());
+
+//     dwRCoordList scaledRef = ref;
+//     scaledRef.alignRawRef(inCon);
+//     double dist0 = inCon.squaredDist(scaledRef);
+//     for(unsigned i = 0; i < inCon.size(); ++i)
+//     {
+//         if(!semiVec[i])
+//             continue; // skip fixed landmarks
+//         realCoord nearest = inOtl.findNearest(scaledRef.list()[i]);
+//         inCon.setCoord(i, nearest);
+//     }
+//     double dist = inCon.squaredDist(scaledRef);
+
+//     while(dist0 > dist)
+//     {
+//         dwRCoordList scaledRef = ref;
+//         scaledRef.alignRawRef(inCon);
+//         dist0 = dist;
+//         for(unsigned i = 0; i < inCon.size(); ++i)
+//         {
+//             if(!semiVec[i])
+//                 continue; // skip fixed landmarks
+//             realCoord nearest = inOtl.findNearest(scaledRef.list()[i]);
+//             inCon.setCoord(i, nearest);
+//         }
+//         dist = inCon.squaredDist(scaledRef);
+//         // qDebug() << dist;
+//     }
+// }

@@ -388,6 +388,7 @@ void WingInfo::XmlReconfiguration(QDomDocument XmlDoc)
     }
 
     std::vector< Coord > oldLandmarks = landmarks;
+    std::vector< Coord > newLandmarks = landmarks;
 
     QDomNode n = docElem.firstChild();
     while(!n.isNull()) {
@@ -401,12 +402,12 @@ void WingInfo::XmlReconfiguration(QDomDocument XmlDoc)
                 int to = toString.toInt()-1;// array starts from 0 and numbering from 1
 
                 int oldSize = oldLandmarks.size() - 1;
-                int newSize = landmarks.size() - 1;
+                int newSize = newLandmarks.size() - 1;
                 if( from < 0  || to < 0  || from > oldSize  || to > newSize ){
                     qWarning() << "Attribute out of range.";
                     break;
                 }
-                landmarks[to] = oldLandmarks[from];
+                newLandmarks[from] = oldLandmarks[to];
             }
             // add needs to be done first
             if( tag == "add"){
@@ -414,23 +415,25 @@ void WingInfo::XmlReconfiguration(QDomDocument XmlDoc)
                 int n = nString.toInt();// array starts from 0 and numbering from 1
                 Coord empty(-1, -1);
                 for(int i = 0; i < n; ++i)
-                    landmarks.push_back(empty);
+                    newLandmarks.push_back(empty);
             }
             //remove needs to be in decreasing order otherwise wrong index is removed
             if( tag == "remove"){
                 QString fromString = e.attribute("from");
                 int from = fromString.toInt()-1;// array starts from 0 and numbering from 1
 
-                int newSize = landmarks.size() - 1; // array starts from 0
+                int newSize = newLandmarks.size() - 1; // array starts from 0
                 if( from < 0  || from > newSize ){
                     qWarning() << "Attribute out of range.";
                     break;
                 }
-                landmarks.erase(landmarks.begin()+from);
+                newLandmarks.erase(newLandmarks.begin()+from);
             }
         }
         n = n.nextSibling();
     }
+
+    landmarks = newLandmarks;
 }
 
 // Reconfiguration of landmarks based on xml

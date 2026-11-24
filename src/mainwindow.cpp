@@ -344,6 +344,7 @@ void MainWindow::createMenus()
     fileMenu->addAction(importTpsAct);
     fileMenu->addAction(exportDataAct);
     fileMenu->addAction(exportDataDirAct);
+    fileMenu->addAction(reconfigAct);
     fileMenu->addAction(preferencesAct);
 
     separatorAction = fileMenu->addSeparator();

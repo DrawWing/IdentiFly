@@ -191,6 +191,7 @@ private:
     QAction *importTpsAct;
     QAction *exportDataAct;
     QAction *exportDataDirAct;
+    QAction *reconfigAct;
     QAction *preferencesAct;
     QAction *exitAct;
 
@@ -252,7 +253,6 @@ private:
     QAction *setImageTextAct;
     QAction *resetTxtDirAct;
     QAction *convertCsvTpsAct;
-    QAction *reconfigAct;
     QAction *renameAct;
     QAction *addDirPrefixAct;
     QAction *testAct;
