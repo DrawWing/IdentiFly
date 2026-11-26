@@ -395,7 +395,7 @@ void WingInfo::XmlReconfiguration(QDomDocument XmlDoc)
         QDomElement e = n.toElement(); // try to convert the node to an element.
         if(!e.isNull()) {
             QString tag = e.tagName();
-            if( tag == "move"){
+            if( tag == "move"){ // replace move with rename
                 QString fromString = e.attribute("from");
                 int from = fromString.toInt()-1;// array starts from 0 and numbering from 1
                 QString toString = e.attribute("to");
@@ -407,7 +407,7 @@ void WingInfo::XmlReconfiguration(QDomDocument XmlDoc)
                     qWarning() << "Attribute out of range.";
                     break;
                 }
-                newLandmarks[from] = oldLandmarks[to];
+                newLandmarks[to] = oldLandmarks[from];
             }
             // add needs to be done first
             if( tag == "add"){
