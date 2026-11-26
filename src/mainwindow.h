@@ -105,6 +105,7 @@ private slots:
     void lmarkOut();
     void lmarkOneOut();
     void lmarkPairOut();
+    void lmarkSimilar();
 
     void protoSet();
     void protoView();
@@ -224,6 +225,7 @@ private:
     QAction *lmarkOutAct;
     QAction *lmarkOneOutAct;
     QAction *lmarkPairOutAct;
+    QAction *lmarkSimilarAct;
     QAction *protoSetAct;
     QAction *protoViewAct;
 

@@ -66,6 +66,7 @@ public:
     std::vector< realCoord > points(void) const;
     bool update(QString path);
     bool erase(QString path);
+    bool removeById(const QString &inId);
     void clear();
     void flip(const int height = 0); //Flip points verticaly for transformation between bitmap and cartesian coordinates
     QString toSVG(const QString & fileName, dwImage & image) const;

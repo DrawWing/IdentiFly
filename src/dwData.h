@@ -25,6 +25,7 @@
 #include <QDomDocument> // for xml
 
 #include "dwRCoordList.h"
+#include "coord.h"
 
 class dwData
 {
@@ -34,7 +35,9 @@ public:
     void fromDwPng(QString &fileName);
     void clear();
     void fromXml(const QDomElement & inElement);
-    void fromRCoordList(const dwRCoordList & inList);
+    void fromRCoordList(const dwRCoordList &inList);
+    // void fromCoordList(const std::vector<Coord> &inList,
+    //                    const QString &inId = QString());
     cv::Mat toCvMatDouble() const;
     double at(unsigned i) const;
     void setAt(unsigned i, double inVal);

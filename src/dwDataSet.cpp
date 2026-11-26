@@ -1272,3 +1272,80 @@ std::vector< QString > dwDataSet::outliersMD(void)
     }
     return outStrList;
 }
+
+// Return row IDs ordered from smallest to largest Mahalanobis distance from the last row.
+std::vector< QString > dwDataSet::similarMD()
+{
+    std::vector< QString > outStrList;
+    if(dataSet.size() < 2)
+        return outStrList;
+
+    unsigned variableCount = dataSet[0].size();
+    if(variableCount == 0)
+        return outStrList;
+
+    dwData inData = dataSet.back();
+    if(inData.size() != variableCount)
+        return outStrList;
+
+    cv::Mat dataSetMat = toCvMatDouble();
+    cv::Mat comparisonMat = dataSetMat.rowRange(0, dataSetMat.rows - 1);
+    cv::Mat inDataMat = inData.toCvMatDouble();
+
+    cv::Mat mean;
+    cv::reduce(comparisonMat, mean, 0, cv::REDUCE_AVG);
+
+    cv::Mat covar = cv::Mat::zeros(variableCount, variableCount, CV_64F);
+    if(comparisonMat.rows > 1)
+    {
+        for(int i = 0; i < comparisonMat.rows; ++i)
+        {
+            cv::Mat difference = comparisonMat.row(i) - mean;
+            covar += difference.t() * difference;
+        }
+        covar /= static_cast<double>(comparisonMat.rows - 1);
+    }
+
+    cv::Mat inverseCovar;
+    if(comparisonMat.rows > 1)
+    {
+        cv::SVD decomposition(covar, cv::SVD::MODIFY_A);
+        cv::Mat singularValues = decomposition.w;
+        double largest = singularValues.rows > 0
+                ? singularValues.at<double>(0)
+                : 0.0;
+        double threshold = largest * variableCount * std::numeric_limits<double>::epsilon();
+
+        cv::Mat reciprocal = cv::Mat::zeros(variableCount, variableCount, CV_64F);
+        for(int i = 0; i < singularValues.rows; ++i)
+        {
+            double value = singularValues.at<double>(i);
+            if(value > threshold)
+                reciprocal.at<double>(i, i) = 1.0 / value;
+        }
+        inverseCovar = decomposition.vt.t() * reciprocal * decomposition.u.t();
+    }
+
+    std::vector< std::pair<double, QString> > pairVec;
+    for(unsigned i = 0; i < dataSet.size() - 1; ++i)
+    {
+        dwData theData = dataSet.at(i);
+        cv::Mat theDataMat = theData.toCvMatDouble();
+        double theDist = comparisonMat.rows > 1
+                ? cv::Mahalanobis(theDataMat, inDataMat, inverseCovar)
+                : 0.0;
+        pairVec.push_back({theDist, theData.getId()});
+    }
+
+    std::stable_sort(pairVec.begin(), pairVec.end(),
+                     [](const std::pair<double, QString> &a,
+                        const std::pair<double, QString> &b)
+                     {
+                         return a.first < b.first;
+                     });
+
+    for(const std::pair<double, QString> &pair : pairVec)
+        outStrList.push_back(pair.second);
+
+    return outStrList;
+}

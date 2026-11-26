@@ -240,6 +240,9 @@ void MainWindow::createActions()
     lmarkPairOutAct = new QAction(tr("&Pair outliers"), this);
     connect(lmarkPairOutAct, SIGNAL(triggered()), this, SLOT(lmarkPairOut()));
 
+    lmarkSimilarAct = new QAction(tr("&Similar"), this);
+    connect(lmarkSimilarAct, SIGNAL(triggered()), this, SLOT(lmarkSimilar()));
+    
     protoSetAct = new QAction(tr("&Set prototype"), this);
     connect(protoSetAct, SIGNAL(triggered()), this, SLOT(protoSet()));
 
@@ -392,6 +395,7 @@ void MainWindow::createMenus()
     lmarkMenu->addAction(lmarkOutAct);
     lmarkMenu->addAction(lmarkOneOutAct);
     lmarkMenu->addAction(lmarkPairOutAct);
+    lmarkMenu->addAction(lmarkSimilarAct);
     // //    lmarkMenu->addAction(lmarkAdjustAct);
     lmarkMenu->addSeparator();
     lmarkMenu->addAction(lmarkResetDirAct);
@@ -1690,8 +1694,8 @@ void MainWindow::zoom4()
 // show landmarks coordinates in text window
 void MainWindow::dataLmak()
 {
-    std::vector< Coord > junc = view->landmarks();
-    info.setLandmarks(junc);
+    std::vector< Coord > landmarks = view->landmarks();
+    info.setLandmarks(landmarks);
     QString data = info.toTxt();
     TxtWindow * dataWindow = new TxtWindow;
     dataWindow->setPlainTxt(data);
@@ -2043,7 +2047,6 @@ void MainWindow::lmarkOut()
     reference = rcl.superimposeGPA();
     reference.center();
     reference.scale(1.0/reference.centroidSize());
-    statusBar()->showMessage(tr("Finished"));
 
     dwDataSet theDataSet;
     theDataSet.fromRclList(rcl);
@@ -2140,6 +2143,55 @@ void MainWindow::lmarkPairOut()
     }
 }
 
+void MainWindow::lmarkSimilar()
+{
+    dwRCoordList lmarkList(view->landmarks());
+    lmarkList.setId(inFileInfo.absoluteFilePath());
+
+    QString inDirName = QFileDialog::getExistingDirectory(this, tr("Choose a directory"),
+                                                          filePath, QFileDialog::ShowDirsOnly);
+
+    dwRclList rcl = readDirData(inDirName);
+    if(rcl.size() == 0)
+        return;
+
+    if(lmarkList.size() != static_cast<unsigned>(rcl.getMinSize()))
+    {
+        QMessageBox::warning(this, tr("Warning"),
+                             tr("The landmark count does not match the data set."));
+        return;
+    }
+
+    rcl.removeById(inFileInfo.absoluteFilePath());
+    rcl.push_back(lmarkList);
+    rcl.superimposeGPA();
+
+    reference = lmarkList;
+    reference.center();
+    reference.scale(1.0/reference.centroidSize());
+
+    dwDataSet theDataSet;
+    theDataSet.fromRclList(rcl);
+    std::vector< QString > outList = theDataSet.similarMD();
+
+    QList< QFileInfo > theFileList;
+    for(unsigned i = 0; i < outList.size(); ++i)
+    {
+        QString theStr = outList[i];
+        QFileInfo theInfo(theStr);
+        theFileList.push_back(theInfo);
+    }
+    fileInfoList = theFileList;
+
+    if(fileInfoList.size())
+    {
+        if(fileInfoList.size() > 1)
+            openNextAct->setEnabled(true);
+        fileInfoCount = 0;
+        inFileInfo = fileInfoList.at(fileInfoCount);
+        openDwPng(inFileInfo.absoluteFilePath());
+    }
+}
 void MainWindow::protoSet()
 {
     QString inFileName = QFileDialog

@@ -719,6 +719,20 @@ bool dwRclList::erase(QString path)
     return false;
 }
 
+// Remove the first item whose ID matches inId.
+bool dwRclList::removeById(const QString &inId)
+{
+    for(unsigned i = 0; i < rclList.size(); ++i)
+    {
+        if(rclList[i].getId() == inId)
+        {
+            rclList.erase(rclList.begin() + i);
+            return true;
+        }
+    }
+    return false;
+}
+
 //remove all
 void dwRclList::clear()
 {

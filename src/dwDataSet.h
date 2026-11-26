@@ -86,6 +86,7 @@ public:
     dwData eDistance(const dwData &inData) const;
     dwData removeRow(unsigned rowNo);
     std::vector< QString > outliersMD(void);
+    std::vector< QString > similarMD();
 
 private:
     QString id;

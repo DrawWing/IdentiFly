@@ -86,22 +86,31 @@ void dwData::fromXml(const QDomElement & inElement)
     }
 }
 
-void dwData::fromRCoordList(const dwRCoordList & inList)
+void dwData::fromRCoordList(const dwRCoordList &inList)
 {
     data.clear();
+    id = inList.getId();
 
-    std::vector< realCoord > inVec = inList.list();
-    for( unsigned i = 0; i < inVec.size(); ++i)
+    const std::vector<realCoord> inVec = inList.list();
+    for(unsigned i = 0; i < inVec.size(); ++i)
     {
         realCoord theCoord = inVec[i];
         data.push_back(theCoord.dx());
         data.push_back(theCoord.dy());
     }
-//    double constant = inList.getConstant();
-//    if(constant!=0.0)
-//        data.push_back(constant);
-    id=inList.getId();
 }
+
+// void dwData::fromCoordList(const std::vector<Coord> &inList, const QString &inId)
+// {
+//     data.clear();
+//     id = inId;
+
+//     for(unsigned i = 0; i < inList.size(); ++i)
+//     {
+//         data.push_back(inList[i].dx());
+//         data.push_back(inList[i].dy());
+//     }
+// }
 
 cv::Mat dwData::toCvMatDouble() const
 {
