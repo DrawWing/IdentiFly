@@ -100,15 +100,14 @@ void dwRclList::fromTps(const QString & resources)
             }
         }
     }
-    std::vector< dwRCoordList >::const_iterator rclIter;
-    for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-        int size = rclIter->size();
+    for(unsigned i = 0; i < rclList.size(); ++i){
+        int size = rclList[i].size();
         if(size > maxRcListSize)
             maxRcListSize = size;
     }
     minRcListSize = maxRcListSize;
-    for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-        int size = rclIter->size();
+    for(unsigned i = 0; i < rclList.size(); ++i){
+        int size = rclList[i].size();
         if(size < minRcListSize)
             minRcListSize = size;
     }
@@ -201,15 +200,14 @@ QString dwRclList::readTps(const QString & resources)
         rcl.setId(id);
     rclList.push_back(rcl);
 
-    std::vector< dwRCoordList >::const_iterator rclIter;
-    for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-        int size = rclIter->size();
+    for(unsigned i = 0; i < rclList.size(); ++i){
+        int size = rclList[i].size();
         if(size > maxRcListSize)
             maxRcListSize = size;
     }
     minRcListSize = maxRcListSize;
-    for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-        int size = rclIter->size();
+    for(unsigned i = 0; i < rclList.size(); ++i){
+        int size = rclList[i].size();
         if(size < minRcListSize)
             minRcListSize = size;
     }
@@ -235,15 +233,14 @@ void dwRclList::fromCsv(const QString & resources)
         rcl.fromCsv(ln,',');
         rclList.push_back(rcl);
     }
-    std::vector< dwRCoordList >::const_iterator rclIter;
-    for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-        int size = rclIter->size();
+    for(unsigned i = 0; i < rclList.size(); ++i){
+        int size = rclList[i].size();
         if(size > maxRcListSize)
             maxRcListSize = size;
     }
     minRcListSize = maxRcListSize;
-    for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-        int size = rclIter->size();
+    for(unsigned i = 0; i < rclList.size(); ++i){
+        int size = rclList[i].size();
         if(size < minRcListSize)
             minRcListSize = size;
     }
@@ -259,9 +256,8 @@ void dwRclList::fromVector(const std::vector< dwRCoordList > &inVec)
 QString dwRclList::toTps(void) const
 {
 	QString output;
-	std::vector< dwRCoordList >::const_iterator rclIter;
-	for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-		output += rclIter->toTps();
+	for(unsigned i = 0; i < rclList.size(); ++i){
+		output += rclList[i].toTps();
 	}
 	return output;
 }
@@ -269,9 +265,8 @@ QString dwRclList::toTps(void) const
 QString dwRclList::toXml(void) const
 {
 	QString output;
-	std::vector< dwRCoordList >::const_iterator rclIter;
-	for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-		output += rclIter->toXml();
+	for(unsigned i = 0; i < rclList.size(); ++i){
+		output += rclList[i].toXml();
 	}
 	return output;
 }
@@ -288,9 +283,8 @@ QString dwRclList::toCsv(void) const
     }
     output += "\n";
 
-    std::vector< dwRCoordList >::const_iterator rclIter;
-    for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-        output += rclIter->toCsv();
+    for(unsigned i = 0; i < rclList.size(); ++i){
+        output += rclList[i].toCsv();
     }
     return output;
 }
@@ -306,15 +300,14 @@ void dwRclList::fromFile(const QString & resources)
 		dwRCoordList rcl(in);
 		rclList.push_back(rcl);
 	}
-	std::vector< dwRCoordList >::const_iterator rclIter;
-	for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-		int size = rclIter->size();
+	for(unsigned i = 0; i < rclList.size(); ++i){
+		int size = rclList[i].size();
 		if(size > maxRcListSize)
 			maxRcListSize = size;
 	}
 	minRcListSize = maxRcListSize;
-	for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-		int size = rclIter->size();
+	for(unsigned i = 0; i < rclList.size(); ++i){
+		int size = rclList[i].size();
 		if(size < minRcListSize)
 			minRcListSize = size;
 	}
@@ -337,15 +330,14 @@ void dwRclList::fromImgDir(const QDir & inDir)
         rcl.setId(localFileInfo.absoluteFilePath());
         rclList.push_back(rcl);
     }
-    std::vector< dwRCoordList >::const_iterator rclIter;
-    for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-        int size = rclIter->size();
+    for(unsigned i = 0; i < rclList.size(); ++i){
+        int size = rclList[i].size();
         if(size > maxRcListSize)
             maxRcListSize = size;
     }
     minRcListSize = maxRcListSize;
-    for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-        int size = rclIter->size();
+    for(unsigned i = 0; i < rclList.size(); ++i){
+        int size = rclList[i].size();
         if(size < minRcListSize)
             minRcListSize = size;
     }
@@ -440,9 +432,8 @@ void dwRclList::flip( const int height)
 double dwRclList::superimpose_once(const dwRCoordList & reference)
 {
 	double diff = 0.0;
-	std::vector< dwRCoordList >::iterator rclIter;
-	for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-		diff += rclIter->superimpose(reference);
+	for(unsigned i = 0; i < rclList.size(); ++i){
+		diff += rclList[i].superimpose(reference);
 	}
 
 	return diff;
@@ -493,9 +484,8 @@ int dwRclList::getMinSize(void) const
 
 bool dwRclList::setValidSize(const int size)
 {
-	std::vector< dwRCoordList >::iterator rclIter;
-	for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-		bool succes = rclIter->setValidSize(size);
+	for(unsigned i = 0; i < rclList.size(); ++i){
+		bool succes = rclList[i].setValidSize(size);
 		if(!succes) 
 			return false;
 	}
@@ -595,9 +585,8 @@ double dwRclList::meanCS(void) const
 {
     double totalCS = 0;
     int count = 0;
-    std::vector< dwRCoordList >::const_iterator rclIter;
-    for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-        dwRCoordList rcl = *rclIter; //needed because centroidSize is not const.
+    for(unsigned i = 0; i < rclList.size(); ++i){
+        dwRCoordList rcl = rclList[i]; //needed because centroidSize is not const.
         totalCS += rcl.centroidSize();
         ++count;
     }
@@ -708,11 +697,9 @@ bool dwRclList::update(QString path)
 //remove one of the rcl associated with path
 bool dwRclList::erase(QString path)
 {
-    std::vector< dwRCoordList >::iterator rclIter;
-    for(rclIter = rclList.begin(); rclIter != rclList.end(); rclIter++){
-        //dwRCoordList rcl = *rclIter;
-        if(rclIter->getId() == path){
-            rclList.erase(rclIter);
+    for(unsigned i = 0; i < rclList.size(); ++i){
+        if(rclList[i].getId() == path){
+            rclList.erase(rclList.begin() + i);
             return true;
         }
     }

@@ -154,6 +154,8 @@ private:
     void createStatusBar();
     void createToolBars();
     bool isNoImage();
+    bool isNoLandmarks();
+    bool hasTooFewLandmarks(unsigned minCount);
     bool okToContinue();
     bool loadFile(const QString &fileName);
     bool openDwPng(const QString &);

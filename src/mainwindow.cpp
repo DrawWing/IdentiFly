@@ -545,6 +545,30 @@ bool MainWindow::isNoImage(){
         return false;
 }
 
+bool MainWindow::isNoLandmarks()
+{
+    if(view->landmarks().size() == 0)
+    {
+        QMessageBox::warning(this, tr("Warning"), tr("No data available"));
+        return true;
+    }
+    return false;
+}
+
+bool MainWindow::hasTooFewLandmarks(unsigned minCount)
+{
+    if(isNoLandmarks())
+        return true;
+
+    if(view->landmarks().size() < minCount)
+    {
+        QMessageBox::warning(this, tr("Warning"),
+                             tr("Number of landmarks smaller than %1").arg(minCount));
+        return true;
+    }
+    return false;
+}
+
 void MainWindow::updateStatus(QPointF pos)
 {
     int x = pos.x();
@@ -1241,8 +1265,9 @@ bool MainWindow::saveAsTps(QString & fileName)
 
 void MainWindow::exportData()
 {
-    if(isNoImage())
+    if(isNoLandmarks())
         return;
+
     std::vector< Coord > junc = view->landmarks();
     if(junc.size() == 0)
         return;
@@ -1694,6 +1719,9 @@ void MainWindow::zoom4()
 // show landmarks coordinates in text window
 void MainWindow::dataLmak()
 {
+    if(isNoLandmarks())
+        return;
+
     std::vector< Coord > landmarks = view->landmarks();
     info.setLandmarks(landmarks);
     QString data = info.toTxt();
@@ -1705,14 +1733,10 @@ void MainWindow::dataLmak()
 // calculate centroid size of current landmarks
 void MainWindow::dataCs()
 {
-    if(isNoImage())
+    if(isNoLandmarks())
         return;
 
     std::vector< Coord > landmarks = view->landmarks();
-    if( landmarks.size() == 0 ){
-        QMessageBox::warning(this, tr("Warning"), tr("No data available"));
-        return;
-    }
 
     dwRCoordList realLandmarks(landmarks);
     double CS = realLandmarks.centroidSize();
@@ -2515,12 +2539,10 @@ void MainWindow::semiLand1()
     pxlList outline;
     outline.fromTxt(outlineString);
 
-    std::vector < Coord > landmarks = view->landmarks();
-    if(landmarks.size() < 1)
-    {
-        QMessageBox::warning(this, tr("Warning"), tr("Number of landmarks different than %1").arg(1));
+    if(isNoLandmarks())
         return;
-    }
+
+    std::vector < Coord > landmarks = view->landmarks();
     Coord lastPoint = landmarks.front();
 
     bool ok;
@@ -2598,12 +2620,10 @@ void MainWindow::semiLand2()
     pxlList outline;
     outline.fromTxt(outlineString);
 
-    std::vector < Coord > landmarks = view->landmarks();
-    if(landmarks.size() < 2)
-    {
-        QMessageBox::warning(this, tr("Warning"), tr("Number of landmarks different than %1").arg(2));
+    if(hasTooFewLandmarks(2))
         return;
-    }
+
+    std::vector < Coord > landmarks = view->landmarks();
     Coord fromPoint = landmarks[0];
     Coord toPoint = landmarks[1];
 
@@ -3016,7 +3036,10 @@ void MainWindow::idFile()
 // classify currently open data using classifiction from xml file
 void MainWindow::id()
 {
-    QDomDocument XmlDoc = loadXmlDoc(idFilePath);
+     if(isNoLandmarks())
+        return;
+
+   QDomDocument XmlDoc = loadXmlDoc(idFilePath);
     if(XmlDoc.isNull())
         return;
 

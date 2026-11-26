@@ -16,7 +16,9 @@
 */
 
 #include <QFile>
+#include <QDebug>
 #include <QRegularExpression>
+#include <QTextStream>
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -1343,6 +1345,22 @@ std::vector< QString > dwDataSet::similarMD()
                      {
                          return a.first < b.first;
                      });
+
+    // QFile debugFile("similarMD-debug.csv");
+    // if(debugFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    // {
+    //     QTextStream out(&debugFile);
+    //     out << "id;distance\n";
+    //     for(unsigned i = 0; i < pairVec.size(); ++i)
+    //     {
+    //         out << pairVec[i].second << ";"
+    //             << QString::number(pairVec[i].first, 'g', 17) << "\n";
+    //     }
+    // }
+    // else
+    // {
+    //     qWarning() << "Cannot write similarMD-debug.csv:" << debugFile.errorString();
+    // }
 
     for(const std::pair<double, QString> &pair : pairVec)
         outStrList.push_back(pair.second);
